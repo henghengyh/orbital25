@@ -1,6 +1,6 @@
 File: `package.json` 
 ===
-Developed by DeepSeek on 2025-05-01
+Created on 2025-05-01
 
 # Initialisation
 This file contains metadata about the project, including its name, version, description, main entry point, scripts, and dependencies.
@@ -9,7 +9,7 @@ This file contains metadata about the project, including its name, version, desc
 - The `"private"` field is set to true to prevent accidental publication to the npm registry.
 
 # Explanation
-The package.json file is like a recipe book for a software project. It tells the computer what the project is about, what tools it needs to run, and how to perform certain tasks. Here's what each part means:
+The `package.json` file is like a recipe book for a software project. It tells the computer what the project is about, what tools it needs to run, and how to perform certain tasks. Here's what each part means:
 
 1. Project Information:
     - `"name"`: The name of the project (e.g. `"travelgo-server"`).
