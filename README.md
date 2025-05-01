@@ -1,6 +1,6 @@
 orbital25
 ========
-This repository contains material for the project *CP2106 Independent Software Development Project (Orbital)* for [henghengyh](https://github.com/henghengyh) and [haobuhaoo]().
+This repository contains material for the project *CP2106 Independent Software Development Project (Orbital)* for [henghengyh](https://github.com/henghengyh) and [haobuhaoo](https://github.com/haobuhaoo).
 
 ## Contributing
 
@@ -13,9 +13,26 @@ Branch naming should be such that they can be easily distinguished. Recommended 
 ### Commit Messages
 - We expect to practice good version control for archival purpose and future reference, hence the need for a convention for our commit messages.
 - Commit messages should be in present tense. [Here's why](http://stackoverflow.com/questions/3580013/should-i-use-past-or-present-tense-in-git-commit-messages).
-- Commit message format: `[<component>]: <Commit message>`
-  - `<component>`: FE / BE / API / AUT / D for Frontend / Backend / API & Third Party Integrations / Authentications / Development respectively.
+- Commit message format: `[<component>] <Commit message>`
+  - `<component>`: FE / BE / API / AUT / DEV for Frontend / Backend / API & Third Party Integrations / Authentications / Development respectively.
   - e.g. If you have updated database code, the commit message can be: `[BE] Update DB for new feature X`
 
 ### Style Guide
 Official Style Guide: http://www.python.org/dev/peps/pep-0008/
+
+## Useful Documentations
+The project proposal can be found [here](https://docs.google.com/document/d/1D2bHDXoqUTczwbjbPwc9bvrkqinJr8MP/edit). 
+### Tech Stacks
+Click on each technology to be directed to their documentation.
+- Frontend
+  - [`React.js`]
+  - [`Tailwind CSS`]
+  - [`Axios`]
+- Backend
+  - [`Node.js`](https://devdocs.io/node/)
+  - [`MongoDB`](https://www.mongodb.com/docs/manual/)
+- API & Third Party Integrations
+  - [`OpenWeatherMap API`]
+  - [`Google Maps API`]
+- Authentications
+  - [`Passport.js`](https://www.passportjs.org/docs/)
