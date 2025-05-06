@@ -5,6 +5,7 @@ const passport = require('passport');
 const cors = require('cors');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 /** EXPLANATION
@@ -51,5 +52,4 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use('/api/users', require('./routes/users'));
 app.use('/api/itineraries', require('./routes/itineraries'));
 
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

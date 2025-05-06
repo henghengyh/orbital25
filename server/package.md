@@ -1,6 +1,6 @@
 File: `package.json` 
 ===
-Created on 2025-05-01
+Created on 2025-05-01, using CLI cmd: `npm init -y` in directory `orbital25/server`
 
 # Initialisation
 This file contains metadata about the project, including its name, version, description, main entry point, scripts, and dependencies.
