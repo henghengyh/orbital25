@@ -5,7 +5,10 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
+
+//Add ons (For Middleware to enhance security)
+const authenticateToken = require('./middleware/authenticateToken');
 
 // Middleware
 /** EXPLANATION
@@ -50,6 +53,9 @@ mongoose.connect(process.env.MONGODB_URI, {
  * '/api/itineraries' route.
 */
 app.use('/api/users', require('./routes/auth'));
+app.use('/api/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route.', user: req.user });
+});
 //app.use('/api/itineraries', require('./routes/itineraries'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

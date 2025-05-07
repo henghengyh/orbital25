@@ -57,6 +57,117 @@ The file imports the following libraries:
 
 ---
 
+### 4. **Testing the Endpoints**  
+
+You can use **Postman** to test the `POST /register` and `POST /login` endpoints defined in `auth.js`. Below are the steps for testing each endpoint:  
+
+---
+
+#### **Testing `POST /register`**  
+
+**Purpose**: To create a new user in the database.  
+
+1. Open Postman and create a new request.  
+2. Set the method to `POST` and the URL to:  
+   ```
+   http://localhost:3000/api/users/register
+   ```  
+3. Go to the **Body** tab, select **raw**, and set the type to **JSON**.  
+4. Add the following JSON body:  
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```  
+5. Click **Send**.  
+
+**Expected Responses**:  
+- **Success**:  
+  ```json
+  {
+    "message": "User registered successfully"
+  }
+  ```  
+- **Error (User already exists)**:  
+  ```json
+  {
+    "message": "User already exists"
+  }
+  ```  
+
+---
+
+#### **Testing `POST /login`**  
+
+**Purpose**: To authenticate a user and return a JWT token.  
+
+1. Open Postman and create a new request.  
+2. Set the method to `POST` and the URL to:  
+   ```
+   http://localhost:3000/api/users/login
+   ```  
+3. Go to the **Body** tab, select **raw**, and set the type to **JSON**.  
+4. Add the following JSON body:  
+    ```json
+    {
+      "email": "john@example.com",
+      "password": "password123"
+    }
+    ```  
+5. Click **Send**.  
+
+**Expected Responses**:  
+- **Success**:  
+  ```json
+  {
+    "token": "jwt_token_here",
+    "user": {
+      "id": "user_id_here",
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+  ```  
+- **Error (Invalid credentials)**:  
+  ```json
+  {
+    "message": "Invalid credentials"
+  }
+  ```  
+- **Error (User not found)**:  
+  ```json
+  {
+    "message": "User not found"
+  }
+  ```  
+
+---
+
+#### **Additional Notes**  
+- **Ensure the Server is Running**:  
+  - Start your server by running:  
+    ```bash
+    node server.js
+    ```  
+  - Ensure there are no errors in the terminal, and the server is listening on the correct port (e.g., `3000`).  
+
+- **Database Connection**:  
+  - Verify that your MongoDB database is running and accessible.  
+  - Check the `MONGODB_URI` in your `.env` file.  
+
+- **Environment Variables**:  
+  - Ensure your `.env` file contains the correct `JWT_SECRET` and `PORT`.  
+
+- **Testing JWT Tokens**:  
+  - After logging in, you can use the returned JWT token to test protected routes (if implemented). Add the token to the **Authorization** header in Postman:  
+    ```
+    Authorization: Bearer <jwt_token_here>
+    ```  
+
+---
+
 ### Why is `auth.js` Important?
 The `auth.js` file is essential for managing user authentication in the TravelGo application. It ensures:
 - Secure storage of user passwords.
