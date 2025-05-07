@@ -49,7 +49,7 @@ mongoose.connect(process.env.MONGODB_URI, {
  * create a new itinerary, they send a request to the
  * '/api/itineraries' route.
 */
-//app.use('/api/users', require('./routes/users'));
+app.use('/api/users', require('./routes/auth'));
 //app.use('/api/itineraries', require('./routes/itineraries'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
