@@ -36,3 +36,7 @@ Click on each technology to be directed to their documentation.
   - [`Google Maps API`]
 - Authentications
   - [`Passport.js`](https://www.passportjs.org/docs/)
+
+### Other documents along the way
+- Backend
+  - [`Postman`](https://www.geeksforgeeks.org/introduction-postman-api-development/)
