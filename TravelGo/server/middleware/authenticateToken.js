@@ -1,5 +1,17 @@
 const jwt = require('jsonwebtoken');
 
+// Middleware to authenticate JWT tokens
+/** EXPLANATION
+ * This middleware checks if the incoming request has a valid JWT token.
+ * If the token is valid, it allows the request to proceed to the next middleware or route handler.
+ * If not, it sends a 403 Forbidden response.
+ * 
+ * authenticateToken FUNCTION
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @return {void}
+ */
 const authenticateToken = (req, res, next) => {
   // Get the token from the Authorization header
   const authHeader = req.header('Authorization');
