@@ -19,3 +19,4 @@ This repository contains materials for *TravelGo* backend development.
   - `bcryptjs`
   - `jsonwebtoken`
   - `--save-dev nodemon`
+  - `axios`
