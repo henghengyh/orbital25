@@ -41,7 +41,7 @@
     justify-content: center;
     align-items: center;
     width: 250px;
-    height: 60px;
+    height: 50px;
     margin: 0 auto;
 }
 
@@ -59,6 +59,7 @@
     width: 200px;
     height: 35px;
     margin: 0 auto;
+    margin-top: 8px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -103,4 +104,22 @@
 .lr-container div.lr-link p a:active {
     color: rgb(137, 137, 255);
     text-decoration: none;
+}
+
+.lr-error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
+
+.lr-handle {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 250px;
+    height: fit-content;
+    margin-top: 0;
+    margin-bottom: 0;
 }

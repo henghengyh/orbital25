@@ -29,7 +29,7 @@ export default function Register() {
                 }
             })
             .catch((err) => {
-                const message = err.response?.data?.message || "Something went wrong.";
+                const message = err.response?.data?.message || "Something went wrong. Please try again.";
                 console.error("Registration error:", message);
                 setError(message);
             });
@@ -40,6 +40,7 @@ export default function Register() {
             <div className="lr-container">
                 <h1>Register</h1>
                 <form onSubmit={handleSubmit}>
+                    <p className="lr-handle">Username</p>
                     <div>
                         <input
                             type="text"
@@ -50,6 +51,7 @@ export default function Register() {
                             onChange={(e) => setUser(e.target.value)}
                         />
                     </div>
+                    <p className="lr-handle">Email</p>
                     <div>
                         <input
                             type="text"
@@ -60,6 +62,7 @@ export default function Register() {
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
+                    <p className="lr-handle">Password</p>
                     <div>
                         <input
                             type="password"
@@ -70,7 +73,9 @@ export default function Register() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    {error && <p className="error">{error}</p>}
+                    {
+                        error && <p className="lr-error">{error}</p> // Display error message if any
+                    }
                     <button type="submit">Register</button>
                 </form>
                 <div className="lr-link">

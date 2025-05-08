@@ -29,9 +29,9 @@ router.post("/register", async (req, res) => {
     /* await is used to wait for the promise to resolve.
     /* If the promise resolves to null, it means no user was found.
     */
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ message: "User already exists" });
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail)
+      return res.status(400).json({ message: "Email already exists" });
 
     const user = new User({ name, email, password });
 

@@ -41,6 +41,7 @@ export default function Login() {
             <div className="lr-container">
                 <h1>Login</h1>
                 <form onSubmit={handleSubmit}>
+                    <p className="lr-handle">Email</p>
                     <div>
                         <input
                             type="text"
@@ -51,6 +52,7 @@ export default function Login() {
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
+                    <p className="lr-handle">Password</p>
                     <div>
                         <input
                             type="password"
@@ -61,7 +63,9 @@ export default function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    {error && <p className="error">{error}</p>}
+                    {
+                        error && <p className="lr-error">{error}</p> // Display error message if any
+                    }
                     <button type="submit">Log In</button>
                 </form>
                 <div className="lr-link">
