@@ -56,6 +56,7 @@ app.use('/api/users', require('./routes/auth'));
 app.use('/api/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route.', user: req.user });
 });
+app.use('/api/weather', require('./routes/weather'));
 //app.use('/api/itineraries', require('./routes/itineraries'));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
