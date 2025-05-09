@@ -1,0 +1,125 @@
+.lr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* background-image: linear-gradient(rgb(216, 240, 255), rgb(175, 255, 223)); */
+    background-image: url('../../assets/lr-bg.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.lr-container {
+    width: 300px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: blanchedalmond;
+    border-radius: 20px;
+    box-shadow: 0 8px 100px rgb(0, 0, 0, 0.1);
+}
+
+.lr-container h1 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.lr-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.lr-container div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.lr-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+.lr-container button {
+    width: 200px;
+    height: 35px;
+    margin: 0 auto;
+    margin-top: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.lr-container button:hover {
+    background-color: #45a049;
+}
+
+.lr-container div.lr-link {
+    font-size: 14px;
+    text-align: center;
+    height: 40px;
+    width: 70%;
+    margin: 0 auto;
+}
+
+.lr-container div.lr-link p {
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+.lr-container div.lr-link p a:link {
+    color: rgb(61, 61, 255);
+    text-decoration: none;
+}
+
+.lr-container div.lr-link p a:visited {
+    color: rgb(61, 61, 255);
+    text-decoration: none;
+}
+
+.lr-container div.lr-link p a:hover {
+    text-decoration: underline;
+}
+
+.lr-container div.lr-link p a:active {
+    color: rgb(137, 137, 255);
+    text-decoration: none;
+}
+
+.lr-error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin: 0 auto;
+    padding-bottom: 10px;
+}
+
+.lr-handle {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 250px;
+    height: fit-content;
+    margin-top: 0;
+    margin-bottom: 0;
+}
