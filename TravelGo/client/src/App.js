@@ -1,7 +1,5 @@
 import logo from './logo.svg';
 import './App.css';
-import React from 'react';
-import Weather from './components/Weather';
 
 function App() {
   return (
@@ -19,7 +17,6 @@ function App() {
         >
           Learn React
         </a>
-        <Weather />
       </header>
     </div>
   );
