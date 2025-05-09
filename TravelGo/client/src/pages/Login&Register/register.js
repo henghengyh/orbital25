@@ -17,7 +17,7 @@ export default function Register() {
         e.preventDefault();
         setError(""); // Clear previous errors
         axios
-            .post("http://localhost:5000/api/users/register", { // send registration request to backend server
+            .post("http://localhost:5001/api/users/register", { // send registration request to backend server
                 name: user,
                 email: email,
                 password: password,
