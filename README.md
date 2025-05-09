@@ -32,7 +32,7 @@ Click on each technology to be directed to their documentation.
   - [`Node.js`](https://devdocs.io/node/)
   - [`MongoDB`](https://www.mongodb.com/docs/manual/)
 - API & Third Party Integrations
-  - [`OpenWeatherMap API`]
+  - [`OpenWeatherMap API`](https://openweathermap.org/api/one-call-3)
   - [`Google Maps API`]
 - Authentications
   - [`Passport.js`](https://www.passportjs.org/docs/)
