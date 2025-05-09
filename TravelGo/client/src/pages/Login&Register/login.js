@@ -16,7 +16,7 @@ export default function Login() {
         e.preventDefault();
         setError(""); // Clear previous errors
         axios
-            .post("http://localhost:5000/api/users/login", { // send login request to backend server
+            .post("http://localhost:5001/api/users/login", { // send login request to backend server
                 email: email,
                 password: password,
             })
