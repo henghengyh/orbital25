@@ -1,8 +1,8 @@
 // For haohao's checking and implementation
-
-/**
 import React, { useState } from 'react';
 import axios from 'axios';
+
+import Navbar from '../../components/Navbar/navbar';
 
 const Weather = () => {
     const [city, setCity] = useState('');
@@ -19,7 +19,9 @@ const Weather = () => {
 
     return (
         <div>
+            <Navbar /> {/* Navbar component for navigation */}
             <h2>Weather Forecast</h2>
+            <h1>Check the weather in your city</h1>
             <input
                 type="text"
                 placeholder="Enter city"
@@ -39,4 +41,3 @@ const Weather = () => {
 };
 
 export default Weather;
-*/
