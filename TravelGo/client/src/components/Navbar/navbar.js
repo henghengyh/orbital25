@@ -4,13 +4,16 @@ import { menuItems } from '../MenuItem/menuitem';
 
 export default function Navbar() {
     return (
-        <nav className='bg-white shadow-md p-4 mx-5 mt-4 rounded-xl h-16 flex items-center justify-between'>
-            <Link to="/home" className='font-bold text-lg p-2'>TravelGo</Link>
-            <ul className='flex space-x-4'>
+        <nav className='bg-sky-200 pt-4 h-screen w-[200px] flex'>
+            <ul className='h-auto w-[200px] flex-col gap-4 flex list-none'>
+                {/* Loop through the menuItems array to create the navbar items */}
                 {menuItems.map((item, index) => {
                     return (
-                        <li key={index}>
-                            <Link to={item.url} className={item.className}> {item.title} </Link>
+                        <li key={index} className={`flex flex-row justify-center items-center h-[60px] transition-all hover:h-[60px] hover:cursor-pointer hover:justify-center hover:items-center ${index !== 0 ? 'hover:bg-sky-50' : 'hover:bg-transparent'}`}>
+                            <div className='flex-[30%] grid place-items-center'>
+                                <Link to={item.url}>{item.icon}</Link>
+                            </div>
+                            <Link to={item.url} className={item.className}>{item.title}</Link>
                         </li>
                     )
                 })}
