@@ -3,12 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "./login&register.css";
+import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+    const [email, setEmail] = useState(""); // State to store the email
+    const [password, setPassword] = useState(""); // State to store the password
+    const [error, setError] = useState(""); // State to store any error messages
+    const navigate = useNavigate(); // Hook to programmatically navigate to different routes
 
     // Function to handle form submission
     // It sends a POST request to the backend server with the email and password
@@ -37,41 +38,45 @@ export default function Login() {
     };
 
     return (
-        <div className="lr">
-            <div className="lr-container">
-                <h1>Login</h1>
-                <form onSubmit={handleSubmit}>
-                    <p className="lr-handle">Email</p>
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Email"
-                            autoComplete="off"
-                            name="email"
-                            required
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <p className="lr-handle">Password</p>
-                    <div>
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            autoComplete="off"
-                            name="password"
-                            required
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    {
-                        error && <p className="lr-error">{error}</p> // Display error message if any
-                    }
-                    <button type="submit">Log In</button>
-                </form>
-                <div className="lr-link">
-                    <p>
-                        Don't have an account? <Link to="/register">Sign Up</Link>
-                    </p>
+        <div className="bg">
+            <img src={backgroundImage} alt="Background" className="background-image" />
+            <div className="lr">
+                <div className="lr-container">
+                    <form onSubmit={handleSubmit}>
+                        <h1>Login</h1>
+                        <div className="input-box">
+                            <input
+                                type="text"
+                                placeholder="Email"
+                                autoComplete="off"
+                                name="email"
+                                required
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <div><ion-icon name="mail"></ion-icon></div>
+                        </div>
+                        <div className="input-box">
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                autoComplete="off"
+                                name="password"
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <div><ion-icon name="lock-closed"></ion-icon></div>
+                        </div>
+                        {
+                            error && <p className="lr-error">{error}</p> // Display error message if any
+                        }
+                        <button type="submit">Log In</button>
+                        <div className="lr-link">
+                            <p>
+                                Don't have an account?
+                                <Link to="/register">Register</Link>
+                            </p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
