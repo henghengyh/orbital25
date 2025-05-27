@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,6 +11,13 @@ export default function Register() {
     const [password, setPassword] = useState(""); // State to store the password
     const [error, setError] = useState(""); // State to store any error messages
     const navigate = useNavigate(); // Hook to programmatically navigate to different routes
+
+    // Display error message for 3 seconds if there is an error
+    useEffect(() => {
+        if (error) {
+            setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
+        }
+    }, [error]);
 
     // Function to handle form submission
     // It sends a POST request to the backend server with the username, email and password
@@ -37,12 +44,12 @@ export default function Register() {
     };
 
     return (
-        <div className="bg">
+        <div className="lr-bg">
             <img src={backgroundImage} alt="Background" className="background-image" />
             <div className="lr">
                 <div className="lr-container">
-                    <form onSubmit={handleSubmit}>
-                        <h1>Register</h1>
+                    <form name="register" onSubmit={handleSubmit}>
+                        <h1 className="lr-title">Register</h1>
                         <div className="input-box">
                             <input
                                 type="text"
@@ -77,9 +84,12 @@ export default function Register() {
                             <div><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <p className="lr-error">{error}</p> // Display error message if any
+                            error &&
+                            <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
+                                {error}
+                            </div> // Display error message if any
                         }
-                        <button type="submit">Register</button>
+                        <button type="submit" className="lr-button">Register</button>
                         <div className="lr-link">
                             <p>
                                 Already have an account?

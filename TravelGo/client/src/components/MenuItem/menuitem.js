@@ -1,6 +1,6 @@
 import travelgo from '../../assets/icon.png';
 
-const sharedStyles = "flex-[70%] place-item-start p-2 text-lg";
+const sharedStyles = "flex-[70%] place-item-start pt-2 pb-2 pr-2 text-lg";
 
 export const menuItems = [
     // list of menu items in the navbar
@@ -8,13 +8,13 @@ export const menuItems = [
     // each item has a title, url, and className for styling
     {
         title: "TravelGo",
-        url: "/home",
+        url: "/about",
         icon: <img src={travelgo} alt="TravelGo Logo" className='w-10 h-10 hover:h-11 hover:w-11' />,
-        className: `${sharedStyles} font-bold text-2xl hover:text-[28px]`
+        className: `${sharedStyles} font-bold text-2xl hover:text-[28px] hover:text-green-700`
     },
     {
         title: "Dashboard",
-        url: "/home",
+        url: "/dashboard",
         icon: <ion-icon name="list" ></ion-icon>,
         className: `${sharedStyles} font-semibold`
     },
@@ -42,4 +42,10 @@ export const menuItems = [
         icon: <ion-icon name="map"></ion-icon>,
         className: `${sharedStyles} font-semibold`
     },
+    {
+        title: "Sign Out",
+        url: "/",
+        icon: <ion-icon name="log-out"></ion-icon>,
+        className: `${sharedStyles} font-semibold`
+    }
 ]
