@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import "./login&register.css";
@@ -10,6 +10,24 @@ export default function Login() {
     const [password, setPassword] = useState(""); // State to store the password
     const [error, setError] = useState(""); // State to store any error messages
     const navigate = useNavigate(); // Hook to programmatically navigate to different routes
+    const location = useLocation(); // Hook to get the current location
+    const [popup, setPopup] = useState(false); // State to control the visibility of the popup after being redirected from a protected route
+
+    // Display popup for 3 seconds if the user was redirected from a protected route
+    useEffect(() => {
+        if (location.state?.fromProtectedRoute) {
+            setPopup(true); // Show the popup if redirected from a protected route
+            setTimeout(() => setPopup(false), 3000); // Hide the popup after 3 seconds
+            window.history.replaceState({}, document.title); // Clear the state to prevent the popup from showing again on refresh
+        }
+    }, [location.state])
+
+    // Display error message for 3 seconds if there is an error
+    useEffect(() => {
+        if (error) {
+            setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
+        }
+    }, [error]);
 
     // Function to handle form submission
     // It sends a POST request to the backend server with the email and password
@@ -25,25 +43,30 @@ export default function Login() {
                 console.log(res.data);
                 if (res.data) { // if login is successful, store token in local storage and navigate to home page
                     localStorage.setItem("token", res.data.token);
-                    navigate("/home");
+                    navigate("/dashboard");
                 }
             })
             .catch((err) => {
-                console.error(
-                    "Registration error:",
-                    err.response?.data?.message || "Something went wrong."
-                );
-                setError("Invalid Email or Password");
+                const message = err.response?.data?.message || "Something went wrong.";
+                console.error("Registration error:", message);
+                setError(message);
             });
     };
 
     return (
-        <div className="bg">
+        <div className="lr-bg">
             <img src={backgroundImage} alt="Background" className="background-image" />
+            {
+                popup && (
+                    <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
+                        Please log in to continue.
+                    </div>
+                )
+            }
             <div className="lr">
                 <div className="lr-container">
                     <form onSubmit={handleSubmit}>
-                        <h1>Login</h1>
+                        <h1 className="lr-title">Login</h1>
                         <div className="input-box">
                             <input
                                 type="text"
@@ -67,9 +90,12 @@ export default function Login() {
                             <div><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <p className="lr-error">{error}</p> // Display error message if any
+                            error &&
+                            <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
+                                {error}
+                            </div> // Display error message if any
                         }
-                        <button type="submit">Log In</button>
+                        <button type="submit" className="lr-button">Log In</button>
                         <div className="lr-link">
                             <p>
                                 Don't have an account?
