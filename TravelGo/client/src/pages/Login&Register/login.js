@@ -40,7 +40,6 @@ export default function Login() {
                 password: password,
             })
             .then((res) => {
-                console.log(res.data);
                 if (res.data) { // if login is successful, store token in local storage and navigate to home page
                     localStorage.setItem("token", res.data.token);
                     navigate("/dashboard");
