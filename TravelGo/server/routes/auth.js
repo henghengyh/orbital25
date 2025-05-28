@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
     // Writes the user to the database
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: `User ${name} registered successfully` });
   } catch (err) {
     // Pokemon Exception
     res.status(500).json({ message: "Server error" });
@@ -65,22 +65,25 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    /* Check if the user exists
+     * If the user does not exist, return a 404 status with a message.
+     */
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: `Email ${email} not found` });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    const token = jwt.sign(
+      { id: user._id, },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h", }
+    );
+    res.status(200).json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, },
     });
-    res
-      .status(200)
-      .json({
-        token,
-        user: { id: user._id, name: user.name, email: user.email },
-      });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
