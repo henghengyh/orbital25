@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .input-box {
+        @apply relative flex flex-row w-full h-[50px] my-[30px] border-[1px] rounded-[40px] border-black hover:shadow-[rgba(0,0,0,0.2)_0_0_10px];
+    }
+
+    .input-box-input {
+        @apply w-full h-full bg-transparent border-none outline-none border-2 border-white/10 rounded-[40px] text-[16px] px-[20px] pr-[45px] py-[20px] placeholder-black;
+    }
+
+    .input-box-icon {
+        @apply absolute top-3 right-3 -translate-x-1/2 text-lg;
+    }
+
+    .error {
+        @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center;
+    }
+}

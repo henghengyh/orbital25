@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import axiosInstance  from "../../utils/axiosInstance";
 
-import "./login&register.css";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
@@ -17,12 +16,13 @@ export default function Login() {
     useEffect(() => {
         if (location.state?.fromProtectedRoute) {
             setPopup(true); // Show the popup if redirected from a protected route
-            setTimeout(() => setPopup(false), 3000); // Hide the popup after 3 seconds
+            setError("Please log in to continue."); // Set the error message for the popup
+            setTimeout(() => {setPopup(false); setError("")}, 3000); // Hide the popup after 3 seconds
             window.history.replaceState({}, document.title); // Clear the state to prevent the popup from showing again on refresh
         }
     }, [location.state])
 
-    // Display error message for 3 seconds if there is an error
+    // Display error message for 3 seconds if there is an error log in
     useEffect(() => {
         if (error) {
             setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
@@ -34,8 +34,8 @@ export default function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(""); // Clear previous errors
-        axios
-            .post("http://localhost:5001/api/users/login", { // send login request to backend server
+        axiosInstance
+            .post("/users/login", { // send login request to backend server
                 email: email,
                 password: password,
             })
@@ -53,19 +53,15 @@ export default function Login() {
     };
 
     return (
-        <div className="lr-bg">
-            <img src={backgroundImage} alt="Background" className="background-image" />
+        <div className="flex justify-center items-center relative w-full min-h-screen">
+            <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             {
-                popup && (
-                    <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
-                        Please log in to continue.
-                    </div>
-                )
+                popup && <div className="error">{error}</div>
             }
-            <div className="lr">
-                <div className="lr-container">
+            <div className="relative z-10 w-[420px] h-[450px] bg-transparent items-center flex">
+                <div className="w-full p-10">
                     <form onSubmit={handleSubmit}>
-                        <h1 className="lr-title">Login</h1>
+                        <h1 className="text-4xl text-center">Login</h1>
                         <div className="input-box">
                             <input
                                 type="text"
@@ -73,9 +69,10 @@ export default function Login() {
                                 autoComplete="off"
                                 name="email"
                                 required
+                                className="input-box-input"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
-                            <div><ion-icon name="mail"></ion-icon></div>
+                            <div className="input-box-icon"><ion-icon name="mail"></ion-icon></div>
                         </div>
                         <div className="input-box">
                             <input
@@ -84,21 +81,19 @@ export default function Login() {
                                 autoComplete="off"
                                 name="password"
                                 required
+                                className="input-box-input"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <div><ion-icon name="lock-closed"></ion-icon></div>
+                            <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error &&
-                            <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
-                                {error}
-                            </div> // Display error message if any
+                            error && <div className="error">{error}</div> // Display error message if any
                         }
-                        <button type="submit" className="lr-button">Log In</button>
-                        <div className="lr-link">
+                        <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Log In</button>
+                        <div className="text-sm mt-5 mb-4 text-center">
                             <p>
                                 Don't have an account?
-                                <Link to="/register">Register</Link>
+                                <Link to="/register" className="font-semibold pl-1 hover:underline">Register</Link>
                             </p>
                         </div>
                     </form>

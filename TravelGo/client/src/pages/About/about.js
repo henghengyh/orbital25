@@ -9,7 +9,7 @@ const sharedPStyles = "text-lg text-justify px-5 pb-4 w-full";
 
 export default function About() {
     return (
-        <div className="bg-stone-100 h-screen flex">
+        <div className="bg-off-white h-screen flex">
             <Navbar /> {/* Navbar component for navigation */}
             <div className="flex flex-col p-8 w-full">
                 <h1 className="text-4xl font-bold text-center m-2 text-green-600">TravelGo</h1>
