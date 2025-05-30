@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance  from "../../utils/axiosInstance";
 import Loading from '../Loading/loading';
 
 export default function PrivateRoutes() {
@@ -9,11 +9,7 @@ export default function PrivateRoutes() {
 
     useEffect(() => {
         const authenticateToken = async () => {
-            axios.post("http://localhost:5001/api/protected", {}, {
-                headers: {
-                    Authorization: `Bearer ${token}` // Include the token in the request headers
-                }
-            })
+            axiosInstance.get("/protected")
                 .then(res => {
                     console.log(res.data);
                     if (res.data) {

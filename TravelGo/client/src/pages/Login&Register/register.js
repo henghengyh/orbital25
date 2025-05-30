@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance  from "../../utils/axiosInstance";
 
-import "./login&register.css";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
@@ -24,8 +23,8 @@ export default function Register() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(""); // Clear previous errors
-        axios
-            .post("http://localhost:5001/api/users/register", { // send registration request to backend server
+        axiosInstance
+            .post("/users/register", { // send registration request to backend server
                 name: user,
                 email: email,
                 password: password,
@@ -44,12 +43,12 @@ export default function Register() {
     };
 
     return (
-        <div className="lr-bg">
-            <img src={backgroundImage} alt="Background" className="background-image" />
-            <div className="lr">
-                <div className="lr-container">
+        <div className="flex justify-center items-center relative w-full min-h-screen">
+            <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
+            <div className="relative z-10 w-[420px] h-[450px] bg-transparent items-center flex ">
+                <div className="w-full p-10">
                     <form name="register" onSubmit={handleSubmit}>
-                        <h1 className="lr-title">Register</h1>
+                        <h1 className="text-4xl text-center">Register</h1>
                         <div className="input-box">
                             <input
                                 type="text"
@@ -57,9 +56,10 @@ export default function Register() {
                                 autoComplete="off"
                                 name="name"
                                 required
+                                className="input-box-input"
                                 onChange={(e) => setUser(e.target.value)}
                             />
-                            <div><ion-icon name="person"></ion-icon></div>
+                            <div className="input-box-icon"><ion-icon name="person"></ion-icon></div>
                         </div>
                         <div className="input-box">
                             <input
@@ -68,9 +68,10 @@ export default function Register() {
                                 autoComplete="off"
                                 name="email"
                                 required
+                                className="input-box-input"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
-                            <div><ion-icon name="mail"></ion-icon></div>
+                            <div className="input-box-icon"><ion-icon name="mail"></ion-icon></div>
                         </div>
                         <div className="input-box">
                             <input
@@ -79,21 +80,19 @@ export default function Register() {
                                 autoComplete="off"
                                 name="password"
                                 required
+                                className="input-box-input"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
-                            <div><ion-icon name="lock-closed"></ion-icon></div>
+                            <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error &&
-                            <div className="bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center">
-                                {error}
-                            </div> // Display error message if any
+                            error &&<div className="error">{error}</div> // Display error message if any
                         }
-                        <button type="submit" className="lr-button">Register</button>
-                        <div className="lr-link">
+                        <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Register</button>
+                        <div className="text-sm mt-5 mb-4 text-center">
                             <p>
                                 Already have an account?
-                                <Link to="/">Log In</Link>
+                                <Link to="/"className="font-semibold pl-1 hover:underline">Log In</Link>
                             </p>
                         </div>
                     </form>
