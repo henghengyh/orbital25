@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import axiosInstance  from "../../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 
 import backgroundImage from "../../assets/lr-bg.jpg";
 
@@ -17,7 +17,7 @@ export default function Login() {
         if (location.state?.fromProtectedRoute) {
             setPopup(true); // Show the popup if redirected from a protected route
             setError("Please log in to continue."); // Set the error message for the popup
-            setTimeout(() => {setPopup(false); setError("")}, 3000); // Hide the popup after 3 seconds
+            setTimeout(() => { setPopup(false); setError("") }, 3000); // Hide the popup after 3 seconds
             window.history.replaceState({}, document.title); // Clear the state to prevent the popup from showing again on refresh
         }
     }, [location.state])
@@ -40,7 +40,7 @@ export default function Login() {
                 password: password,
             })
             .then((res) => {
-                if (res.data) { // if login is successful, store token in local storage and navigate to home page
+                if (res.data) { // if login is successful, store token and user in local storage and navigate to home page
                     localStorage.setItem("token", res.data.token);
                     navigate("/dashboard");
                 }
@@ -53,7 +53,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex justify-center items-center relative w-full min-h-screen">
+        <div className="start-div-block">
             <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             {
                 popup && <div className="error">{error}</div>

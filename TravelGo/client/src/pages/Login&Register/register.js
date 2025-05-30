@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance  from "../../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 
 import backgroundImage from "../../assets/lr-bg.jpg";
 
@@ -43,7 +43,7 @@ export default function Register() {
     };
 
     return (
-        <div className="flex justify-center items-center relative w-full min-h-screen">
+        <div className="start-div-block">
             <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             <div className="relative z-10 w-[420px] h-[450px] bg-transparent items-center flex ">
                 <div className="w-full p-10">
@@ -86,13 +86,13 @@ export default function Register() {
                             <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error &&<div className="error">{error}</div> // Display error message if any
+                            error && <div className="error">{error}</div> // Display error message if any
                         }
                         <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Register</button>
                         <div className="text-sm mt-5 mb-4 text-center">
                             <p>
                                 Already have an account?
-                                <Link to="/"className="font-semibold pl-1 hover:underline">Log In</Link>
+                                <Link to="/" className="font-semibold pl-1 hover:underline">Log In</Link>
                             </p>
                         </div>
                     </form>

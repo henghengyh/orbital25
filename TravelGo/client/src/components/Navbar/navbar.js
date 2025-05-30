@@ -1,34 +1,55 @@
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
+import travelgo from '../../assets/icon.png';
 import { menuItems } from '../MenuItem/menuitem';
+import SearchBar from '../SearchBar/searchbar';
+import ProfileInfo from '../Cards/profileinfo';
 
-export default function Navbar() {
+export default function Navbar({ user }) {
     const navigate = useNavigate(); // Hook to programmatically navigate to different routes
+    const [searchValue, setSearchValue] = useState(''); // State to manage the search input value
 
-    const handleClick = (url) => {
-        // If the clicked item is "Sign Out", clear the local storage and navigate to the home page
-        if (url === '/') {
-            localStorage.removeItem("token"); // Clear the token from local storage
-            localStorage.removeItem("user"); // Clear the user data from local storage
-            navigate('/'); // Redirect to the home page
-        } else {
-            navigate(url); // Navigate to the clicked item's URL
-        }
+    const handleSearch = () => { }
+
+    const onClearSearch = () => {
+        setSearchValue(''); // Clear the search input value
+    }
+
+    const logout = () => {
+        localStorage.removeItem("token"); // Clear the token from local storage
+        navigate('/'); // Redirect to the home page
     }
 
     return (
-        <nav className='bg-sky-200 pt-4 h-screen w-[200px] flex'>
-            <ul className='h-auto w-[200px] flex-col gap-4 flex list-none'>
+        <nav className='bg-sky-100 px-4 mx-4 mb-4 w-full h-[60px] shadow-md flex justify-between items-center'>
+            <div className='flex flex-row items-center justify-center gap-4 w-[240px] h-full'>
+                <img src={travelgo} alt="TravelGo Logo" className='w-10 h-10 cursor-pointer' />
+                <p className='font-extrabold text-2xl cursor-pointer' onClick={() => { navigate("/about") }}>TravelGo</p>
+            </div>
+            <SearchBar
+                value={searchValue}
+                onChange={({ target }) => {
+                    setSearchValue(target.value); // Update the search input value
+                }}
+                handleSearch={handleSearch}
+                onClearSearch={onClearSearch}
+            />
+            <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
                 {/* Loop through the menuItems array to create the navbar items */}
                 {menuItems.map((item, index) => {
                     return (
-                        <li key={index} onClick={() => { handleClick(item.url) }} className={`flex flex-row justify-center items-center h-[60px] transition-all hover:h-[60px] hover:cursor-pointer hover:justify-center hover:items-center ${index !== 0 ? 'hover:bg-sky-50' : 'hover:bg-transparent'}`}>
-                            <p className='flex-[30%] grid place-items-center'>{item.icon}</p>
-                            <p className={item.className}>{item.title}</p>
+                        <li
+                            key={index}
+                            onClick={() => { navigate(item.url) }}
+                            className={`flex flex-row justify-center items-center h-10 transition-all cursor-pointer hover:rounded-lg hover:bg-mint-green`}>
+                            <p className="p-2 text-lg font-medium">{item.title}</p>
                         </li>
                     )
                 })}
+                <ProfileInfo user={user} onLogout={logout} />
             </ul>
+
         </nav>
     )
 }
