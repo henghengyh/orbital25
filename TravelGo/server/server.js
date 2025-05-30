@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 
 //Add ons (For Middleware to enhance security)
-const authenticateToken = require("./middleware/authenticateToken");
+// const authenticateToken = require("./middleware/authenticateToken");
 
 // Middleware
 /** EXPLANATION
@@ -48,9 +48,7 @@ connectDB();
  * '/api/itineraries' route.
  */
 app.use("/api/users", require("./routes/auth"));
-app.use("/api/protected", authenticateToken, (req, res) => {
-  res.json({ message: "This is a protected route.", user: req.user });
-});
+app.use("/api/protected", require("./routes/protected"));
 app.use("/api/weather", require("./routes/weather"));
 //app.use('/api/itineraries', require('./routes/itineraries'));
 
