@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import axiosInstance  from "../../utils/axiosInstance";
+import axiosInstance from "../../utils/axiosInstance";
 import Loading from '../Loading/loading';
 
 export default function PrivateRoutes() {
@@ -33,5 +33,11 @@ export default function PrivateRoutes() {
     }
 
     // If valid token exists, render the child routes; otherwise, redirect to the home page
-    return (valid ? <Outlet /> : <Navigate to="/" replace state={{ fromProtectedRoute: true }} />);
+    return (valid
+        ? <Outlet />
+        : <Navigate to="/" replace state={{
+            fromProtectedRoute: true,
+            message: "Please log in to continue."
+        }} />
+    );
 }

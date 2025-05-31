@@ -32,7 +32,12 @@ export default function Register() {
             .then((res) => {
                 console.log(res.data);
                 if (res.data) { // If registration is successful, navigate to the login page
-                    navigate("/");
+                    navigate("/", {
+                        state: {
+                            fromRegister: true,
+                            message: "Registration successful! Please log in."
+                        }
+                    });
                 }
             })
             .catch((err) => {
