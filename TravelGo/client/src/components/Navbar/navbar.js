@@ -1,30 +1,50 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-import travelgo from '../../assets/icon.png';
-import { menuItems } from '../MenuItem/menuitem';
-import SearchBar from '../SearchBar/searchbar';
+import { navbarItems } from './navbaritems';
+import { useAuth } from "../../context/AuthContext/authcontext";
 import ProfileInfo from '../Cards/profileinfo';
+import SearchBar from '../SearchBar/searchbar';
+import travelgo from '../../assets/icon.png';
 
 export default function Navbar({ user }) {
-    const navigate = useNavigate(); // Hook to programmatically navigate to different routes
-    const [searchValue, setSearchValue] = useState(''); // State to manage the search input value
+    // States
+    const [searchValue, setSearchValue] = useState(''); // Manage the search input value
 
+    // Hooks
+    const { setAuth } = useAuth();
+    const navigate = useNavigate();
+
+    // Handle query
     const handleSearch = () => { }
 
+    // Clear the search input value
     const onClearSearch = () => {
-        setSearchValue(''); // Clear the search input value
+        setSearchValue('');
     }
 
+    // Logout function clears token and user from local storage and redirect to login page
     const logout = () => {
-        localStorage.removeItem("token"); // Clear the token from local storage
-        navigate('/'); // Redirect to the home page
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setAuth({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            loading: false,
+            logout: true,
+        });
+        navigate('/');
     }
 
     return (
-        <nav className='bg-sky-100 px-4 mx-4 mb-4 w-full h-[60px] shadow-md flex justify-between items-center'>
+        <nav className='bg-sky-100 px-4 w-full h-[60px] shadow-md flex justify-between items-center'>
             <div className='flex flex-row items-center justify-center gap-4 w-[240px] h-full'>
-                <img src={travelgo} alt="TravelGo Logo" className='w-10 h-10 cursor-pointer' />
+                <img
+                    src={travelgo}
+                    alt="TravelGo Logo"
+                    className='w-10 h-10 cursor-pointer'
+                    onClick={() => { navigate("/about") }} />
                 <p className='font-extrabold text-2xl cursor-pointer' onClick={() => { navigate("/about") }}>TravelGo</p>
             </div>
             <SearchBar
@@ -37,7 +57,7 @@ export default function Navbar({ user }) {
             />
             <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
                 {/* Loop through the menuItems array to create the navbar items */}
-                {menuItems.map((item, index) => {
+                {navbarItems.map((item, index) => {
                     return (
                         <li
                             key={index}
@@ -49,7 +69,6 @@ export default function Navbar({ user }) {
                 })}
                 <ProfileInfo user={user} onLogout={logout} />
             </ul>
-
         </nav>
     )
 }

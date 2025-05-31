@@ -1,4 +1,4 @@
-export const menuItems = [
+export const navbarItems = [
     // list of menu items in the navbar
     {
         title: "Dashboard",

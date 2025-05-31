@@ -28,4 +28,32 @@
   .error {
     @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center text-center;
   }
+
+  .about-outer-div {
+    @apply flex flex-row justify-center m-2 h-auto;
+  }
+
+  .about-inner-div {
+    @apply flex-[50%] bg-blue-100 rounded-lg shadow-lg mr-2;
+  }
+
+  .about-h4 {
+    @apply text-xl font-semibold text-indigo-600 text-center p-3 pt-4;
+  }
+
+  .about-para {
+    @apply text-lg text-justify px-5 pb-4 w-full;
+  }
+
+  .about-img {
+    @apply h-20 flex-[30%];
+  }
+
+  .about-img-div {
+    @apply flex flex-row items-center w-full;
+  }
+
+  .about-img-label {
+    @apply text-left text-lg flex-[70%] pl-3;
+  }
 }
