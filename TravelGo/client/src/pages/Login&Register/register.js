@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
 
+import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
-    const [user, setUser] = useState(""); // State to store the username
-    const [email, setEmail] = useState(""); // State to store the email
-    const [password, setPassword] = useState(""); // State to store the password
-    const [error, setError] = useState(""); // State to store any error messages
+    // States
+    const [email, setEmail] = useState(""); // Store the email
+    const [error, setError] = useState(""); // Store any error messages
+    const [password, setPassword] = useState(""); // Store the password
+    const [user, setUser] = useState(""); // Store the username
+
+    // Hooks
     const navigate = useNavigate(); // Hook to programmatically navigate to different routes
 
-    // Display error message for 3 seconds if there is an error
+    // Display error message
     useEffect(() => {
         if (error) {
             setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds

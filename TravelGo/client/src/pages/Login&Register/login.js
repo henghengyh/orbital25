@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
 
+import { useAuth } from '../../context/AuthContext/authcontext';
+import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
-    const [email, setEmail] = useState(""); // State to store the email
-    const [password, setPassword] = useState(""); // State to store the password
-    const [error, setError] = useState(""); // State to store any error messages
-    const [popup, setPopup] = useState(false); // State to control the visibility of the popup after being redirected from a protected route
-    const [message, setMessage] = useState(""); // State to store the message for the popup
-    const navigate = useNavigate(); // Hook to programmatically navigate to different routes
-    const location = useLocation(); // Hook to get the current location
+    // States
+    const [email, setEmail] = useState(""); // Store the email
+    const [error, setError] = useState(""); // Store any error messages
+    const [message, setMessage] = useState(""); // Store the message for the popup
+    const [password, setPassword] = useState(""); // Store the password
+    const [popup, setPopup] = useState(false); // Control the visibility of the popup after being redirected from a protected route
+
+    // Hooks
+    const { setAuth } = useAuth(); // Set the state of authentication
+    const location = useLocation(); // Get the current location
+    const navigate = useNavigate(); // Navigate to different routes
 
     // Display popup for 3 seconds
     useEffect(() => {
@@ -23,7 +28,7 @@ export default function Login() {
                 setPopup(false);
                 setMessage("")
             }, 3000); // Hide the popup after 3 seconds
-            window.history.replaceState({}, document.title); // Clear the state to prevent the popup from showing again on refresh
+            window.history.replaceState({}, document.title);
         }
 
         // Display error message for 3 seconds if there is an error log in
@@ -43,8 +48,14 @@ export default function Login() {
                 password: password,
             })
             .then((res) => {
-                if (res.data) { // if login is successful, store token and user in local storage and navigate to home page
-                    localStorage.setItem("token", res.data.token);
+                if (res.data) {
+                    localStorage.setItem("token", res.data.token); // Store token in local storage 
+                    setAuth({
+                        user: res.data.user,
+                        token: res.data.token,
+                        isAuthenticated: true,
+                        loading: false,
+                    }); // Update authentication state
                     navigate("/dashboard");
                 }
             })
