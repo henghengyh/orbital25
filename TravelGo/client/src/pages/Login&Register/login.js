@@ -8,26 +8,29 @@ export default function Login() {
     const [email, setEmail] = useState(""); // State to store the email
     const [password, setPassword] = useState(""); // State to store the password
     const [error, setError] = useState(""); // State to store any error messages
+    const [popup, setPopup] = useState(false); // State to control the visibility of the popup after being redirected from a protected route
+    const [message, setMessage] = useState(""); // State to store the message for the popup
     const navigate = useNavigate(); // Hook to programmatically navigate to different routes
     const location = useLocation(); // Hook to get the current location
-    const [popup, setPopup] = useState(false); // State to control the visibility of the popup after being redirected from a protected route
 
-    // Display popup for 3 seconds if the user was redirected from a protected route
+    // Display popup for 3 seconds
     useEffect(() => {
-        if (location.state?.fromProtectedRoute) {
-            setPopup(true); // Show the popup if redirected from a protected route
-            setError("Please log in to continue."); // Set the error message for the popup
-            setTimeout(() => { setPopup(false); setError("") }, 3000); // Hide the popup after 3 seconds
+        // Display message if the user was redirected from a protected route or after registration
+        if (location.state?.fromProtectedRoute || location.state?.fromRegister) {
+            setPopup(true);
+            setMessage(location.state.message)
+            setTimeout(() => {
+                setPopup(false);
+                setMessage("")
+            }, 3000); // Hide the popup after 3 seconds
             window.history.replaceState({}, document.title); // Clear the state to prevent the popup from showing again on refresh
         }
-    }, [location.state])
 
-    // Display error message for 3 seconds if there is an error log in
-    useEffect(() => {
+        // Display error message for 3 seconds if there is an error log in
         if (error) {
             setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
         }
-    }, [error]);
+    }, [location.state, error])
 
     // Function to handle form submission
     // It sends a POST request to the backend server with the email and password
@@ -56,7 +59,7 @@ export default function Login() {
         <div className="start-div-block">
             <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             {
-                popup && <div className="error">{error}</div>
+                popup && <div className="error bg-[#dcf0fa] text-orange-600">{message}</div>
             }
             <div className="relative z-10 w-[420px] h-[450px] bg-transparent items-center flex">
                 <div className="w-full p-10">
