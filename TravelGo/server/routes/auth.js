@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const authenticateToken = require("../middleware/authenticateToken");
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.post("/register", async (req, res) => {
     // Writes the user to the database
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: `User ${name} registered successfully` });
   } catch (err) {
     // Pokemon Exception
     res.status(500).json({ message: "Server error" });
@@ -65,25 +66,54 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    /* Check if the user exists
+     * If the user does not exist, return a 404 status with a message.
+     */
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h", }
+    );
+    res.status(200).json({
+      token,
+      user: { _id: user._id, name: user.name, email: user.email, },
     });
-    res
-      .status(200)
-      .json({
-        token,
-        user: { id: user._id, name: user.name, email: user.email },
-      });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
+});
+
+// Get user information
+/** EXPLANATION
+ * This route retrieves the user information.
+ * When a user sends a GET request to '/getUserInfo',
+ * we check if the user is authenticated and return their information.
+ *
+ * router.get FUNCTION
+ * @param {string} path - The path for the route.
+ * @param {function} callback - The function to handle the request.
+ *
+ * LAMBDA FUNCTION
+ * @param {Object} req - The request object containing user data.
+ * @param {Object} res - The response object used to send a response.
+ * @return {Object} - The response object containing the user information and message.
+ */
+router.get("/getUserInfo", authenticateToken, async (req, res) => {
+  const user = req.user;
+  const isUser = await User.findOne({ _id: user._id });
+
+  if (!isUser) {
+    return res.status(401).json({ message: "User not found" });
+  }
+
+  return res.status(200).json({ user: isUser, message: "User retrieved successfully" });
 });
 
 module.exports = router;

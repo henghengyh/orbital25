@@ -1,5 +1,59 @@
-body {
-  margin: 0;
-  padding: 0;;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-off-white;
+  }
 }
 
+@layer components {
+  .start-div-block {
+    @apply flex flex-col justify-center items-center relative w-full min-h-screen;
+  }
+
+  .input-box {
+    @apply relative flex flex-row w-full h-[50px] my-[30px] border-[1px] rounded-[40px] border-black hover:shadow-[rgba(0,0,0,0.2)_0_0_10px];
+  }
+
+  .input-box-input {
+    @apply w-full h-full bg-transparent border-none outline-none border-2 border-white/10 rounded-[40px] text-[16px] px-[20px] pr-[45px] py-[20px] placeholder-black;
+  }
+
+  .input-box-icon {
+    @apply absolute top-3 right-3 -translate-x-1/2 text-lg;
+  }
+
+  .error {
+    @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center text-center;
+  }
+
+  .about-outer-div {
+    @apply flex flex-row justify-center m-2 h-auto;
+  }
+
+  .about-inner-div {
+    @apply flex-[50%] bg-blue-100 rounded-lg shadow-lg mr-2;
+  }
+
+  .about-h4 {
+    @apply text-xl font-semibold text-indigo-600 text-center p-3 pt-4;
+  }
+
+  .about-para {
+    @apply text-lg text-justify px-5 pb-4 w-full;
+  }
+
+  .about-img {
+    @apply h-20 flex-[30%];
+  }
+
+  .about-img-div {
+    @apply flex flex-row items-center w-full;
+  }
+
+  .about-img-label {
+    @apply text-left text-lg flex-[70%] pl-3;
+  }
+}
