@@ -6,6 +6,8 @@ require("dotenv").config();
 // Initialize Express application
 const app = express();
 
+const path = require('path');
+
 //Add ons (For Middleware to enhance security)
 // const authenticateToken = require("./middleware/authenticateToken");
 
@@ -45,12 +47,20 @@ connectDB();
  * Routes are like the paths in your application that handle
  * different requests. For example, when a user wants to
  * create a new itinerary, they send a request to the
- * '/api/itineraries' route.
+ * '/itineraries' route.
  */
-app.use("/api/users", require("./routes/auth"));
-app.use("/api/protected", require("./routes/protected"));
-app.use("/api/weather", require("./routes/weather"));
-//app.use('/api/itineraries', require('./routes/itineraries'));
+app.use("/users", require("./routes/auth"));
+app.use("/protected", require("./routes/protected"));
+app.use("/weather", require("./routes/weather"));
+//app.use('/itineraries', require('./routes/itineraries'));
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// All other GET requests not handled before will return the React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+});
 
 // Start the server
 /** EXPLANATION
