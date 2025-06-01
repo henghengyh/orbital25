@@ -23,7 +23,7 @@ export default function UserProvider({ children }) {
                 }
             })
             .catch((err) => {
-                if (err.response.status === 401) {
+                if (err.response && err.response.status === 401) {
                     console.error("Unauthorized access, redirecting to login.");
                 }
                 navigate("/");
