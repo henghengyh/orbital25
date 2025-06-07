@@ -1,0 +1,101 @@
+const mongoose = require("mongoose");
+const ActivitySchema = require("./Activity");
+
+/** NOTES to Frontend Developer HAOHAOOOOOO:
+ * You should consider the possibility of 
+ * including optional activities and notes. 
+ * On top of the compulsory fields below to 
+ * create an itinerary.
+*/
+
+/** ItinerarySchema
+ * @param {ObjectId} user - User ID Object
+ * @param {string} destination - Destination
+ * @param {Date} startDate - Start date
+ * @param {Date} endDate - End date //Date is a built-in JavaScript object that represents a single moment in time
+ * @param {number} numberOfPeople - Number of people
+ * @param {Array} activities - Array of ActivitySchema
+ * @param {string} notes - Additional notes, optional
+ */
+const ItinerarySchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    destination: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    numberOfPeople: { type: Number, default: 1 },
+    activities: { type: [ActivitySchema], default: [] }, 
+    notes: { type: String, default: "" }
+}, { timestamps: true });
+
+/** INSTANCE METHODS
+ * To be invoked on an instance of the ItinerarySchema
+ */
+
+ItinerarySchema.methods.getUser = async function() {
+    // LEARNING POINT: .populate() is asynchronus, returns Promise 
+    // it replaces the ObjectId referenced with
+    // the actual UserSchema object
+    await this.populate('user');
+    return this.user;
+}
+
+ItinerarySchema.methods.getTripDuration = function(includeStart = false) {
+    let duration = (this.endDate - this.startDate) / (1000 * 60 * 60 * 24);
+    return includeStart ? duration + 1 : duration;
+}
+
+ItinerarySchema.methods.getActivitiesByType = function(type) {
+    return this.activities.filter(x => x.isOfType(type));
+}
+
+ItinerarySchema.methods.getActivitiesForDate = function(date) {
+    return this.activities.filter(x => x.isOnDate(date));
+};
+
+ItinerarySchema.methods.addActivity = function(activity) {
+    this.activities.push(activity);
+    return this.save();
+}
+
+ItinerarySchema.methods.removeActivity = function(activityId) {
+    this.activities = this.activities.filter(
+        x => x._id.toString() !== activityId.toString()
+    );
+    return this.save();
+};
+
+ItinerarySchema.methods.updateActivity = function(activityId, updatedFields) {
+    const activity = this.activities.id(activityId);
+    if (activity) {
+        return activity.updateActivity(updatedFields).then(() => this.save());
+    } else {
+        throw new Error("Activity not found");
+    }
+};
+
+ItinerarySchema.methods.moveActivity = function(activityId, newIndex) {
+    const idx = this.activities.findIndex(a => a._id.toString() === activityId.toString());
+    if (idx === -1) throw new Error("Activity not found");
+    
+    // what happens here is we remove the activity from its current pos
+    const [activity] = this.activities.splice(idx, 1);
+
+    // thenw e insert it in
+    this.activities.splice(newIndex, 0, activity);
+    return this.save();
+};
+
+/** STATIC METHODS
+ * To be invoked on the ItinerarySchema model (resembles a class in Java)
+ * But can directly access the entire collection of itineraries in our MongoDB database
+ */
+
+ItinerarySchema.statics.findByUser = function(userId) {
+    return this.find({ user: userId });
+};
+
+ItinerarySchema.statics.findByDestination = function(destination) {
+    return this.find({ destination });
+};
+
+module.exports = mongoose.model('Itinerary', ItinerarySchema);
