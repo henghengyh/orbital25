@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const ActivitySchema = require("./Activity");
+const { ActivitySchema } = require("./Activity");
 
 /** NOTES to Frontend Developer HAOHAOOOOOO:
  * You should consider the possibility of 

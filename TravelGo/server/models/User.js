@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    
+}, {
     // SECURITY! To remove the password field from the response
     toJSON: {
         transform: function(_, ret) {
