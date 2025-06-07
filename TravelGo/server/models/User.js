@@ -7,22 +7,26 @@ const mongoose = require("mongoose");
  * hashing is done safely and efficiently. */
 const bcrypt = require("bcryptjs");
 
-// User Schema
-/** EXPLANATION
- * A schema is like a blueprint (ABSTRACTION) for our data.
- * It defines what fields our data will have and their types.
- * For example, a user will have a name, email, password and role.
- * The user will be assigned a role of either 'admin' or 'user'.
- * The 'required' field means that this information must
- * be provided when creating a new user.
+/** ActivitySchema
+ * @param {String} name - username
+ * @param {String} email - email, which must only have 1 in DB
+ * @param {String} password - password, which must be hashed
  */
 const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    
+    // SECURITY! To remove the password field from the response
+    toJSON: {
+        transform: function(_, ret) {
+            delete ret.password;
+            return ret;
+        }
+    }
 });
 
-// Hash the password before saving the user
+// INBUILT FUNCTION ... Hash the password before saving the user
 UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
 
@@ -33,5 +37,21 @@ UserSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
+
+/** INSTANCE METHODS */
+
+UserSchema.methods.comparePassword = function(newPass) {
+    return bcrypt.compare(newPass, this.password);
+};
+
+/** STATIC METHODS */
+
+UserSchema.statics.listAllUsers = function() {
+    return this.find({});
+};
+
+UserSchema.statics.findByEmail = function(email) {
+    return this.findOne({ email });
+};
 
 module.exports = mongoose.model("User", UserSchema);
