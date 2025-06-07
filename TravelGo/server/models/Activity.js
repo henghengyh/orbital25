@@ -55,6 +55,7 @@ ActivitySchema.statics.getActivity = function(activityId) {
     return this.findById(activityId);
 };
 
-
-const Activity = mongoose.model("Activity", ActivitySchema);
-module.exports = Activity;
+module.exports = {
+    ActivitySchema,
+    Activity: mongoose.model("Activity", ActivitySchema)
+};

@@ -26,6 +26,17 @@ router.post("/", async (req, res) => {
     }
 })
 
+router.delete("/:itineraryId", async (req, res) => {
+    try {
+        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        if (!itinerary) return;
+        await Itinerary.findByIdAndDelete(req.params.itineraryId);
+        res.json({ message: "Itinerary deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to delete itinerary" });
+    }
+});
+
 // ##################
 // HELPER FUNCTION
 // ##################
@@ -106,3 +117,5 @@ router.get("/:itineraryId/activities/:activityId", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch activity" });
     }
 });
+
+module.exports = router;
