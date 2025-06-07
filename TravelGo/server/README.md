@@ -20,3 +20,8 @@ This repository contains materials for *TravelGo* backend development.
   - `jsonwebtoken`
   - `--save-dev nodemon`
   - `axios`
+
+### Postman Testing
+- `router.post(...)` handles requests to CREATE new resources
+- `router.put(...)` handles requests to UPDATE existing resources
+- `router.delete(...)` handles requests to DELETE existing resources
