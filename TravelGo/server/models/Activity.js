@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const typeOfActivities = ["meal", "sightseeing", "transport", "shopping", "other"]
 
 /** ActivitySchema
  * @param {String} name - username
@@ -13,7 +14,11 @@ const ActivitySchema = new mongoose.Schema({
     date: Date,
     startTime: String,
     endTime: String,
-    type: String, // e.g. meal, sightseeing
+    type: {
+        type: String,
+        enum: typeOfActivities, 
+        required: true
+    },
     notes: String,
 }); 
 
@@ -52,6 +57,16 @@ ActivitySchema.methods.timeToStart = function(now = new Date()) {
     const diffHours = diffMs / (1000 * 60 * 60);
     return diffHours;
 };
+
+ActivitySchema.methods.getActivityDuration = function() {
+    const [startHours, startMinutes] = this.startTime.split(':').map(Number);
+    const [endHours, endMinutes] = this.endTime.split(':').map(Number);
+    const startDate = new Date(this.date);
+    startDate.setHours(startHours, startMinutes, 0, 0);
+    const endDate = new Date(this.date);
+    endDate.setHours(endHours, endMinutes, 0, 0);
+    return (endDate - startDate) / (1000 * 60 * 60); 
+}
 
 /** STATIC METHODS */
 

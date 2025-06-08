@@ -12,6 +12,10 @@ const bodyTextHtml = function(user, note) {
   `;
 }
 
+/** sendCreateEmail
+ * @param {ItinerarySchema} itinerary - The itinerary object
+ * @returns {undefined}
+ */
 function sendCreateEmail(itinerary) {
   const user = itinerary.user;
   const note = `Your itinerary to <strong>${itinerary.destination}</strong> has been successfully created!<br><br>
@@ -33,6 +37,12 @@ function sendCreateEmail(itinerary) {
   .then(() => console.log('Email successfully sent to ' + user.email))
 };
 
+/** sendCreateEmail
+ * @param {ItinerarySchema} itinerary - The itinerary object
+ * @param {ActivitySchema} activity - The activity object
+ * @param {number} duration - The number of hours until the activity starts
+ * @returns {undefined}
+ */
 function sendUpdateEmail(itinerary, activity, duration) {
   const user = itinerary.user;
   const note = `WARNING: The activity ${activity.name}, which is scheduled to start in ${duration} hours, has been updated.\n`;

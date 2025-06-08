@@ -1,10 +1,19 @@
+/** itineraries.js
+ * This file contains the Express routes for managing itineraries and activities.
+ * CREATE, DELETE and UDPATE itineraries and activities.
+ */
+
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
-const email = require("../routes/Email");
 
-/** CREATING A NEW ITINERARY 
+// IMPORTING HELPER MODULES
+const email = require("./email-helper");
+const { findItineraryOr404, findActivityOr404 } = require("./finder-helper");
+const { isValidActivity } = require("./valid-activity-helper");
+
+/** Creatiing a new itinerary 
  * LAMBDA FUNCTION
  * @param {string}} req - The request object containing new itinerary request data.
  * @param {Object} res - The response object used to send a response to frontend.
@@ -29,6 +38,9 @@ router.post("/", async (req, res) => {
     }
 })
 
+/** Updating an itinerary */
+
+/** Removing an itinerary */
 router.delete("/:itineraryId", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
@@ -40,33 +52,16 @@ router.delete("/:itineraryId", async (req, res) => {
     }
 });
 
-// ##################
-// HELPER FUNCTION
-// ##################
-
-async function findItineraryOr404(itineraryId, res) {
-    const itinerary = await Itinerary.findById(itineraryId);
-    if (!itinerary) {
-        res.status(404).json({ error: "Itinerary not found" });
-        return null;
-    }
-    return itinerary;
-}
-
-async function findActivityOr404(itinerary, activityId, res) {
-    const activity = itinerary.activities.id(activityId);
-    if (!activity) {
-        res.status(404).json({ error: "Activity not found" });
-        return null;
-    }
-    return activity;
-}
-
 /** Adding an activity */
 router.post("/:itineraryId/activities", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) return;
+        if (!isValidActivity(itinerary, req.body)) {
+            res.status(400).json({ error: "Invalid activity" });
+            return;
+        }
+
         await itinerary.addActivity(req.body); 
         res.status(201).json(itinerary);
     } catch (error) {
@@ -117,7 +112,7 @@ router.get("/:itineraryId/activities", async (req, res) => {
     }
 });
 
-/** Getting ONE Specific activities */
+/** Getting ONE Specific activity */
 router.get("/:itineraryId/activities/:activityId", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
