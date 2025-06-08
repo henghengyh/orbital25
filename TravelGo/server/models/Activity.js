@@ -25,7 +25,6 @@ const ActivitySchema = new mongoose.Schema({
  */
 ActivitySchema.methods.updateActivity = function(updatedFields) {
     Object.assign(this, updatedFields);
-    return this.save();
 };
 
 /** isOfType
@@ -44,6 +43,16 @@ ActivitySchema.methods.isOnDate = function(date) {
     return this.date.toISOString().slice(0, 10) === date.toISOString().slice(0, 10);
 }
 
+ActivitySchema.methods.timeToStart = function(now = new Date()) {
+    const [hours, minutes] = this.startTime.split(':').map(Number);
+    const activityStart = new Date(this.date);
+    activityStart.setHours(hours, minutes, 0, 0);
+
+    const diffMs = activityStart - now;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    return diffHours;
+};
+
 /** STATIC METHODS */
 
 /** getActivity
@@ -55,7 +64,4 @@ ActivitySchema.statics.getActivity = function(activityId) {
     return this.findById(activityId);
 };
 
-module.exports = {
-    ActivitySchema,
-    Activity: mongoose.model("Activity", ActivitySchema)
-};
+module.exports = { ActivitySchema };

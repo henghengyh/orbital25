@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
+const email = require("../routes/Email");
 
 /** CREATING A NEW ITINERARY 
  * LAMBDA FUNCTION
@@ -19,6 +20,8 @@ router.post("/", async (req, res) => {
             numberOfPeople
         });
         const savedItinerary = await newItinerary.save();
+        await savedItinerary.populate('user');
+        email.sendCreateEmail(savedItinerary); 
         res.status(201).json(savedItinerary);
     } catch (error) {
         console.error("Error creating itinerary:", error);
@@ -51,7 +54,7 @@ async function findItineraryOr404(itineraryId, res) {
 }
 
 async function findActivityOr404(itinerary, activityId, res) {
-    const activity = itinerary.activities.id(req.params.activityId);
+    const activity = itinerary.activities.id(activityId);
     if (!activity) {
         res.status(404).json({ error: "Activity not found" });
         return null;
@@ -76,9 +79,18 @@ router.put("/:itineraryId/activities/:activityId", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) return;
+        const activity = await findActivityOr404(itinerary, req.params.activityId, res);
+        if (!activity) return;
         await itinerary.updateActivity(req.params.activityId, req.body); 
+        
+        const duration = activity.timeToStart(new Date()).toFixed(2)
+        await itinerary.populate('user');
+        email.sendUpdateEmail(itinerary, activity, Math.floor(duration)); 
+
+        res.status(201).json(itinerary);
     } catch (error) {
         res.status(500).json({ error: "Failed to update activity" });
+        console.error("Error updating activity:", error);
     }
 });
 
@@ -110,7 +122,7 @@ router.get("/:itineraryId/activities/:activityId", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) return;
-        const activity = await findActivityor404(itinerary, req.params.activityId, res);
+        const activity = await findActivityOr404(itinerary, req.params.activityId, res);
         if (!activity) return;
         res.json(activity);
     } catch (error) {
