@@ -27,9 +27,7 @@ const ItinerarySchema = new mongoose.Schema({
     notes: { type: String, default: "" }
 }, { timestamps: true });
 
-/** INSTANCE METHODS
- * To be invoked on an instance of the ItinerarySchema
- */
+/** INSTANCE METHODS */
 
 ItinerarySchema.methods.getUser = async function() {
     // LEARNING POINT: .populate() is asynchronus, returns Promise 
@@ -85,6 +83,15 @@ ItinerarySchema.methods.moveActivity = function(activityId, newIndex) {
     this.activities.splice(newIndex, 0, activity);
     return this.save();
 };
+
+ItinerarySchema.methods.occursOnTrip = function(activity) {
+    const itineraryStart = new Date(this.startDate);
+    const itineraryEnd = new Date(this.endDate);
+    const activityStart = new Date(this.startTime);
+    const activityEnd = new Date(this.endTime);
+
+    return (activityStart < itineraryStart || activityEnd > itineraryEnd) ? false : true;
+}
 
 /** STATIC METHODS
  * To be invoked on the ItinerarySchema model (resembles a class in Java)
