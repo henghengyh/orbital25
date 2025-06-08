@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_API_URL || "http://localhost:5001",
-    timeout: 10000, // Set a timeout of 10 seconds for requests
+    timeout: 10000, // timeout is in ms, not seconds
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,14 +10,14 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token'); // Get the token from local storage
+        const token = localStorage.getItem('token'); 
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`; // Include the token in the request headers
+            config.headers['Authorization'] = `Bearer ${token}`; 
         }
-        return config; // Return the modified config
+        return config; 
     },
     (error) => {
-        return Promise.reject(error); // Reject the promise with the error
+        return Promise.reject(error); // Rejecting promise (Yi Heng need to learn what is promise)
     }
 );
 

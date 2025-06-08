@@ -39,6 +39,19 @@ router.post("/", async (req, res) => {
 })
 
 /** Updating an itinerary */
+router.put("/:itineraryId", async (req, res) => {
+    try {
+        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        if (!itinerary) return;
+        for (const key in req.body) {
+            itinerary[key] = req.body[key];
+        }
+        await itinerary.save();
+    } catch (error) {
+        console.error("Error updating itinerary:", error);
+        res.status(500).json({ error: "Failed to update itinerary" });
+    }
+});      
 
 /** Removing an itinerary */
 router.delete("/:itineraryId", async (req, res) => {
