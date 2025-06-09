@@ -1,5 +1,7 @@
 //For weather class
 
+// To frontend Haohao, ignore WeatherForecast class first, using WeatherHistory class now can offer more information
+
 const MathHelper = require('./math-helper.js');
 
 class WeatherForecast {
@@ -131,6 +133,10 @@ class WeatherHistory {
      * @property {number} averageSnowfall - Average snowfall (mm)
      * @property {string} averageSunrise - Average sunrise time (HH:MM)
      * @property {string} averageSunset - Average sunset time (HH:MM)
+     * @property {Object} alerts - Weather alerts
+     * @subproperty {Object} alerts.rainfall - Rainfall alert ({alert: boolean, msg: string})
+     * @subproperty {Object} alerts.snowfall - Snowfall alert ({alert: boolean, msg: string})
+     * @subproperty {Object} alerts.drasticTemperatureChange - Drastic temperature change alert ({alert: boolean, msg: string})
      */
     getSummary() {
         return {
