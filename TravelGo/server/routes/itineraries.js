@@ -9,9 +9,9 @@ const router = express.Router();
 const Itinerary = require("../models/Itineraries");
 
 // IMPORTING HELPER MODULES
-const email = require("./email-helper");
-const { findItineraryOr404, findActivityOr404 } = require("./finder-helper");
-const { isValidActivity } = require("./valid-activity-helper");
+const email = require("../utilities/email-helper");
+const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
+const { isValidActivity } = require("../utilities/valid-activity-helper");
 
 /** Creatiing a new itinerary 
  * LAMBDA FUNCTION
