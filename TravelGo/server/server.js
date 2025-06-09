@@ -24,6 +24,7 @@ connectDB();
 app.use("/users", require("./routes/auth"));
 app.use("/protected", require("./routes/protected"));
 app.use("/weather", require("./routes/weather"));
+app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/itineraries", require("./routes/itineraries"));
 
 // Serve static files from the React app

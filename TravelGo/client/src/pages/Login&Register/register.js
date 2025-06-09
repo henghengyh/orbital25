@@ -5,36 +5,33 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
-    // States
-    const [email, setEmail] = useState(""); // Store the email
-    const [error, setError] = useState(""); // Store any error messages
-    const [password, setPassword] = useState(""); // Store the password
-    const [user, setUser] = useState(""); // Store the username
+    // Storing variable states
+    const [email, setEmail] = useState(""); 
+    const [error, setError] = useState(""); 
+    const [password, setPassword] = useState(""); 
+    const [user, setUser] = useState(""); 
+    const navigate = useNavigate(); 
 
-    // Hooks
-    const navigate = useNavigate(); // Hook to programmatically navigate to different routes
-
-    // Display error message
     useEffect(() => {
         if (error) {
-            setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
+            setTimeout(() => setError(""), 3000); // Timeout = maximum 3 seconds will clear error msg
         }
     }, [error]);
 
-    // Function to handle form submission
-    // It sends a POST request to the backend server with the username, email and password
+    // Function that'll send a POST request to
+    //  backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
-        setError(""); // Clear previous errors
+        setError(""); 
         axiosInstance
-            .post("/users/register", { // send registration request to backend server
+            .post("/users/register", { 
                 name: user,
                 email: email,
                 password: password,
             })
             .then((res) => {
                 console.log(res.data);
-                if (res.data) { // If registration is successful, navigate to the login page
+                if (res.data) { 
                     navigate("/", {
                         state: {
                             fromRegister: true,

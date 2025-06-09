@@ -6,19 +6,17 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
-    // States
-    const [email, setEmail] = useState(""); // Store the email
-    const [error, setError] = useState(""); // Store any error messages
-    const [message, setMessage] = useState(""); // Store the message for the popup
-    const [password, setPassword] = useState(""); // Store the password
-    const [popup, setPopup] = useState(false); // Control the visibility of the popup after being redirected from a protected route
+    // Storing variable states
+    const [email, setEmail] = useState(""); 
+    const [error, setError] = useState(""); 
+    const [message, setMessage] = useState(""); 
+    const [password, setPassword] = useState(""); 
+    const [popup, setPopup] = useState(false); 
 
-    // Hooks
-    const { setAuth } = useAuth(); // Set the state of authentication
-    const location = useLocation(); // Get the current location
-    const navigate = useNavigate(); // Navigate to different routes
+    const { setAuth } = useAuth(); 
+    const location = useLocation(); 
+    const navigate = useNavigate(); 
 
-    // Display popup for 3 seconds
     useEffect(() => {
         // Display message if the user was redirected from a protected route or after registration
         if (location.state?.fromProtectedRoute || location.state?.fromRegister) {
@@ -27,29 +25,28 @@ export default function Login() {
             setTimeout(() => {
                 setPopup(false);
                 setMessage("")
-            }, 3000); // Hide the popup after 3 seconds
+            }, 3000); 
             window.history.replaceState({}, document.title);
         }
 
-        // Display error message for 3 seconds if there is an error log in
         if (error) {
-            setTimeout(() => setError(""), 3000); // Clear the error message after 3 seconds
+            setTimeout(() => setError(""), 3000); 
         }
     }, [location.state, error])
 
-    // Function to handle form submission
-    // It sends a POST request to the backend server with the email and password
+    // Function that'll send a POST request to
+    //  backend server with 2 info: email & password
     const handleSubmit = (e) => {
         e.preventDefault();
-        setError(""); // Clear previous errors
+        setError(""); 
         axiosInstance
-            .post("/users/login", { // send login request to backend server
+            .post("/users/login", { 
                 email: email,
                 password: password,
             })
             .then((res) => {
                 if (res.data) {
-                    localStorage.setItem("token", res.data.token); // Store token in local storage 
+                    localStorage.setItem("token", res.data.token); 
                     setAuth({
                         user: res.data.user,
                         token: res.data.token,
