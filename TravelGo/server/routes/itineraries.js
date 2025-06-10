@@ -20,13 +20,14 @@ const { isValidActivity } = require("../utilities/valid-activity-helper");
  */
 router.post("/", async (req, res) => {
     try {
-        const { userId, destination, startDate, endDate, numberOfPeople } = req.body;
+        const { userId, destination, startDate, endDate, numberOfPeople, notes } = req.body;
         const newItinerary = new Itinerary({
             user: userId,
             destination,
             startDate,
             endDate,
-            numberOfPeople
+            numberOfPeople,
+            notes: notes
         });
         const savedItinerary = await newItinerary.save();
         await savedItinerary.populate('user');
