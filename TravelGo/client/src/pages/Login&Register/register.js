@@ -5,7 +5,6 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
-    // Storing variable states
     const [email, setEmail] = useState(""); 
     const [error, setError] = useState(""); 
     const [password, setPassword] = useState(""); 
@@ -14,12 +13,11 @@ export default function Register() {
 
     useEffect(() => {
         if (error) {
-            setTimeout(() => setError(""), 3000); // Timeout = maximum 3 seconds will clear error msg
+            setTimeout(() => setError(""), 3000);
         }
     }, [error]);
 
-    // Function that'll send a POST request to
-    //  backend server with 3 info: username, email & password
+    // send a POST request to backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(""); 

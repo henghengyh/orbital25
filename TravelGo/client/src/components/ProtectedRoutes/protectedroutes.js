@@ -10,14 +10,12 @@ export default function PrivateRoutes() {
         return <Loading />
     }
 
-    // If valid token exists, render the child routes; otherwise, redirect to the home page
     return (auth.isAuthenticated
         ? <Outlet />
         : <Navigate
             to="/"
             replace
-            state={
-                auth.logout
+            state={auth.logout
                     ? {}
                     : {
                         fromProtectedRoute: true,
