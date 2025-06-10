@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-off-white;
+    @apply bg-off-white mx-auto w-[1280px];
   }
 }
 

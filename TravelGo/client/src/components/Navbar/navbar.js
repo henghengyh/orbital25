@@ -8,22 +8,17 @@ import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
 
 export default function Navbar({ user }) {
-    // States
-    const [searchValue, setSearchValue] = useState(''); // Manage the search input value
+    const [searchValue, setSearchValue] = useState('');
 
-    // Hooks
     const { setAuth } = useAuth();
     const navigate = useNavigate();
 
-    // Handle query
     const handleSearch = () => { }
 
-    // Clear the search input value
     const onClearSearch = () => {
         setSearchValue('');
     }
 
-    // Logout function clears token and user from local storage and redirect to login page
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -50,13 +45,12 @@ export default function Navbar({ user }) {
             <SearchBar
                 value={searchValue}
                 onChange={({ target }) => {
-                    setSearchValue(target.value); // Update the search input value
+                    setSearchValue(target.value);
                 }}
                 handleSearch={handleSearch}
                 onClearSearch={onClearSearch}
             />
             <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
-                {/* Loop through the menuItems array to create the navbar items */}
                 {navbarItems.map((item, index) => {
                     return (
                         <li
