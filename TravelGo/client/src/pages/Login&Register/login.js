@@ -95,7 +95,7 @@ export default function Login() {
                             <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <div className="error">{error}</div> // Display error message if any
+                            error && <div className="error">{error}</div>
                         }
                         <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Log In</button>
                         <div className="text-sm mt-5 mb-4 text-center">
