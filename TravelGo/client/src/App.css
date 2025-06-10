@@ -13,6 +13,10 @@
     @apply flex flex-col justify-center items-center relative w-full min-h-screen;
   }
 
+  .start-block {
+    @apply mx-14 py-10;
+  }
+
   .input-box {
     @apply relative flex flex-row w-full h-[50px] my-[30px] border-[1px] rounded-[40px] border-black hover:shadow-[rgba(0,0,0,0.2)_0_0_10px];
   }

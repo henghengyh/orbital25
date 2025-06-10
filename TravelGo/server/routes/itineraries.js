@@ -7,6 +7,7 @@
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
+const authenticateToken = require("../middleware/authenticateToken");
 
 // IMPORTING HELPER MODULES
 const email = require("../utilities/email-helper");
@@ -30,13 +31,26 @@ router.post("/", async (req, res) => {
         });
         const savedItinerary = await newItinerary.save();
         await savedItinerary.populate('user');
-        email.sendCreateEmail(savedItinerary); 
+        email.sendCreateEmail(savedItinerary);
         res.status(201).json(savedItinerary);
     } catch (error) {
         console.error("Error creating itinerary:", error);
         res.status(500).json({ error: "Failed to create itinerary" });
     }
-})
+});
+
+/** Getting all itineraries */
+router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
+    const { userId } = req.user;
+
+    try {
+        const itinerary = await Itinerary.findByUser(userId);
+        console.log(itinerary);
+        res.status(200).json({ itineraries: itinerary });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
 
 /** Updating an itinerary */
 router.put("/:itineraryId", async (req, res) => {
@@ -51,7 +65,7 @@ router.put("/:itineraryId", async (req, res) => {
         console.error("Error updating itinerary:", error);
         res.status(500).json({ error: "Failed to update itinerary" });
     }
-});      
+});
 
 /** Removing an itinerary */
 router.delete("/:itineraryId", async (req, res) => {
@@ -75,7 +89,7 @@ router.post("/:itineraryId/activities", async (req, res) => {
             return;
         }
 
-        await itinerary.addActivity(req.body); 
+        await itinerary.addActivity(req.body);
         res.status(201).json(itinerary);
     } catch (error) {
         res.status(500).json({ error: "Failed to add activity" });
@@ -89,11 +103,11 @@ router.put("/:itineraryId/activities/:activityId", async (req, res) => {
         if (!itinerary) return;
         const activity = await findActivityOr404(itinerary, req.params.activityId, res);
         if (!activity) return;
-        await itinerary.updateActivity(req.params.activityId, req.body); 
-        
+        await itinerary.updateActivity(req.params.activityId, req.body);
+
         const duration = activity.timeToStart(new Date()).toFixed(2)
         await itinerary.populate('user');
-        email.sendUpdateEmail(itinerary, activity, Math.floor(duration)); 
+        email.sendUpdateEmail(itinerary, activity, Math.floor(duration));
 
         res.status(201).json(itinerary);
     } catch (error) {
@@ -107,7 +121,7 @@ router.delete("/:itineraryId/activities/:activityId", async (req, res) => {
     try {
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) return;
-        await itinerary.removeActivity(req.params.activityId); 
+        await itinerary.removeActivity(req.params.activityId);
         res.json(itinerary);
     } catch (error) {
         res.status(500).json({ error: "Failed to remove activity" });
