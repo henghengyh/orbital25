@@ -41,11 +41,10 @@ router.post("/", async (req, res) => {
 
 /** Getting all itineraries */
 router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
-    const { userId } = req.user;
+    const user = req.user;
 
     try {
-        const itinerary = await Itinerary.findByUser(userId);
-        console.log(itinerary);
+        const itinerary = await Itinerary.find({ user: user._id });
         res.status(200).json({ itineraries: itinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
