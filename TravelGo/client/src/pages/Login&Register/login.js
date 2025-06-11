@@ -6,7 +6,6 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
-    // Storing variable states
     const [email, setEmail] = useState(""); 
     const [error, setError] = useState(""); 
     const [message, setMessage] = useState(""); 
@@ -18,7 +17,6 @@ export default function Login() {
     const navigate = useNavigate(); 
 
     useEffect(() => {
-        // Display message if the user was redirected from a protected route or after registration
         if (location.state?.fromProtectedRoute || location.state?.fromRegister) {
             setPopup(true);
             setMessage(location.state.message)
@@ -34,8 +32,7 @@ export default function Login() {
         }
     }, [location.state, error])
 
-    // Function that'll send a POST request to
-    //  backend server with 2 info: email & password
+    // send a POST request to backend server with 2 info: email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(""); 
@@ -52,7 +49,7 @@ export default function Login() {
                         token: res.data.token,
                         isAuthenticated: true,
                         loading: false,
-                    }); // Update authentication state
+                    });
                     navigate("/dashboard");
                 }
             })
@@ -98,7 +95,7 @@ export default function Login() {
                             <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <div className="error">{error}</div> // Display error message if any
+                            error && <div className="error">{error}</div>
                         }
                         <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Log In</button>
                         <div className="text-sm mt-5 mb-4 text-center">

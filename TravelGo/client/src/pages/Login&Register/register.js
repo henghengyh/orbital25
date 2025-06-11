@@ -5,7 +5,6 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
-    // Storing variable states
     const [email, setEmail] = useState(""); 
     const [error, setError] = useState(""); 
     const [password, setPassword] = useState(""); 
@@ -14,12 +13,11 @@ export default function Register() {
 
     useEffect(() => {
         if (error) {
-            setTimeout(() => setError(""), 3000); // Timeout = maximum 3 seconds will clear error msg
+            setTimeout(() => setError(""), 3000);
         }
     }, [error]);
 
-    // Function that'll send a POST request to
-    //  backend server with 3 info: username, email & password
+    // send a POST request to backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(""); 
@@ -91,7 +89,7 @@ export default function Register() {
                             <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <div className="error">{error}</div> // Display error message if any
+                            error && <div className="error">{error}</div>
                         }
                         <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Register</button>
                         <div className="text-sm mt-5 mb-4 text-center">
