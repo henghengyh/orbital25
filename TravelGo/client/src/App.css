@@ -2,15 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.rdp-root {
+  --rdp-accent-color: #01b0cb !important;
+  --rdp-accent-background-color: #dffbff !important;
+  --rdp-day_button-border-radius: 8px !important;
+  --rdp-selected-font: bold medium var(--rdp-font-family) !important;
+  --rdp-today-color: coral !important;
+}
+
 @layer base {
+  html {
+    font-family: "Poppins", "sans-serif";
+  }
+
   body {
-    @apply bg-off-white;
+    @apply bg-off-white mx-auto w-[1280px] overflow-x-hidden;
   }
 }
 
 @layer components {
   .start-div-block {
     @apply flex flex-col justify-center items-center relative w-full min-h-screen;
+  }
+
+  .start-block {
+    @apply mx-14 py-10;
   }
 
   .input-box {

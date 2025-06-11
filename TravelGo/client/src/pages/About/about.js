@@ -13,7 +13,7 @@ export default function About() {
                         {innerArray.map((item, idx) => (
                             <div key={idx} className="about-inner-div">
                                 <h4 className="about-h4">{item.title}</h4>
-                                <p className="about-para">{item.content}</p>
+                                <div className="about-para">{item.content}</div>
                             </div>))}
                     </div>
                 ))}

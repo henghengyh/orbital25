@@ -1,5 +1,4 @@
 export const navbarItems = [
-    // list of menu items in the navbar
     {
         title: "Dashboard",
         url: "/dashboard",
