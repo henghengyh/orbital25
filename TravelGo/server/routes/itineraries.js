@@ -40,8 +40,8 @@ router.post("/", async (req, res) => {
 });
 
 /** Getting all itineraries */
-router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
-    const { userId } = req.user;
+router.get("/get-all-itineraries", async (req, res) => {
+    const { userId } = req.body;
 
     try {
         const itinerary = await Itinerary.findByUser(userId);
