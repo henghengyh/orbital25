@@ -17,7 +17,7 @@ const Weather = () => {
     };
 
     return (
-        <div className="start-div-block">
+        <div className="start-block">
             <div className='flex-1 p-8'>
                 <h2>Weather Forecast</h2>
                 <h1>Check the weather in your city</h1>
