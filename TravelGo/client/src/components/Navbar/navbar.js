@@ -3,20 +3,41 @@ import { useNavigate } from 'react-router-dom';
 
 import { navbarItems } from './navbaritems';
 import { useAuth } from "../../context/AuthContext/authcontext";
+import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function Navbar({ user }) {
     const [searchValue, setSearchValue] = useState('');
 
     const { setAuth } = useAuth();
+    const { setSearched, setSearchResults } = useItinerary();
     const navigate = useNavigate();
 
-    const handleSearch = () => { }
+    const onSearch = async (query) => {
+        axiosInstance
+            .get("/itineraries/search-itineraries", { params: { query }, })
+            .then((res) => {
+                setSearchResults(res.data.itineraries);
+                setSearched(true);
+                navigate('/dashboard');
+            })
+            .catch((err) => { console.error(err.message); });
+    }
+
+    const handleSearch = () => {
+        if (searchValue) {
+            onSearch(searchValue);
+        }
+    }
 
     const onClearSearch = () => {
         setSearchValue('');
+        setSearchResults([]);
+        setSearched(false);
+        navigate('/dashboard');
     }
 
     const logout = () => {
@@ -42,6 +63,7 @@ export default function Navbar({ user }) {
                     onClick={() => { navigate("/about") }} />
                 <p className='font-extrabold text-2xl cursor-pointer' onClick={() => { navigate("/about") }}>TravelGo</p>
             </div>
+
             <SearchBar
                 value={searchValue}
                 onChange={({ target }) => {
@@ -50,6 +72,7 @@ export default function Navbar({ user }) {
                 handleSearch={handleSearch}
                 onClearSearch={onClearSearch}
             />
+
             <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
                 {navbarItems.map((item, index) => {
                     return (
@@ -61,6 +84,7 @@ export default function Navbar({ user }) {
                         </li>
                     )
                 })}
+
                 <ProfileInfo user={user} onLogout={logout} />
             </ul>
         </nav>
