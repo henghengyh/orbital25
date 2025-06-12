@@ -6,53 +6,50 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Login() {
-    // Storing variable states
-    const [email, setEmail] = useState(""); 
-    const [error, setError] = useState(""); 
-    const [message, setMessage] = useState(""); 
-    const [password, setPassword] = useState(""); 
-    const [popup, setPopup] = useState(false); 
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+    const [password, setPassword] = useState("");
+    const [popup, setPopup] = useState(false);
 
-    const { setAuth } = useAuth(); 
-    const location = useLocation(); 
-    const navigate = useNavigate(); 
+    const { setAuth } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Display message if the user was redirected from a protected route or after registration
         if (location.state?.fromProtectedRoute || location.state?.fromRegister) {
             setPopup(true);
             setMessage(location.state.message)
             setTimeout(() => {
                 setPopup(false);
                 setMessage("")
-            }, 3000); 
+            }, 3000);
             window.history.replaceState({}, document.title);
         }
 
         if (error) {
-            setTimeout(() => setError(""), 3000); 
+            setTimeout(() => setError(""), 3000);
         }
     }, [location.state, error])
 
-    // Function that'll send a POST request to
-    //  backend server with 2 info: email & password
+    // send a POST request to backend server with 2 info: email & password
     const handleSubmit = (e) => {
         e.preventDefault();
-        setError(""); 
+        setError("");
         axiosInstance
-            .post("/users/login", { 
+            .post("/users/login", {
                 email: email,
                 password: password,
             })
             .then((res) => {
                 if (res.data) {
-                    localStorage.setItem("token", res.data.token); 
+                    localStorage.setItem("token", res.data.token);
                     setAuth({
                         user: res.data.user,
                         token: res.data.token,
                         isAuthenticated: true,
                         loading: false,
-                    }); // Update authentication state
+                    });
                     navigate("/dashboard");
                 }
             })
@@ -64,7 +61,7 @@ export default function Login() {
     };
 
     return (
-        <div className="start-div-block">
+        <div className="login-register">
             <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             {
                 popup && <div className="error bg-[#dcf0fa] text-orange-600">{message}</div>
@@ -98,7 +95,7 @@ export default function Login() {
                             <div className="input-box-icon"><ion-icon name="lock-closed"></ion-icon></div>
                         </div>
                         {
-                            error && <div className="error">{error}</div> // Display error message if any
+                            error && <div className="error">{error}</div>
                         }
                         <button type="submit" className="w-full h-11 bg-peach border-none outline-none rounded-[40px] text-lg cursor-pointer font-semibold hover:opacity-75 hover:shadow-[rgba(0,0,0,0.2)_0_0_10px]">Log In</button>
                         <div className="text-sm mt-5 mb-4 text-center">

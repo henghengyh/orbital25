@@ -2,15 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+.rdp-root {
+  --rdp-accent-color: #01b0cb !important;
+  --rdp-accent-background-color: #dffbff !important;
+  --rdp-day_button-border-radius: 8px !important;
+  --rdp-selected-font: bold medium var(--rdp-font-family) !important;
+  --rdp-today-color: coral !important;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  display: none;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #057c8e;
+  border-radius: 3px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background-color: rgb(172, 201, 229);
+}
+
 @layer base {
+  html {
+    font-family: "Poppins", "sans-serif";
+  }
+
   body {
-    @apply bg-off-white;
+    @apply bg-off-white mx-auto w-[1280px] overflow-x-hidden;
   }
 }
 
 @layer components {
-  .start-div-block {
+  .login-register {
     @apply flex flex-col justify-center items-center relative w-full min-h-screen;
+  }
+
+  .start-block {
+    @apply mx-14 py-10 relative;
   }
 
   .input-box {

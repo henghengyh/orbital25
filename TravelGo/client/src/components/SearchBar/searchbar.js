@@ -1,4 +1,11 @@
 export default function SearchBar({ value, onChange, handleSearch, onClearSearch }) {
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     return (
         <div className="w-96 flex items-center px-4 rounded-md bg-blue-100">
             <input
@@ -7,6 +14,7 @@ export default function SearchBar({ value, onChange, handleSearch, onClearSearch
                 className="w-full text-xs bg-transparent py-[11px] outline-none"
                 value={value}
                 onChange={onChange}
+                onKeyDown={handleKeyDown}
             />
             {
                 value &&

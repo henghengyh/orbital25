@@ -11,6 +11,7 @@ const { ActivitySchema } = require("./Activity");
 /** ItinerarySchema
  * @param {ObjectId} user - User ID Object
  * @param {string} destination - Destination
+ * @param {string} imageUrl - url of image from Gemini AI based on destination
  * @param {Date} startDate - Start date
  * @param {Date} endDate - End date //Date is a built-in JavaScript object that represents a single moment in time
  * @param {number} numberOfPeople - Number of people
@@ -20,16 +21,17 @@ const { ActivitySchema } = require("./Activity");
 const ItinerarySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     destination: { type: String, required: true },
+    imageUrl: { type: String },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     numberOfPeople: { type: Number, default: 1 },
-    activities: { type: [ActivitySchema], default: [] }, 
+    activities: { type: [ActivitySchema], default: [] },
     notes: { type: String, default: "" }
 }, { timestamps: true });
 
 /** INSTANCE METHODS */
 
-ItinerarySchema.methods.getUser = async function() {
+ItinerarySchema.methods.getUser = async function () {
     // LEARNING POINT: .populate() is asynchronus, returns Promise 
     // it replaces the ObjectId referenced with
     // the actual UserSchema object
@@ -37,32 +39,32 @@ ItinerarySchema.methods.getUser = async function() {
     return this.user;
 }
 
-ItinerarySchema.methods.getTripDuration = function(includeStart = false) {
+ItinerarySchema.methods.getTripDuration = function (includeStart = false) {
     let duration = (this.endDate - this.startDate) / (1000 * 60 * 60 * 24);
     return includeStart ? duration + 1 : duration;
 }
 
-ItinerarySchema.methods.getActivitiesByType = function(type) {
+ItinerarySchema.methods.getActivitiesByType = function (type) {
     return this.activities.filter(x => x.isOfType(type));
 }
 
-ItinerarySchema.methods.getActivitiesForDate = function(date) {
+ItinerarySchema.methods.getActivitiesForDate = function (date) {
     return this.activities.filter(x => x.isOnDate(date));
 };
 
-ItinerarySchema.methods.addActivity = function(activity) {
+ItinerarySchema.methods.addActivity = function (activity) {
     this.activities.push(activity);
     return this.save();
 }
 
-ItinerarySchema.methods.removeActivity = function(activityId) {
+ItinerarySchema.methods.removeActivity = function (activityId) {
     this.activities = this.activities.filter(
         x => x._id.toString() !== activityId.toString()
     );
     return this.save();
 };
 
-ItinerarySchema.methods.updateActivity = function(activityId, updatedFields) {
+ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {
     const activity = this.activities.id(activityId);
     if (activity) {
         activity.updateActivity(updatedFields)
@@ -72,10 +74,10 @@ ItinerarySchema.methods.updateActivity = function(activityId, updatedFields) {
     }
 };
 
-ItinerarySchema.methods.moveActivity = function(activityId, newIndex) {
+ItinerarySchema.methods.moveActivity = function (activityId, newIndex) {
     const idx = this.activities.findIndex(a => a._id.toString() === activityId.toString());
     if (idx === -1) throw new Error("Activity not found");
-    
+
     // what happens here is we remove the activity from its current pos
     const [activity] = this.activities.splice(idx, 1);
 
@@ -84,7 +86,7 @@ ItinerarySchema.methods.moveActivity = function(activityId, newIndex) {
     return this.save();
 };
 
-ItinerarySchema.methods.occursOnTrip = function(activity) {
+ItinerarySchema.methods.occursOnTrip = function (activity) {
     const itineraryStart = new Date(this.startDate);
     const itineraryEnd = new Date(this.endDate);
     const activityStart = new Date(this.startTime);
@@ -98,11 +100,11 @@ ItinerarySchema.methods.occursOnTrip = function(activity) {
  * But can directly access the entire collection of itineraries in our MongoDB database
  */
 
-ItinerarySchema.statics.findByUser = function(userId) {
+ItinerarySchema.statics.findByUser = function (userId) {
     return this.find({ user: userId });
 };
 
-ItinerarySchema.statics.findByDestination = function(destination) {
+ItinerarySchema.statics.findByDestination = function (destination) {
     return this.find({ destination });
 };
 
