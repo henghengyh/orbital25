@@ -37,7 +37,7 @@ function sendCreateEmail(itinerary) {
   .then(() => console.log('Email successfully sent to ' + user.email))
 };
 
-/** sendCreateEmail
+/** sendUpdateEmail
  * @param {ItinerarySchema} itinerary - The itinerary object
  * @param {ActivitySchema} activity - The activity object
  * @param {number} duration - The number of hours until the activity starts

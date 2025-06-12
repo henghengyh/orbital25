@@ -3,27 +3,43 @@ import { useNavigate } from 'react-router-dom';
 
 import { navbarItems } from './navbaritems';
 import { useAuth } from "../../context/AuthContext/authcontext";
+import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function Navbar({ user }) {
-    // States
-    const [searchValue, setSearchValue] = useState(''); // Manage the search input value
+    const [searchValue, setSearchValue] = useState('');
 
-    // Hooks
     const { setAuth } = useAuth();
+    const { setSearched, setSearchResults } = useItinerary();
     const navigate = useNavigate();
 
-    // Handle query
-    const handleSearch = () => { }
-
-    // Clear the search input value
-    const onClearSearch = () => {
-        setSearchValue('');
+    const onSearch = async (query) => {
+        axiosInstance
+            .get("/itineraries/search-itineraries", { params: { query }, })
+            .then((res) => {
+                setSearchResults(res.data.itineraries);
+                setSearched(true);
+                navigate('/dashboard');
+            })
+            .catch((err) => { console.error(err.message); });
     }
 
-    // Logout function clears token and user from local storage and redirect to login page
+    const handleSearch = () => {
+        if (searchValue) {
+            onSearch(searchValue);
+        }
+    }
+
+    const onClearSearch = () => {
+        setSearchValue('');
+        setSearchResults([]);
+        setSearched(false);
+        navigate('/dashboard');
+    }
+
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -47,16 +63,17 @@ export default function Navbar({ user }) {
                     onClick={() => { navigate("/about") }} />
                 <p className='font-extrabold text-2xl cursor-pointer' onClick={() => { navigate("/about") }}>TravelGo</p>
             </div>
+
             <SearchBar
                 value={searchValue}
                 onChange={({ target }) => {
-                    setSearchValue(target.value); // Update the search input value
+                    setSearchValue(target.value);
                 }}
                 handleSearch={handleSearch}
                 onClearSearch={onClearSearch}
             />
+
             <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
-                {/* Loop through the menuItems array to create the navbar items */}
                 {navbarItems.map((item, index) => {
                     return (
                         <li
@@ -67,6 +84,7 @@ export default function Navbar({ user }) {
                         </li>
                     )
                 })}
+
                 <ProfileInfo user={user} onLogout={logout} />
             </ul>
         </nav>
