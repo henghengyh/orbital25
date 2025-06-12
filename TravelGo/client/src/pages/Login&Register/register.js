@@ -5,11 +5,11 @@ import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
 export default function Register() {
-    const [email, setEmail] = useState(""); 
-    const [error, setError] = useState(""); 
-    const [password, setPassword] = useState(""); 
-    const [user, setUser] = useState(""); 
-    const navigate = useNavigate(); 
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [password, setPassword] = useState("");
+    const [user, setUser] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (error) {
@@ -20,16 +20,16 @@ export default function Register() {
     // send a POST request to backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
-        setError(""); 
+        setError("");
         axiosInstance
-            .post("/users/register", { 
+            .post("/users/register", {
                 name: user,
                 email: email,
                 password: password,
             })
             .then((res) => {
                 console.log(res.data);
-                if (res.data) { 
+                if (res.data) {
                     navigate("/", {
                         state: {
                             fromRegister: true,
@@ -46,7 +46,7 @@ export default function Register() {
     };
 
     return (
-        <div className="start-div-block">
+        <div className="login-register">
             <img src={backgroundImage} alt="Background" className="absolute inset-0 w-full h-full opacity-50 object-cover" />
             <div className="relative z-10 w-[420px] h-[450px] bg-transparent items-center flex ">
                 <div className="w-full p-10">
