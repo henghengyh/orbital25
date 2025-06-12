@@ -1,82 +1,80 @@
 //For weather class
 
-// To frontend Haohao, ignore WeatherForecast class first, using WeatherHistory class now can offer more information
-
 const MathHelper = require('./math-helper.js');
 
 class WeatherForecast {
 
-    #main;
-    #description;
-    #coord;
-    #temp;
-    #feelsLike;
-    #tempMin;
-    #tempMax;
-    #pressure;
-    #humidity;
-    #visibility;
-    #windSpeed;
-    #sunrise;
-    #sunset;
-    #city;
-    #country;
-    #timezone;
-    #icon;
+    #apiDataCurrent;
+    #apiDataDaily;
 
-    constructor(apiData) {
-
-        // Summary
-        this.main = apiData.weather[0].main;
-        this.description = apiData.weather[0].description;
-
-        // Coordinates in coord[lon, lat]
-        this.coord = [apiData.coord.lon, apiData.coord.lat];
-
-        // Temperature Data
-        this.temp = apiData.main.temp;
-        this.feelsLike = apiData.main.feels_like;
-        this.tempMin = apiData.main.temp_min;
-        this.tempMax = apiData.main.temp_max;
-
-        // Climate Factors
-        this.pressure = apiData.main.pressure;
-        this.humidity = apiData.main.humidity;
-        this.visibility = apiData.visibility;
-        this.windSpeed = apiData.wind.speed;
-
-        // Sunrise & Sunset (UTC)
-        this.sunrise = apiData.sys.sunrise;
-        this.sunset = apiData.sys.sunset;
-
-        // Nomenclature
-        this.city = apiData.name;
-        this.country = apiData.sys.country;
-
-        // Miscellaneous (UTC for time)
-        this.timeOfData = apiData.dt;
-        this.timezone = apiData.timezone;
-        this.icon = apiData.weather[0].icon;
+    /** WeatherForecast class constructor
+     * @param {Object} apiData 
+     * @property {Object} apiDataCurrent - Current weather data
+     * @property {Object} apiDataHourly - Hourly weather data
+     * @property {Object} apiDataDaily - Daily weather data
+     */
+    constructor(api) {
+        this.#apiDataCurrent = api.current;
+        this.#apiDataDaily = WeatherForecast.#decode16DayForecast(api.daily);
     }
 
-    getTemperature() {
-        return this.temp;
+    static #decode16DayForecast(dailyData) {
+        const { 
+            time,
+            temperature2mMax,
+            temperature2mMin,
+            sunrise,
+            sunset,
+            uvIndexMax,
+            rainSum,
+            apparentTemperatureMax,
+            apparentTemperatureMin,
+            windSpeed10mMax 
+        } = dailyData;
+
+        const res = {};
+        for (let i = 0; i < time.length; i++) {
+            res["day " + (i + 1).toString()] = {
+                time: time[i],
+                temperature2mMax: MathHelper.toTwodp(temperature2mMax[i]),
+                temperature2mMin: MathHelper.toTwodp(temperature2mMin[i]),
+                sunrise: sunrise[i],
+                sunset: sunset[i],
+                uvIndexMax: MathHelper.toTwodp(uvIndexMax[i]),
+                rainSum: MathHelper.toTwodp(rainSum[i]),
+                apparentTemperatureMax: MathHelper.toTwodp(apparentTemperatureMax[i]),
+                apparentTemperatureMin: MathHelper.toTwodp(apparentTemperatureMin[i]),
+                windSpeed10mMax: MathHelper.toTwodp(windSpeed10mMax[i])
+            };
+        }
+        return res;
     }
 
-    getDescription() {
-        return this.description;
+    getCurrentWeather() {
+        return this.#apiDataCurrent;
     }
 
-    getFeelsLike() {
-        return this.feelsLike;
+    // This function returns a 16-day weather forecast from TODAY, which is the dat
+    // of API call, not the date of the first day of trip
+    get16DayForecast() {
+        return this.#apiDataDaily;
     }
 
-    getSummary() {
-        return `Weather in ${this.city}, ${this.country}: ${this.description}, ${this.temp}°C (feels like ${this.feelsLike}°C)`;
-    }
+    getTripForecast(tripStart, tripEnd) {
+        const tripForecast = {};
+        const startDate = new Date(tripStart);
+        const endDate = new Date(tripEnd);
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            tripForecast[d] = "Weather data not available";   
+        }  
 
-    #getTempFahrenheit() {
-        return (this.temp * 9/5) + 32;
+        for (const day in this.#apiDataDaily) {
+            const dayDate = new Date(this.#apiDataDaily[day].time);
+            if (dayDate >= startDate && dayDate <= endDate) {
+                tripForecast[dayDate] = this.#apiDataDaily[day];
+            }
+        }
+        return tripForecast;
     }
 }
 
