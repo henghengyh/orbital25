@@ -4,10 +4,13 @@
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
+const authenticateToken = require("../middleware/authenticateToken");
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
-const authenticateToken = require("../middleware/authenticateToken");
+
+const { GoogleGenAI, Modality } = require("@google/genai");
+const fs = require('node.fs');
 
 // IMPORTING HELPER MODULES
 const email = require("../utilities/email-helper");
@@ -24,13 +27,26 @@ router.post("/", authenticateToken, async (req, res) => {
     try {
         const { destination, startDate, endDate, numberOfPeople, notes } = req.body;
         const userId = req.user._id;
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash-preview-image-generation",
+            contents: `A beautiful travel photo of ${destination}`,
+            config: {
+                responseModalities: [Modality.TEXT, Modality.IMAGE],
+            },
+        });
+        const mimeType = response.candidates[0].content.parts[1].inlineData.mimeType;
+        const base64Data = response.candidates[0].content.parts[1].inlineData.data;
+        const image = `data:${mimeType};base64,${base64Data}`;
+
         const newItinerary = new Itinerary({
             user: userId,
             destination,
+            imageUrl: image,
             startDate,
             endDate,
             numberOfPeople,
-            notes: notes
+            notes
         });
         const savedItinerary = await newItinerary.save();
         await savedItinerary.populate('user');
@@ -53,8 +69,48 @@ router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
     const user = req.user;
 
     try {
-        const itinerary = await Itinerary.find({ user: user._id });
+        const itinerary = await Itinerary.find({ user: user._id }).sort({ startDate: 1 });
         res.status(200).json({ itineraries: itinerary });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+/** Search for itineraries */
+router.get("/search-itineraries", authenticateToken, async (req, res) => {
+    const user = req.user;
+    const { query } = req.query;
+
+    if (!query) {
+        return res.status(400).json({ error: true, message: "Search query required." })
+    }
+
+    try {
+        const matchingItinerary = await Itinerary.find({
+            user: user._id,
+            $or: [
+                { destination: { $regex: new RegExp(query, "i") } },
+                { notes: { $regex: new RegExp(query, "i") } }
+            ],
+        }).sort({ startDate: 1 });
+        return res.status(200).json({ itineraries: matchingItinerary, message: "Itinerary found successfully." });
+    } catch (error) {
+        res.status(500).json({ error: true, message: error.message });
+    }
+});
+
+/** Filter itineraries */
+router.get("/filter", authenticateToken, async (req, res) => {
+    const user = req.user;
+    const { start, end } = req.query;
+
+    try {
+        const matchingItinerary = await Itinerary.find({
+            user: user._id,
+            startDate: { $gte: start },
+            endDate: { $lte: end }
+        }).sort({ startDate: 1 });
+        return res.status(200).json({ itineraries: matchingItinerary, message: "Itinerary found successfully." });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
     }

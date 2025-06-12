@@ -5,6 +5,7 @@ import AboutPage from './pages/About/about';
 import AuthProvider from './context/AuthContext/authcontext';
 import DashboardPage from './pages/Dashboard/dashboard';
 import ItineraryPage from './pages/Itinerary/itinerary';
+import ItineraryProvider from './context/ItineraryContext/itinerarycontext';
 import Layout from './components/Layout/layout';
 import LoginPage from './pages/Login&Register/login';
 import MapsPage from './pages/Maps/maps';
@@ -24,7 +25,9 @@ function App() {
                         {/* Render the Navbar on all protected routes */}
                         <Route element={
                             <UserProvider>
-                                <Layout />
+                                <ItineraryProvider>
+                                    <Layout />
+                                </ItineraryProvider>
                             </UserProvider>
                         }>
                             {/* Protected routes that require authentication */}
