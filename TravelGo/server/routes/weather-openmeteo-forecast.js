@@ -134,12 +134,12 @@ router.get('/current/:city', async (req, res) => {
 });
 
 router.get('/forecast/:city', async (req, res) => {
-    const { latitude, longitude } = await cityToLatLong(req.params.city);
-
-    params.latitude = latitude;
-    params.longitude = longitude;
-
     try {
+        const { latitude, longitude } = await cityToLatLong(req.params.city);
+
+        params.latitude = latitude;
+        params.longitude = longitude;
+
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherForecast(decodeWeatherData(responses));
         res.json(weatherRawData.get16DayForecast());

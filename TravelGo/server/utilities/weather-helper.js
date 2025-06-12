@@ -34,8 +34,8 @@ class WeatherForecast {
 
         const res = {};
         for (let i = 0; i < time.length; i++) {
-            res["day " + (i + 1).toString()] = {
-                time: time[i],
+            res[i] = {
+                time: (new Date(time[i]).toString().slice(0, 15)),
                 temperature2mMax: MathHelper.toTwodp(temperature2mMax[i]),
                 temperature2mMin: MathHelper.toTwodp(temperature2mMin[i]),
                 sunrise: sunrise[i],
@@ -54,8 +54,9 @@ class WeatherForecast {
         return this.#apiDataCurrent;
     }
 
-    // This function returns a 16-day weather forecast from TODAY, which is the dat
+    // This function returns a 16-day weather forecast including TODAY, which is the dat
     // of API call, not the date of the first day of trip
+    // So is next 15 days of forecast
     get16DayForecast() {
         return this.#apiDataDaily;
     }
