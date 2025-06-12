@@ -24,9 +24,6 @@ export default function Navbar({ user }) {
             const res = await axiosInstance.get("/itineraries/search-itineraries", { params: { query } });
             setSearchResults(res.data.itineraries);
             setSearched(true);
-            if (window.location.pathname !== '/dashboard') {
-                navigate('/dashboard');
-            }
         } catch (err) {
             console.error(err.message);
         }

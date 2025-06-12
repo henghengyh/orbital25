@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
@@ -21,6 +22,12 @@ export default function Register() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
+
+        if (!validateEmail(email)) {
+            setError("Invalid email");
+            return;
+        }
+
         axiosInstance
             .post("/users/register", {
                 name: user,
