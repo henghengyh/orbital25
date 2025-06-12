@@ -14,10 +14,7 @@ export default function ItineraryCard({
 
     return (
         <div className="border rounded-lg overflow-hidden bg-mint-green hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer">
-            {imageUrl
-                ? <img src={imageUrl} alt={destination} className='w-full h-48 object-cover rounded-lg' />
-                : <div className="w-full h-40 bg-gray-200 rounded-lg" />
-            }
+            <img src={imageUrl} alt={destination} className='w-full h-48 object-cover rounded-lg' />
             <div className="p-4 flex items-center gap-3" onClick={onClick}>
                 <div className="flex-1">
                     <h6 className="text-md font-semibold">{destination}</h6>

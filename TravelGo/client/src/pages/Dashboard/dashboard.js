@@ -1,28 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DayPicker } from 'react-day-picker';
 import moment from 'moment/moment';
 
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
-import ItineraryCard from "../../components/Cards/intinerarycard";
 import EmptyCard from "../../components/Cards/emptycard";
+import ItineraryCard from "../../components/Cards/intinerarycard";
 
 export default function Dashboard() {
     const [dateRange, setDateRange] = useState({ from: null, to: null });
 
     const { allItineraries, setAllItineraries, searched, setSearched, searchResults, setSearchResults } = useItinerary();
 
-    const getAllItinerary = async () => {
+    const getAllItinerary = useCallback((controller) => {
         axiosInstance
-            .get("/itineraries/get-all-itineraries")
+            .get("/itineraries/get-all-itineraries", { signal: controller.signal })
             .then((res) => { setAllItineraries(res.data.itineraries); })
-            .catch((err) => { console.error(err.message); });
-    }
+            .catch((err) => {
+                if (err.name === "CanceledError") {
+                    console.log("Get-all-itinerary request canceled");
+                } else {
+                    console.error(err.message);
+                }
+            });
+    }, [setAllItineraries]);
 
     useEffect(() => {
-        getAllItinerary();
-        return () => { };
-    });
+            getAllItinerary(new AbortController());
+    }, [getAllItinerary]);
+
+    useEffect(() => {
+        return () => {
+            setSearched(false);
+            setSearchResults([]);
+            setDateRange({ from: null, to: null });
+        };
+    }, [setDateRange, setSearched, setSearchResults]);
 
     const itineraries = searched ? searchResults : allItineraries;
 
