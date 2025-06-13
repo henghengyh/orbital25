@@ -93,7 +93,7 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
                 { notes: { $regex: new RegExp(query, "i") } }
             ],
         }).sort({ startDate: 1 });
-        return res.status(200).json({ itineraries: matchingItinerary, message: "Itinerary found successfully." });
+        return res.status(200).json({ itineraries: matchingItinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
     }
@@ -107,8 +107,8 @@ router.get("/filter", authenticateToken, async (req, res) => {
     try {
         const matchingItinerary = await Itinerary.find({
             user: user._id,
-            startDate: { $gte: start },
-            endDate: { $lte: end }
+            startDate: { $gte: new Date(Number(start)) },
+            endDate: { $lte: new Date(Number(end)) }
         }).sort({ startDate: 1 });
         return res.status(200).json({ itineraries: matchingItinerary, message: "Itinerary found successfully." });
     } catch (error) {

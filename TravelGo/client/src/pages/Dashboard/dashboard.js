@@ -6,16 +6,22 @@ import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyCard from "../../components/Cards/emptycard";
 import ItineraryCard from "../../components/Cards/intinerarycard";
+import SearchLoading from "../../components/Loading/searchloading";
 
 export default function Dashboard() {
     const [dateRange, setDateRange] = useState({ from: null, to: null });
 
-    const { allItineraries, setAllItineraries, searched, setSearched, searchResults, setSearchResults } = useItinerary();
+    const {
+        allItineraries, setAllItineraries,
+        loading, setLoading,
+        searched, setSearched,
+        searchResults, setSearchResults
+    } = useItinerary();
 
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
             .get("/itineraries/get-all-itineraries", { signal: controller.signal })
-            .then((res) => { setAllItineraries(res.data.itineraries); })
+            .then((res) => { setAllItineraries(res.data.itineraries); setLoading(false); })
             .catch((err) => {
                 if (err.name === "CanceledError") {
                     console.log("Get-all-itinerary request canceled");
@@ -23,19 +29,23 @@ export default function Dashboard() {
                     console.error(err.message);
                 }
             });
-    }, [setAllItineraries]);
+    }, [setAllItineraries, setLoading]);
 
     useEffect(() => {
-            getAllItinerary(new AbortController());
-    }, [getAllItinerary]);
+        setLoading(true);
+        const controller = new AbortController();
+        getAllItinerary(controller);
+        return () => controller.abort();
+    }, [getAllItinerary, setLoading]);
 
     useEffect(() => {
         return () => {
             setSearched(false);
             setSearchResults([]);
             setDateRange({ from: null, to: null });
+            setLoading(false);
         };
-    }, [setDateRange, setSearched, setSearchResults]);
+    }, [setDateRange, setLoading, setSearched, setSearchResults]);
 
     const itineraries = searched ? searchResults : allItineraries;
 
@@ -48,13 +58,14 @@ export default function Dashboard() {
             return;
         }
 
+        setLoading(true);
         const start = moment(day.from).valueOf();
         const end = moment(day.to).valueOf();
-
         axiosInstance
             .get('/itineraries/filter', { params: { start, end } })
             .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
-            .catch((err) => console.error(err.message));
+            .catch((err) => console.error(err.message))
+            .finally(() => setLoading(false));
     }
 
     const handleDayClick = (day) => {
@@ -66,25 +77,25 @@ export default function Dashboard() {
         <div className="start-block">
             <div className="flex gap-7">
                 <div className="flex-1 h-[490px] overflow-y-scroll scrollbar">
-                    {itineraries.length > 0
-                        ? (
-                            <div className="grid grid-cols-2 gap-4">
-                                {itineraries.map((item) => {
-                                    return (
-                                        <ItineraryCard
-                                            key={item._id}
-                                            destination={item.destination}
-                                            imageUrl={item.imageUrl}
-                                            startDate={item.startDate}
-                                            endDate={item.endDate}
-                                            numberOfPeople={item.numberOfPeople}
-                                            notes={item.notes}
-                                            onClick={() => handleClick(item)}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        ) : (<EmptyCard />)}
+                    {loading ? <SearchLoading />
+                        : itineraries.length > 0
+                            ? (<div className="grid grid-cols-2 gap-4">
+                                    {itineraries.map((item) => {
+                                        return (
+                                            <ItineraryCard
+                                                key={item._id}
+                                                destination={item.destination}
+                                                imageUrl={item.imageUrl}
+                                                startDate={item.startDate}
+                                                endDate={item.endDate}
+                                                numberOfPeople={item.numberOfPeople}
+                                                notes={item.notes}
+                                                onClick={() => handleClick(item)}
+                                            />
+                                        );
+                                    })}
+                                </div>)
+                            : (<EmptyCard />)}
                 </div>
 
                 <div className="w-[335px]">

@@ -13,20 +13,18 @@ export default function Navbar({ user }) {
     const [searchValue, setSearchValue] = useState('');
 
     const { setAuth } = useAuth();
-    const { setSearched, setSearchResults } = useItinerary();
+    const { setLoading, setSearched, setSearchResults } = useItinerary();
     const location = useLocation();
     const navigate = useNavigate();
 
     const isDashboard = location.pathname === '/dashboard';
 
     const onSearch = async (query) => {
-        try {
-            const res = await axiosInstance.get("/itineraries/search-itineraries", { params: { query } });
-            setSearchResults(res.data.itineraries);
-            setSearched(true);
-        } catch (err) {
-            console.error(err.message);
-        }
+        setLoading(true);
+        axiosInstance.get("/itineraries/search-itineraries", { params: { query } })
+            .then((res) => { setSearchResults(res.data.itineraries); setSearched(true); })
+            .catch((err) => console.error(err.message))
+            .finally(() => setLoading(false));
     }
 
     const logout = () => {
