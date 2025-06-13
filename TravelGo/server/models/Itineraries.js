@@ -29,6 +29,10 @@ const ItinerarySchema = new mongoose.Schema({
     notes: { type: String, default: "" }
 }, { timestamps: true });
 
+ItinerarySchema.index({ user: 1});
+ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1});
+ItinerarySchema.index({ user: 1, destination: 1, notes: 1});
+
 /** INSTANCE METHODS */
 
 ItinerarySchema.methods.getUser = async function () {
