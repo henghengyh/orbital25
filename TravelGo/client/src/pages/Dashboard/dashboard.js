@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DayPicker } from 'react-day-picker';
 import moment from 'moment/moment';
 
@@ -17,6 +18,7 @@ export default function Dashboard() {
         searched, setSearched,
         searchResults, setSearchResults
     } = useItinerary();
+    const navigate = useNavigate();
 
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
@@ -99,7 +101,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="w-[335px]">
-                    <div className="bg-off-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
+                    <div className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
                         <div className="p-3">
                             <DayPicker
                                 navLayout="around"
@@ -113,7 +115,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
+                <div onClick={() => navigate('/itinerary')} className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
                     <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
                 </div>
             </div>
