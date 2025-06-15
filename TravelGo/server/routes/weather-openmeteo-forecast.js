@@ -9,7 +9,7 @@ const params = {
     "longitude": null,
     "daily": ["temperature_2m_max", "temperature_2m_min", "sunrise", "sunset", "uv_index_max", "rain_sum", "apparent_temperature_max", "apparent_temperature_min", "wind_speed_10m_max"],
     "current": ["weather_code", "temperature_2m", "relative_humidity_2m", "apparent_temperature", "rain", "cloud_cover", "snowfall"],
-    "timezone": "GMT",
+    "timezone": "auto",
     "forecast_days": 16,
 	"forecast_hours": 24
 };
