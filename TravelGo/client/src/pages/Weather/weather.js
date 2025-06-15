@@ -16,6 +16,20 @@ const Weather = () => {
     const [loadingCurrent, setLoadingCurrent] = useState(false);
     const [cityName, setCityName] = useState('');
 
+    function localTimeDisplay(timeInfo) {
+        const hr24String = new Date(timeInfo).toUTCString().slice(17,22);
+        const hour = Number(hr24String.slice(0,2));
+        let behind = "";
+        if (hour < 12) {
+            behind = "AM";
+            return hour.toString() + hr24String.slice(2,) + " " + behind;
+        } else {
+            behind = "PM";
+            return (hour - 12).toString() + hr24String.slice(2,) + " " + behind;
+        }
+        // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
+    }
+
 
     useEffect(() => {
         fetchTripWeather();
@@ -44,6 +58,7 @@ const Weather = () => {
         }
     }
 
+    // ISSUE: To compare today's dates in the destination's local time zone, for each itinerary.
     //A1a. Helper function to identify next upcoming trip
     const getUpcomingTrips = function(itineraries) {
         const today = new Date();
@@ -103,10 +118,10 @@ const Weather = () => {
                                     <span className={valStyle}>{day.windSpeed10mMax}m/s</span>
 
                                     <span className={keyStyle}>Sunrise:</span> 
-                                    <span className={valStyle}>{new Date(day.sunrise).toLocaleTimeString()}</span>
+                                    <span className={valStyle}>{localTimeDisplay(day.sunrise)}</span>
 
                                     <span className={keyStyle}>Sunset:</span> 
-                                    <span className={valStyle}>{new Date(day.sunset).toLocaleTimeString()}</span>
+                                    <span className={valStyle}>{localTimeDisplay(day.sunset)}</span>
 
                                 </div>
                             </div>
@@ -157,7 +172,7 @@ const Weather = () => {
                         <span className="font-medium text-gray-600">Feels like:</span>
                         <span className="text-gray-800">{currentWeather.apparentTemperature} °C</span>
                         <span className="font-medium text-gray-600">At time:</span>
-                        <span className="text-gray-800">{(new Date(currentWeather.time)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                        <span className="text-gray-800">{localTimeDisplay(currentWeather.time)}</span>
                     </div>
                 </div>
             </div>
@@ -264,10 +279,10 @@ const Weather = () => {
                                 <span className={valStyle}>{day.windSpeed10mMax}m/s</span>
 
                                 <span className={keyStyle}>Sunrise:</span> 
-                                <span className={valStyle}>{new Date(day.sunrise).toLocaleTimeString()}</span>
+                                <span className={valStyle}>{localTimeDisplay(day.sunrise)}</span>
 
                                 <span className={keyStyle}>Sunset:</span> 
-                                <span className={valStyle}>{new Date(day.sunset).toLocaleTimeString()}</span>
+                                <span className={valStyle}>{localTimeDisplay(day.sunset)}</span>
 
                             </div>
                         </div>
