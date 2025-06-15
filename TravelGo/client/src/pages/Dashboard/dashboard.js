@@ -85,7 +85,7 @@ export default function Dashboard() {
                                             <ItineraryCard
                                                 key={item._id}
                                                 destination={item.destination}
-                                                imageUrl={item.imageUrl}
+                                                imageNumber={item.imageNumber}
                                                 startDate={item.startDate}
                                                 endDate={item.endDate}
                                                 numberOfPeople={item.numberOfPeople}

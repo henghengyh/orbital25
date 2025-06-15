@@ -1,8 +1,10 @@
 import moment from 'moment/moment';
 
+import { imageList } from './intineraryimage';
+
 export default function ItineraryCard({
     destination,
-    imageUrl,
+    imageNumber,
     startDate,
     endDate,
     numberOfPeople,
@@ -14,7 +16,7 @@ export default function ItineraryCard({
 
     return (
         <div className="border rounded-lg overflow-hidden bg-mint-green hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer">
-            <img src={imageUrl} alt={destination} className='w-full h-48 object-cover rounded-lg' />
+            <img src={imageList[imageNumber - 1]} alt={destination} className='w-full h-48 object-cover rounded-lg' />
             <div className="p-4 flex items-center gap-3" onClick={onClick}>
                 <div className="flex-1">
                     <h6 className="text-md font-semibold">{destination}</h6>
