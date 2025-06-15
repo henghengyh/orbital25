@@ -9,9 +9,6 @@ const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
 
-const { GoogleGenAI, Modality } = require("@google/genai");
-const fs = require('node.fs');
-
 // IMPORTING HELPER MODULES
 const email = require("../utilities/email-helper");
 const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
@@ -27,22 +24,15 @@ router.post("/", authenticateToken, async (req, res) => {
     try {
         const { destination, startDate, endDate, numberOfPeople, notes } = req.body;
         const userId = req.user._id;
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash-preview-image-generation",
-            contents: `A beautiful travel photo of ${destination}`,
-            config: {
-                responseModalities: [Modality.TEXT, Modality.IMAGE],
-            },
-        });
-        const mimeType = response.candidates[0].content.parts[1].inlineData.mimeType;
-        const base64Data = response.candidates[0].content.parts[1].inlineData.data;
-        const image = `data:${mimeType};base64,${base64Data}`;
+
+        const getRndInteger = (min, max) => {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
         const newItinerary = new Itinerary({
             user: userId,
             destination,
-            imageUrl: image,
+            imageNumber: getRndInteger(1, 8),
             startDate,
             endDate,
             numberOfPeople,
@@ -145,7 +135,7 @@ router.delete("/:itineraryId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
-        
+
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -155,7 +145,7 @@ router.delete("/:itineraryId", authenticateToken, async (req, res) => {
             await Itinerary.findByIdAndDelete(req.params.itineraryId);
             res.json({ message: "Itinerary deleted successfully" });
         }
-        
+
     } catch (error) {
         res.status(500).json({ error: "Failed to delete itinerary" });
     }
@@ -171,7 +161,7 @@ router.post("/:itineraryId/activities", authenticateToken, async (req, res) => {
         } else if (!hasAccessToItinerary(itinerary, user)) {
             res.status(403).json({ error: "You do not have permission to access this itinerary" });
             return;
-        } 
+        }
         if (!isValidActivity(itinerary, req.body)) {
             res.status(400).json({ error: "Invalid activity" });
             return;
@@ -209,7 +199,7 @@ router.put("/:itineraryId/activities/:activityId", authenticateToken, async (req
                 // At this point, we can still return the saved itinerary even if the email is invalid.
             }
             res.status(200).json(itinerary);
-        }        
+        }
     } catch (error) {
         res.status(500).json({ error: "Failed to update activity" });
         console.error("Error updating activity:", error);
@@ -258,7 +248,7 @@ router.get("/:itineraryId/activities/:activityId", authenticateToken, async (req
     try {
         const user = req.user;
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
-       if (!itinerary) {
+        if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
             res.status(403).json({ error: "You do not have permission to access this itinerary" });
