@@ -2,6 +2,37 @@
 
 const MathHelper = require('./math-helper.js');
 
+/** WMO Code Description Obtained from open-meteo API */
+const wmoCodeToDescription = {
+    0: "Clear sky",
+    1: "Mainly clear",
+    2: "Partly cloudy",
+    3: "Overcast",
+    45: "Fog",
+    48: "Depositing rime fog",
+    51: "Light drizzle",
+    53: "Moderate drizzle",
+    55: "Dense drizzle",
+    56: "Light freezing drizzle",
+    57: "Dense freezing drizzle",
+    61: "Slight rain",
+    63: "Moderate rain",
+    65: "Heavy rain",
+    66: "Light freezing rain",
+    67: "Heavy freezing rain",
+    71: "Slight snow fall",
+    73: "Moderate snow fall",
+    75: "Heavy snow fall",
+    77: "Snow grains",
+    80: "Slight rain showers",
+    81: "Moderate rain showers",
+    82: "Violent rain showers",
+    85: "Slight snow showers",
+    86: "Heavy snow showers",
+    95: "Thunderstorm",
+    96: "Thunderstorm with slight hail",
+    99: "Thunderstorm with heavy hail"
+};
 class WeatherForecast {
 
     #apiDataCurrent;
@@ -14,8 +45,31 @@ class WeatherForecast {
      * @property {Object} apiDataDaily - Daily weather data
      */
     constructor(api) {
-        this.#apiDataCurrent = api.current;
+        this.#apiDataCurrent = WeatherForecast.#decodeCurrentWeather(api.current);
         this.#apiDataDaily = WeatherForecast.#decode16DayForecast(api.daily);
+    }
+
+    static #decodeCurrentWeather(currentData) {
+        const { 
+            time,
+            weatherCode,
+            temperature2m,
+            relativeHumidity2m,
+            apparentTemperature,
+            rain,
+            cloudCover,
+            snowfall
+        } = currentData;
+        return {
+            time: time,
+            weatherCode: wmoCodeToDescription[weatherCode] || "Unknown weather code",
+            temperature2m: MathHelper.toTwodp(temperature2m),
+            relativeHumidity2m: MathHelper.toTwodp(relativeHumidity2m),
+            apparentTemperature: MathHelper.toTwodp(apparentTemperature),
+            rain: MathHelper.toTwodp(rain),
+            cloudCover: MathHelper.toTwodp(cloudCover),
+            snowfall: MathHelper.toTwodp(snowfall)
+        };
     }
 
     static #decode16DayForecast(dailyData) {
@@ -34,8 +88,8 @@ class WeatherForecast {
 
         const res = {};
         for (let i = 0; i < time.length; i++) {
-            res["day " + (i + 1).toString()] = {
-                time: time[i],
+            res[i] = {
+                time: (new Date(time[i]).toString().slice(0, 15)),
                 temperature2mMax: MathHelper.toTwodp(temperature2mMax[i]),
                 temperature2mMin: MathHelper.toTwodp(temperature2mMin[i]),
                 sunrise: sunrise[i],
@@ -54,8 +108,9 @@ class WeatherForecast {
         return this.#apiDataCurrent;
     }
 
-    // This function returns a 16-day weather forecast from TODAY, which is the dat
+    // This function returns a 16-day weather forecast including TODAY, which is the dat
     // of API call, not the date of the first day of trip
+    // So is next 15 days of forecast
     get16DayForecast() {
         return this.#apiDataDaily;
     }
@@ -64,16 +119,26 @@ class WeatherForecast {
         const tripForecast = {};
         const startDate = new Date(tripStart);
         const endDate = new Date(tripEnd);
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            tripForecast[d] = "Weather data not available";   
-        }  
+        const processedAPIData = {};
 
-        for (const day in this.#apiDataDaily) {
-            const dayDate = new Date(this.#apiDataDaily[day].time);
-            if (dayDate >= startDate && dayDate <= endDate) {
-                tripForecast[dayDate] = this.#apiDataDaily[day];
-            }
+        for (const key in this.#apiDataDaily) {
+            const day = this.#apiDataDaily[key];
+            const dateKey = new Date(day.time).toISOString().slice(0, 10);
+            processedAPIData[dateKey] = day;
         }
+        
+        console.log(processedAPIData);
+
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {   
+            tripForecast[d] = "Weather data not available";
+            for (let d2 in processedAPIData) {
+                if (d.toISOString().slice(0,10) == d2) {
+                    console.log(d.toISOString().slice(0,10), d2);
+                    tripForecast[d] = processedAPIData[d.toISOString().slice(0,10)];
+                    break;
+                }
+            }
+        }  
         return tripForecast;
     }
 }
