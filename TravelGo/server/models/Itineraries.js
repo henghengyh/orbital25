@@ -21,13 +21,17 @@ const { ActivitySchema } = require("./Activity");
 const ItinerarySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     destination: { type: String, required: true },
-    imageUrl: { type: String },
+    imageNumber: { type: Number },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     numberOfPeople: { type: Number, default: 1 },
     activities: { type: [ActivitySchema], default: [] },
     notes: { type: String, default: "" }
 }, { timestamps: true });
+
+ItinerarySchema.index({ user: 1});
+ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1});
+ItinerarySchema.index({ user: 1, destination: 1, notes: 1});
 
 /** INSTANCE METHODS */
 
