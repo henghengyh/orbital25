@@ -8,8 +8,8 @@ const params = {
     "latitude": null,
     "longitude": null,
     "daily": ["temperature_2m_max", "temperature_2m_min", "sunrise", "sunset", "uv_index_max", "rain_sum", "apparent_temperature_max", "apparent_temperature_min", "wind_speed_10m_max"],
-    "current": ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "rain", "cloud_cover", "snowfall"],
-    "timezone": "auto",
+    "current": ["weather_code", "temperature_2m", "relative_humidity_2m", "apparent_temperature", "rain", "cloud_cover", "snowfall"],
+    "timezone": "GMT",
     "forecast_days": 16,
 	"forecast_hours": 24
 };
@@ -59,12 +59,13 @@ function decodeWeatherData(responses) {
     const weatherData = {
         current: {
             time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
-            temperature2m: current.variables(0).value(),
-            relativeHumidity2m: current.variables(1).value(),
-            apparentTemperature: current.variables(2).value(),
-            rain: current.variables(3).value(),
-            cloudCover: current.variables(4).value(),
-            snowfall: current.variables(5).value(),
+            weatherCode: current.variables(0).value(),
+            temperature2m: current.variables(1).value(),
+            relativeHumidity2m: current.variables(2).value(),
+            apparentTemperature: current.variables(3).value(),
+            rain: current.variables(4).value(),
+            cloudCover: current.variables(5).value(),
+            snowfall: current.variables(6).value(),
         },
         daily: {
             time: [...Array((Number(daily.timeEnd()) - Number(daily.time())) / daily.interval())].map(
@@ -116,11 +117,15 @@ function decodeWeatherData(responses) {
     return weatherData;
 };
 
-router.get('/current/:city', async (req, res) => {
-    const { latitude, longitude } = await cityToLatLong(req.params.city);
+router.get('/current', async (req, res) => {
+    const { lat, lon } = req.query;
 
-    params.latitude = latitude;
-    params.longitude = longitude;
+    if (!lat || !lon) {
+        return res.status(400).json({ error: 'Latitude and longitude are required.' });
+    }
+
+    params.latitude = Number(lat);
+    params.longitude = Number(lon);
 
     try {
         const responses = await fetchWeatherApi(url, params);

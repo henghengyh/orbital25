@@ -39,6 +39,10 @@ ItinerarySchema.methods.getUser = async function () {
     return this.user;
 }
 
+ItinerarySchema.methods.getDestination = function () {
+    return this.destination;
+}
+
 ItinerarySchema.methods.getTripDuration = function (includeStart = false) {
     let duration = (this.endDate - this.startDate) / (1000 * 60 * 60 * 24);
     return includeStart ? duration + 1 : duration;
