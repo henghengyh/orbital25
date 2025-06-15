@@ -56,6 +56,7 @@ router.post("/", authenticateToken, async (req, res) => {
 
 /** Getting all itineraries */
 router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
+    console.log("Fetching all itineraries");
     const user = req.user;
 
     try {
