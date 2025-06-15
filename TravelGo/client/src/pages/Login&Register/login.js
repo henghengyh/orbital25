@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { useAuth } from '../../context/AuthContext/authcontext';
+import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 import backgroundImage from "../../assets/lr-bg.jpg";
 
@@ -36,6 +37,12 @@ export default function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
+
+        if (!validateEmail(email)) {
+            setError("Invalid email");
+            return;
+        }
+
         axiosInstance
             .post("/users/login", {
                 email: email,

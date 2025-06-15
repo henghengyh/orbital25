@@ -10,3 +10,17 @@ export const getInitials = (name) => {
 
     return initials;
 }
+
+/** regex breakdown: (email is of format xxx@xxx.xxx)
+ * ^ — Start of the string
+ * [^\s@]+ — One or more characters that are not whitespace (\s) or @
+ * @ — The @ symbol
+ * [^\s@]+ — One or more characters that are not whitespace or @ (domain name part before the dot)
+ * \. — Literal dot . (escaped as \.)
+ * [^\s@]+ — One or more characters that are not whitespace or @ (domain suffix, like com, org, etc.)
+ * $ — End of the string
+ */
+export const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+};
