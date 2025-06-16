@@ -109,9 +109,9 @@ router.get("/filter", authenticateToken, async (req, res) => {
 });
 
 /** Getting an itinerary */
-router.get("/:itineraryId", authenticateToken, async (req, res) => {
+router.get("/:id", authenticateToken, async (req, res) => {
     try {
-        const itinerary = await Itinerary.findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) return res.status(404).json({ error: "No itinerary found." });
         res.status(200).json({ itinerary: itinerary });
     } catch (error) {
@@ -120,7 +120,7 @@ router.get("/:itineraryId", authenticateToken, async (req, res) => {
 });
 
 /** Updating an itinerary */
-router.put("/:itineraryId", authenticateToken, async (req, res) => {
+router.put("/:id", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);

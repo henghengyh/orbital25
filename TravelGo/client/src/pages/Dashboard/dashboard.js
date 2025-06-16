@@ -86,13 +86,12 @@ export default function Dashboard() {
                                     return (
                                         <ItineraryCard
                                             key={item._id}
-                                                tripName={item.tripName}
+                                            tripName={item.tripName}
                                             destination={item.destination}
                                             imageNumber={item.imageNumber}
                                             startDate={item.startDate}
                                             endDate={item.endDate}
                                             numberOfPeople={item.numberOfPeople}
-                                            notes={item.notes}
                                             onClick={() => handleClick(item)}
                                         />
                                     );
@@ -116,7 +115,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div onClick={() => navigate('/itinerary')} className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
+                <div onClick={() => navigate('/create-itinerary')} className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
                     <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
                 </div>
             </div>
