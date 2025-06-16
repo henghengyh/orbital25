@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ItineraryLayout({ mode, itinerary }) {
+export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
     const [destination, setDestination] = useState(itinerary?.destination || "");
-    const [end, setEnd] = useState(itinerary?.endDate || null);
-    const [name, setName] = useState(itinerary?.tripName || "");
+    const [endDate, setEndDate] = useState(itinerary?.endDate || null);
+    const [tripName, setTripName] = useState(itinerary?.tripName || "");
     const [notes, setNotes] = useState(itinerary?.notes || "");
-    const [people, setPeople] = useState(itinerary?.numberOfPeople || 1);
-    const [start, setStart] = useState(itinerary?.startDate || null);
+    const [numberOfPeople, setNumberOfPeople] = useState(itinerary?.numberOfPeople || 1);
+    const [startDate, setStartDate] = useState(itinerary?.startDate || null);
 
     const navigate = useNavigate();
 
-    const create = mode === "create";
     const edit = mode === "edit";
 
     const formatDate = (date) => {
@@ -44,10 +43,11 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 type="text"
                                 placeholder="trip name"
                                 name="trip name"
-                                value={name}
+                                value={tripName}
+                                autoComplete="off"
                                 required
                                 className="text-input"
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={(e) => setTripName(e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col gap-2 pt-2">
@@ -57,6 +57,7 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 placeholder="destination"
                                 name="destination"
                                 value={destination}
+                                autoComplete="off"
                                 required
                                 className="text-input"
                                 onChange={(e) => setDestination(e.target.value)}
@@ -68,12 +69,14 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 <div className="flex">
                                     <input
                                         type="date"
-                                        name="start"
+                                        name="startDate"
                                         placeholder="dd/mm/yyyy"
-                                        max={end ? end : undefined}
-                                        value={formatDate(start)}
+                                        autoComplete="off"
+                                        max={endDate ? endDate : undefined}
+                                        value={formatDate(startDate)}
+                                        required
                                         className="text-input w-[146px] cursor-text"
-                                        onChange={(e) => setStart(e.target.value)}
+                                        onChange={(e) => setStartDate(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -82,12 +85,14 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 <div className="flex">
                                     <input
                                         type="date"
-                                        name="end"
+                                        name="endDate"
                                         placeholder="dd/mm/yyyy"
-                                        min={start ? start : undefined}
-                                        value={formatDate(end)}
+                                        autoComplete="off"
+                                        min={startDate ? startDate : undefined}
+                                        value={formatDate(endDate)}
+                                        required
                                         className="text-input w-[146px] cursor-text"
-                                        onChange={(e) => setEnd(e.target.value)}
+                                        onChange={(e) => setEndDate(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -98,10 +103,11 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 type="number"
                                 placeholder="1"
                                 min="1"
-                                name="people"
-                                value={people}
+                                name="numberOfPeople"
+                                autoComplete="off"
+                                value={numberOfPeople}
                                 className="text-sm bg-off-white px-3 py-2 rounded w-16"
-                                onChange={(e) => setPeople(e.target.value)}
+                                onChange={(e) => setNumberOfPeople(e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col gap-2">
@@ -111,6 +117,7 @@ export default function ItineraryLayout({ mode, itinerary }) {
                                 placeholder="notes"
                                 name="notes"
                                 rows={3}
+                                autoComplete="off"
                                 value={notes}
                                 className="text-input overflow-y-scroll scrollbar"
                                 onChange={(e) => setNotes(e.target.value)}
@@ -120,20 +127,28 @@ export default function ItineraryLayout({ mode, itinerary }) {
 
                     {edit
                         ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
-                            <button className="itinerary-button bg-green-100 hover:bg-green-200">
+                            <div onClick={(e) => {
+                                e.preventDefault();
+                                editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
+                            }}
+                                className="itinerary-button bg-green-100 hover:bg-green-200">
                                 <ion-icon name="pencil"></ion-icon>
                                 Save
-                            </button>
-                            <button className="itinerary-button bg-red-100 hover:bg-red-200">
+                            </div>
+                            <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
+                                className="itinerary-button bg-red-100 hover:bg-red-200">
                                 <ion-icon name="trash"></ion-icon>
                                 Delete
-                            </button>
+                            </div>
                         </div>
-                        : <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
-                            <button className="itinerary-button w-[100%] bg-green-100 hover:bg-green-200">
-                                <ion-icon name="pencil"></ion-icon>
-                                Add
-                            </button>
+                        : <div
+                            onClick={(e) => {
+                                e.preventDefault();
+                                addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
+                            }}
+                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-100 hover:bg-green-200">
+                            <ion-icon name="pencil"></ion-icon>
+                            Add
                         </div>}
                 </div>
 

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DayPicker } from 'react-day-picker';
-import moment from 'moment/moment';
 
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
@@ -11,6 +10,8 @@ import SearchLoading from "../../components/Loading/searchloading";
 
 export default function Dashboard() {
     const [dateRange, setDateRange] = useState({ from: null, to: null });
+    const [error, setError] = useState("");
+    const [popup, setPopup] = useState(false);
 
     const {
         allItineraries, setAllItineraries,
@@ -18,6 +19,7 @@ export default function Dashboard() {
         searched, setSearched,
         searchResults, setSearchResults
     } = useItinerary();
+    const location = useLocation();
     const navigate = useNavigate();
 
     const getAllItinerary = useCallback((controller) => {
@@ -51,7 +53,17 @@ export default function Dashboard() {
 
     const itineraries = searched ? searchResults : allItineraries;
 
-    const handleClick = (item) => { navigate(`/itinerary/${item._id}`); }
+    useEffect(() => {
+        if (location.state?.message) {
+            setError(location.state.message);
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state])
 
     const filterItineraryByDate = async (day) => {
         if (!day || !day.from || !day.to) {
@@ -83,6 +95,7 @@ export default function Dashboard() {
     return (
         <div className="start-block">
             <div className="flex gap-7">
+                {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
                 <div className="flex-1 h-[490px] overflow-y-scroll scrollbar">
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
@@ -97,7 +110,7 @@ export default function Dashboard() {
                                             startDate={item.startDate}
                                             endDate={item.endDate}
                                             numberOfPeople={item.numberOfPeople}
-                                            onClick={() => handleClick(item)}
+                                            onClick={() => navigate(`/itinerary/${item._id}`)}
                                         />
                                     );
                                 })}
