@@ -86,6 +86,7 @@ export default function Dashboard() {
                                     return (
                                         <ItineraryCard
                                             key={item._id}
+                                                tripName={item.tripName}
                                             destination={item.destination}
                                             imageNumber={item.imageNumber}
                                             startDate={item.startDate}

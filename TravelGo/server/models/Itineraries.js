@@ -20,6 +20,7 @@ const { ActivitySchema } = require("./Activity");
  */
 const ItinerarySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    tripName: { type: String, required: true },
     destination: { type: String, required: true },
     imageNumber: { type: Number },
     startDate: { type: Date, required: true },
@@ -41,6 +42,10 @@ ItinerarySchema.methods.getUser = async function () {
     // the actual UserSchema object
     await this.populate('user');
     return this.user;
+}
+
+ItinerarySchema.methods.getDestination = function () {
+    return this.destination;
 }
 
 ItinerarySchema.methods.getTripDuration = function (includeStart = false) {
