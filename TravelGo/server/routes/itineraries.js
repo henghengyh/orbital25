@@ -22,7 +22,7 @@ const { hasAccessToItinerary } = require("../utilities/valid-access-helper");
  */
 router.post("/", authenticateToken, async (req, res) => {
     try {
-        const { destination, startDate, endDate, numberOfPeople, notes } = req.body;
+        const { tripName, destination, startDate, endDate, numberOfPeople, notes } = req.body;
         const userId = req.user._id;
 
         const getRndInteger = (min, max) => {
@@ -31,6 +31,7 @@ router.post("/", authenticateToken, async (req, res) => {
 
         const newItinerary = new Itinerary({
             user: userId,
+            tripName,
             destination,
             imageNumber: getRndInteger(1, 8),
             startDate,
@@ -56,6 +57,7 @@ router.post("/", authenticateToken, async (req, res) => {
 
 /** Getting all itineraries */
 router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
+    console.log("Fetching all itineraries");
     const user = req.user;
 
     try {
