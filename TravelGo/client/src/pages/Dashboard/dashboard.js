@@ -51,7 +51,7 @@ export default function Dashboard() {
 
     const itineraries = searched ? searchResults : allItineraries;
 
-    const handleClick = () => { }
+    const handleClick = (item) => { navigate(`/itinerary/${item._id}`); }
 
     const filterItineraryByDate = async (day) => {
         if (!day || !day.from || !day.to) {
@@ -82,21 +82,21 @@ export default function Dashboard() {
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
                             ? (<div className="grid grid-cols-2 gap-4">
-                                    {itineraries.map((item) => {
-                                        return (
-                                            <ItineraryCard
-                                                key={item._id}
-                                                destination={item.destination}
-                                                imageNumber={item.imageNumber}
-                                                startDate={item.startDate}
-                                                endDate={item.endDate}
-                                                numberOfPeople={item.numberOfPeople}
-                                                notes={item.notes}
-                                                onClick={() => handleClick(item)}
-                                            />
-                                        );
-                                    })}
-                                </div>)
+                                {itineraries.map((item) => {
+                                    return (
+                                        <ItineraryCard
+                                            key={item._id}
+                                            destination={item.destination}
+                                            imageNumber={item.imageNumber}
+                                            startDate={item.startDate}
+                                            endDate={item.endDate}
+                                            numberOfPeople={item.numberOfPeople}
+                                            notes={item.notes}
+                                            onClick={() => handleClick(item)}
+                                        />
+                                    );
+                                })}
+                            </div>)
                             : (<EmptyCard />)}
                 </div>
 

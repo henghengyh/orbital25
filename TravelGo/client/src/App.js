@@ -33,9 +33,10 @@ function App() {
                             {/* Protected routes that require authentication */}
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
-                            <Route path="/weather" element={<WeatherPage />} />
                             <Route path="/itinerary" element={<ItineraryPage />} />
+                            <Route path="/itinerary/:itineraryId" element={<ItineraryPage />} />
                             <Route path="/maps" element={<MapsPage />} />
+                            <Route path="/weather" element={<WeatherPage />} />
                         </Route>
                     </Route>
                 </Routes>
