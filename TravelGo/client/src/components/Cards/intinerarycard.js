@@ -4,6 +4,7 @@ import { imageList } from './intineraryimage';
 
 export default function ItineraryCard({
     destination,
+    tripName,
     imageNumber,
     startDate,
     endDate,
@@ -19,7 +20,7 @@ export default function ItineraryCard({
             <img src={imageList[imageNumber - 1]} alt={destination} className='w-full h-48 object-cover rounded-lg' />
             <div className="p-4 flex items-center gap-3" onClick={onClick}>
                 <div className="flex-1">
-                    <h6 className="text-md font-semibold">{destination}</h6>
+                    <h6 className="text-md font-semibold">{`${tripName}: ${destination}`}</h6>
                     <span className="text-xs text-slate-500">
                         {parsedStartDate} - {parsedEndDate}
                     </span>
