@@ -60,9 +60,14 @@ export default function Dashboard() {
             return;
         }
 
+        const toUTCDate = (day) => {
+            const date = new Date(day);
+            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
+        }
+
         setLoading(true);
-        const start = moment(day.from).valueOf();
-        const end = moment(day.to).valueOf();
+        const start = toUTCDate(day.from);
+        const end = toUTCDate(day.to);
         axiosInstance
             .get('/itineraries/filter', { params: { start, end } })
             .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
