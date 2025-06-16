@@ -48,7 +48,7 @@ router.post("/", authenticateToken, async (req, res) => {
             // At this point, we can still return the saved itinerary even if the email is invalid.
             // Previously, we were throwing an error causing the program to crash.
         }
-        res.status(201).json(savedItinerary);
+        res.status(201).json({ savedItinerary, message: "Itinerary added" });
     } catch (error) {
         console.error("Error creating itinerary:", error);
         res.status(500).json({ error: "Failed to create itinerary" });
@@ -73,7 +73,7 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     const { query } = req.query;
 
     if (!query) {
-        return res.status(400).json({ error: true, message: "Search query required." })
+        return res.status(400).json({ error: true, message: "Search query required" })
     }
 
     try {
@@ -94,7 +94,7 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
 router.get("/filter", authenticateToken, async (req, res) => {
     const user = req.user;
     const { start, end } = req.query;
-    
+
     try {
         const matchingItinerary = await Itinerary.find({
             user: user._id,
@@ -110,8 +110,8 @@ router.get("/filter", authenticateToken, async (req, res) => {
 /** Getting an itinerary */
 router.get("/:id", authenticateToken, async (req, res) => {
     try {
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
-        if (!itinerary) return res.status(404).json({ error: "No itinerary found." });
+        const itinerary = await findItineraryOr404(req.params.id, res);
+        if (!itinerary) return;
         res.status(200).json({ itinerary: itinerary });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -122,7 +122,7 @@ router.get("/:id", authenticateToken, async (req, res) => {
 router.put("/:id", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
 
         if (!itinerary) {
             return;
@@ -134,7 +134,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
                 itinerary[key] = req.body[key];
             }
             await itinerary.save();
-            res.status(200).json(itinerary);
+            res.status(200).json({ itinerary, message: "Itinerary edited" });
         }
     } catch (error) {
         console.error("Error updating itinerary:", error);
@@ -143,10 +143,10 @@ router.put("/:id", authenticateToken, async (req, res) => {
 });
 
 /** Removing an itinerary */
-router.delete("/:itineraryId", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
 
         if (!itinerary) {
             return;
@@ -154,8 +154,8 @@ router.delete("/:itineraryId", authenticateToken, async (req, res) => {
             res.status(403).json({ error: "You do not have permission to access this itinerary" });
             return;
         } else {
-            await Itinerary.findByIdAndDelete(req.params.itineraryId);
-            res.json({ message: "Itinerary deleted successfully" });
+            await Itinerary.findByIdAndDelete(req.params.id);
+            res.status(200).json({ itinerary, message: "Itinerary deleted" });
         }
 
     } catch (error) {
