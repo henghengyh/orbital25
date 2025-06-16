@@ -61,16 +61,17 @@ ItinerarySchema.methods.getActivitiesForDate = function (date) {
     return this.activities.filter(x => x.isOnDate(date));
 };
 
-ItinerarySchema.methods.addActivity = function (activity) {
+ItinerarySchema.methods.addActivity = async function (activity) {
     this.activities.push(activity);
-    return this.save();
+    await this.save();
+    return this;
 }
 
-ItinerarySchema.methods.removeActivity = function (activityId) {
-    this.activities = this.activities.filter(
-        x => x._id.toString() !== activityId.toString()
-    );
-    return this.save();
+ItinerarySchema.methods.removeActivity = async function (activityId) {
+    const n = this.activities.findIndex((x) => x._id.toString() == activityId.toString());
+    this.activities.splice(n, 1);
+    await this.save();
+    return this;
 };
 
 ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {

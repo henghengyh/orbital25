@@ -8,6 +8,7 @@ const authenticateToken = require("../middleware/authenticateToken");
 const express = require("express");
 const router = express.Router();
 const Itinerary = require("../models/Itineraries");
+const Activity = require("../models/Activity");
 
 // IMPORTING HELPER MODULES
 const email = require("../utilities/email-helper");
@@ -164,14 +165,16 @@ router.post("/:itineraryId/activities", authenticateToken, async (req, res) => {
             res.status(403).json({ error: "You do not have permission to access this itinerary" });
             return;
         }
-        if (!isValidActivity(itinerary, req.body)) {
+
+        const x = Activity.newActivity(req.body);
+        if (!isValidActivity(itinerary, x)) {
             res.status(400).json({ error: "Invalid activity" });
             return;
         }
-
-        await itinerary.addActivity(req.body);
+        await itinerary.addActivity(x);
         res.status(201).json(itinerary);
     } catch (error) {
+        console.error("Error adding activity:", error);
         res.status(500).json({ error: "Failed to add activity" });
     }
 });
@@ -223,6 +226,7 @@ router.delete("/:itineraryId/activities/:activityId", authenticateToken, async (
             res.json(itinerary);
         }
     } catch (error) {
+        console.error("Error removing activity:", error);
         res.status(500).json({ error: "Failed to remove activity" });
     }
 });

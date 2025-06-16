@@ -79,4 +79,10 @@ ActivitySchema.statics.getActivity = function(activityId) {
     return this.findById(activityId);
 };
 
-module.exports = { ActivitySchema };
+ActivitySchema.statics.newActivity = function(activityData) {
+    return new this(activityData);
+};
+
+const Activity = mongoose.model("Activity", ActivitySchema);
+
+module.exports = Activity;
