@@ -123,18 +123,15 @@ class WeatherForecast {
 
         for (const key in this.#apiDataDaily) {
             const day = this.#apiDataDaily[key];
-            const dateKey = new Date(day.time).toISOString().slice(0, 10);
+            const dateKey = new Date(day.time).toString().slice(0, 10);
             processedAPIData[dateKey] = day;
         }
-        
-        console.log(processedAPIData);
 
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {   
             tripForecast[d] = "Weather data not available";
             for (let d2 in processedAPIData) {
-                if (d.toISOString().slice(0,10) == d2) {
-                    console.log(d.toISOString().slice(0,10), d2);
-                    tripForecast[d] = processedAPIData[d.toISOString().slice(0,10)];
+                if (d.toString().slice(0,10) == d2) {
+                    tripForecast[d] = processedAPIData[d.toString().slice(0,10)];
                     break;
                 }
             }
