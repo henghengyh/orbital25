@@ -9,8 +9,9 @@ const Weather = () => {
     // Itinerary Weather
     const [itineraryWeather, setItineraryWeather] = useState(null);
     const [allItineraries, setAllItineraries] = useState([]);
-    const [selectedItineraryDisplay, setSelectedItineraryDisplay] = useState('');
+    const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [selectedItineraryId, setSelectedItineraryId] = useState('');
+    const [weatherWarnings, setWeatherWarnings] = useState(null);
     let destination;
 
     // General Weather
@@ -37,7 +38,8 @@ const Weather = () => {
     useEffect(() => {
         fetchAllItineraries();
         fetchTripWeather(null);
-        fetchCurrentWeather();
+        fetchWeatherWarnings(null);
+        fetchCurrentWeather();        
     }, []);
 
     //A1. Fetch all itineraries
@@ -83,13 +85,13 @@ const Weather = () => {
                     onChange={e => {
                         const selected = allItineraries.find(it => it._id === e.target.value);
                         try {
-                            setSelectedItineraryDisplay(selected.tripName);
+                            setSelectedItinerary(selected);
                         } catch (error) {
-                            setSelectedItineraryDisplay("");
+                            setSelectedItinerary(null);
                             setItineraryWeather(null);
                         }
                         setSelectedItineraryId(e.target.value);
-                        if (selected) fetchTripWeather(selected);
+                        if (selected) { fetchTripWeather(selected); fetchWeatherWarnings(selected); }
                     }}
                 >
                     <option value="">-- Choose --</option>
@@ -107,20 +109,21 @@ const Weather = () => {
     const showTripForecast = () => {
         if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
         if (!itineraryWeather) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
-        const days = Object.entries(itineraryWeather);
+        const pairs = Object.entries(itineraryWeather);
         
         const keyStyle = "font-medium text-gray-600";
         const valStyle = "text-gray-800";
+        console.log('Itinerary Weather Data:', itineraryWeather);
         return (
             <div>
                 <div className="mb-4 text-gray-700 text-base">
                     Displaying weather forecast results for:&nbsp;
-                    <span className="font-bold text-blue-700">{selectedItineraryDisplay}</span>
+                    <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
                 </div>
                 <div style={{ height: '5px' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {days.map(([key, day], i) => 
-                        itineraryWeather[day] === "Weather data not available" ? (
+                    {pairs.map(([key, day], i) => 
+                        day == "Weather data not available" ? (
                             <div 
                                 key={i} 
                                 className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full" 
@@ -166,6 +169,64 @@ const Weather = () => {
             </div>
         );
     };
+
+    // A5. Fetch weather warnings for the selected itinerary
+    const fetchWeatherWarnings = async (itinerary) => {
+        if (!itinerary) return;
+
+        function minusOneYear(date) {
+            const year = Number(date.slice(0, 4)) - 1;
+            return year.toString() + date.slice(4, 10);
+        }
+        const tripStart = itinerary.startDate.slice(0, 10);
+        const tripEnd = itinerary.endDate.slice(0,10);
+        const historyStart = minusOneYear(tripStart);
+        const historyEnd = minusOneYear(tripEnd);
+        const city = itinerary.destination;
+        const response = await axiosInstance.get(`weather-history/${city}/${historyStart}_${historyEnd}`);
+        setWeatherWarnings(response.data);
+    }
+
+    //A6. Display itinerary weather warnings
+    const showWeatherWarnings = () => {
+        if (allItineraries.length === 0) return;
+        if (!selectedItinerary) return;
+        
+        const tripStart = selectedItinerary.startDate.slice(0, 10);
+        const tripEnd = selectedItinerary.endDate.slice(0,10);
+        
+        if (!weatherWarnings) return <div className="text-gray-500">Loading weather warnings...</div>;
+
+        function numberOfWarnings() {
+            let count = 0;
+            if (weatherWarnings.rainfall.alert) count++;
+            if (weatherWarnings.snowfall.alert) count++;
+            if (weatherWarnings.drasticTemperatureChange.alert) count++;
+            return count;
+        }
+        
+        const bannerColour = numberOfWarnings() >= 1 ? "yellow" : "green";
+        const bannerBgClass = bannerColour === "yellow" ? "bg-yellow-100 border-yellow-500 text-yellow-800" : "bg-green-100 border-green-500 text-green-800";
+        const bannerTextClass = bannerColour === "yellow" ? "text-yellow-700" : "text-green-700";
+        
+        return (
+            <>
+                <div className={`mt-8 border-l-4 p-4 ${bannerBgClass}`}>
+                    <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings</h2>
+                    <div>
+                        <span className="font-semibold">Destination:</span> {selectedItinerary.destination} &nbsp;|&nbsp;
+                        <span className="font-semibold">Trip Period:</span> {tripStart} to {tripEnd}
+                    </div>
+                    <div className={`mt-2 ${bannerTextClass}`}>
+                        <p>{weatherWarnings.rainfall.msg}</p>
+                        <p>{weatherWarnings.snowfall.msg}</p>
+                        <p>{weatherWarnings.drasticTemperatureChange.msg}</p>                   
+                    </div>
+                </div>
+                <div style={{ height: '30px' }} />
+            </>
+        );
+    }
 
     //B1. Fetch current weather based on geolocation
     const fetchCurrentWeather = async () => {
@@ -352,6 +413,7 @@ const Weather = () => {
                     <TabPanel>
                         {/* Itinerary Weather Content */}
                         {dropdownItinerary()}
+                        {showWeatherWarnings()}
                         {showTripForecast()}
                     </TabPanel>
                     <TabPanel>

@@ -62,18 +62,6 @@ function decodeWeatherData(responses) {
             temperature2mMean: daily.variables(6).valuesArray(),
         },
     };
-    for (let i = 0; i < weatherData.daily.time.length; i++) {
-        console.log(
-            weatherData.daily.time[i].toISOString(),
-            weatherData.daily.temperature2mMax[i],
-            weatherData.daily.temperature2mMin[i],
-            weatherData.daily.sunrise[i].toISOString(),
-            weatherData.daily.sunset[i].toISOString(),
-            weatherData.daily.rainSum[i],
-            weatherData.daily.snowfallSum[i],
-            weatherData.daily.temperature2mMean[i]
-        );
-    }
     return weatherData;
 };
 
@@ -92,7 +80,7 @@ router.get('/:city/:period', async (req, res) => {
     try {
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherHistory(decodeWeatherData(responses));
-        res.json(weatherRawData.getSummary());
+        res.json(weatherRawData.getAlerts());
     } catch (error) { 
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch weather data' });
