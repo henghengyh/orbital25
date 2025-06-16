@@ -57,7 +57,6 @@ router.post("/", authenticateToken, async (req, res) => {
 
 /** Getting all itineraries */
 router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
-    console.log("Fetching all itineraries");
     const user = req.user;
 
     try {
@@ -95,14 +94,14 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
 router.get("/filter", authenticateToken, async (req, res) => {
     const user = req.user;
     const { start, end } = req.query;
-
+    
     try {
         const matchingItinerary = await Itinerary.find({
             user: user._id,
-            startDate: { $gte: new Date(Number(start)) },
-            endDate: { $lte: new Date(Number(end)) }
+            startDate: { $gte: new Date(start) },
+            endDate: { $lte: new Date(end) }
         }).sort({ startDate: 1 });
-        return res.status(200).json({ itineraries: matchingItinerary, message: "Itinerary found successfully." });
+        return res.status(200).json({ itineraries: matchingItinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
     }
