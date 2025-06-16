@@ -1,14 +1,26 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function Itinerary() {
     const [destination, setDestination] = useState("");
     const [end, setEnd] = useState(null);
+    const [itinerary, setItinerary] = useState(null);
     const [notes, setNotes] = useState("");
     const [people, setPeople] = useState(1);
     const [start, setStart] = useState(null);
 
+    const { id } = useParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        axiosInstance
+            .get(`/itinerary/${id}`)
+            .then((res) => setItinerary(res.data.itinerary))
+            .catch((err) => console.error(err))
+    }, [id]);
+
+    if (!itinerary) return <div>loading...</div>
 
     return (
         <div className="start-block py-[35px]">

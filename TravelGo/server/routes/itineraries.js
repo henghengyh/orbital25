@@ -106,6 +106,17 @@ router.get("/filter", authenticateToken, async (req, res) => {
     }
 });
 
+/** Getting an itinerary */
+router.get("/:itineraryId", authenticateToken, async (req, res) => {
+    try {
+        const itinerary = await Itinerary.findItineraryOr404(req.params.itineraryId, res);
+        if (!itinerary) return res.status(404).json({ error: "No itinerary found." });
+        res.status(200).json({ itinerary: itinerary });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 /** Updating an itinerary */
 router.put("/:itineraryId", authenticateToken, async (req, res) => {
     try {
