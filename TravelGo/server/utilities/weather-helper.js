@@ -218,7 +218,8 @@ class WeatherHistory {
 
     rainfallAlert() {
         const heavyRain = this.rainSum.some(val => val > 10);
-        const maxRainfall = MathHelper.toTwodp(Math.max(...this.rainSum));
+        const validRainSum = this.rainSum.filter(val => typeof val === 'number' && !isNaN(val));
+        const maxRainfall = MathHelper.toTwodp(Math.max(...validRainSum));
         let alert, msg;
         if (heavyRain) {
             alert = true;
@@ -232,7 +233,8 @@ class WeatherHistory {
 
     snowfallAlert() {
         const heavySnow = this.snowfallSum.some(val => val > 10);
-        const maxSnowfall = MathHelper.toTwodp(Math.max(...this.snowfallSum))
+        const validSnowSum = this.snowfallSum.filter(val => typeof val === 'number' && !isNaN(val));
+        const maxSnowfall = MathHelper.toTwodp(Math.max(...validSnowSum))
         let alert, msg;
         if (heavySnow) {
             alert = true;
@@ -256,7 +258,15 @@ class WeatherHistory {
         }
         return {
             alert: false,
-            msg: 'No drastic daily temperature changes detected.'
+            msg: 'No drastic daily temperature changes (+/- 10°C) detected.'
+        };
+    }
+
+    getAlerts() {
+        return {
+            rainfall: this.rainfallAlert(),
+            snowfall: this.snowfallAlert(),
+            drasticTemperatureChange: this.drasticDailyTemperatureChangeAlert()
         };
     }
 }
