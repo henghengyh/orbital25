@@ -20,6 +20,7 @@ const { ActivitySchema } = require("./Activity");
  */
 const ItinerarySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    tripName: { type: String, required: true },
     destination: { type: String, required: true },
     imageNumber: { type: Number },
     startDate: { type: Date, required: true },
