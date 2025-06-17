@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import ActivityCard from "../Activity/activitycard";
+import EmptyActivity from "../Cards/emptyactivity";
+
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
+    const [activities, setActivities] = useState(itinerary?.activities || []);
+    const [dates, setDates] = useState([]);
     const [destination, setDestination] = useState(itinerary?.destination || "");
     const [endDate, setEndDate] = useState(itinerary?.endDate || null);
     const [tripName, setTripName] = useState(itinerary?.tripName || "");
@@ -17,6 +22,22 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
         if (!date) return "";
         return date.slice(0, 10);
     }
+
+    const dateRange = (startDate, endDate) => {
+        if (!startDate || !endDate) return [];
+
+        const dates = [];
+        let curr = new Date(startDate);
+        while (curr <= new Date(endDate)) {
+            dates.push(curr.toISOString().slice(0, 10));
+            curr.setDate(curr.getDate() + 1);
+        }
+        return dates;
+    }
+
+    useEffect(() => {
+        setDates(dateRange(startDate, endDate));
+    }, [startDate, endDate]);
 
     return (
         <div className="flex flex-col h-[500px] bg-white shadow-xl rounded-xl border-2">
@@ -34,6 +55,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     />
                 </div>
             </div>
+
             <div className="flex gap-7 h-[444px] pb-4">
                 <div className="w-[320px] pl-4">
                     <div>
@@ -42,7 +64,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                             <input
                                 type="text"
                                 placeholder="trip name"
-                                name="trip name"
+                                name="tripName"
                                 value={tripName}
                                 autoComplete="off"
                                 required
@@ -70,8 +92,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     <input
                                         type="date"
                                         name="startDate"
-                                        placeholder="dd/mm/yyyy"
-                                        autoComplete="off"
                                         max={endDate ? endDate : undefined}
                                         value={formatDate(startDate)}
                                         required
@@ -86,8 +106,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     <input
                                         type="date"
                                         name="endDate"
-                                        placeholder="dd/mm/yyyy"
-                                        autoComplete="off"
                                         min={startDate ? startDate : undefined}
                                         value={formatDate(endDate)}
                                         required
@@ -153,7 +171,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 </div>
 
                 <div className="w-[816px] pr-4">
-                    itineraries
+                    <div className="flex flex-row gap-2 px-1 overflow-x-scroll scrollbar border-slate-300 rounded bg-gray-300">
+                        {dates.length > 0
+                            ? dates.map((date, idx) => (
+                                <ActivityCard key={idx} date={date} activities={activities} />
+                            ))
+                            : <EmptyActivity dateSelected={false} />}
+                    </div>
                 </div>
             </div>
         </div>
