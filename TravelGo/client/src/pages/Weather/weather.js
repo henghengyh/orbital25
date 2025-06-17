@@ -123,7 +123,7 @@ const Weather = () => {
                 <div style={{ height: '5px' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {pairs.map(([key, day], i) => 
-                        day == "Weather data not available" ? (
+                        day === "Weather data not available" ? (
                             <div 
                                 key={i} 
                                 className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full" 
