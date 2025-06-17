@@ -22,8 +22,8 @@ const Weather = () => {
     const [cityName, setCityName] = useState('');
 
     function localTimeDisplay(timeInfo) {
-        const hr24String = new Date(timeInfo).toUTCString().slice(17,22);
-        const hour = Number(hr24String.slice(0,2));
+        const hr24String = new Date(timeInfo).toUTCString().slice(17, 22);
+        const hour = Number(hr24String.slice(0, 2));
         let behind = "";
         if (hour < 12) {
             behind = "AM";
@@ -61,7 +61,7 @@ const Weather = () => {
             } else {
                 destination = selectedItinerary.destination;
                 const tripStart = selectedItinerary.startDate.slice(0, 10);
-                const tripEnd = selectedItinerary.endDate.slice(0,10);
+                const tripEnd = selectedItinerary.endDate.slice(0, 10);
                 const response_weather = await axiosInstance.get(`/weather-forecast/trip-forecast/${destination}?tripStart=${tripStart}&tripEnd=${tripEnd}`);
                 setItineraryWeather(response_weather.data);
                 console.log(response_weather.data);
@@ -97,7 +97,7 @@ const Weather = () => {
                     <option value="">-- Choose --</option>
                     {allItineraries.map(itinerary => (
                         <option key={itinerary._id} value={itinerary._id}>
-                            {itinerary.destination} ({itinerary.startDate.slice(0,10)} to {itinerary.endDate.slice(0,10)})
+                            {itinerary.destination} ({itinerary.startDate.slice(0, 10)} to {itinerary.endDate.slice(0, 10)})
                         </option>
                     ))}
                 </select>
@@ -110,7 +110,7 @@ const Weather = () => {
         if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
         if (!itineraryWeather) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
         const pairs = Object.entries(itineraryWeather);
-        
+      
         const keyStyle = "font-medium text-gray-600";
         const valStyle = "text-gray-800";
         console.log('Itinerary Weather Data:', itineraryWeather);
@@ -134,31 +134,31 @@ const Weather = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div 
-                                key={i} 
-                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full" 
+                            <div
+                                key={i}
+                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full"
                             >
                                 <h4 className="text-lg font-semibold text-blue-700 mb-2">{key.slice(0, 15)}</h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                                    <span className={keyStyle}>Max Temp:</span> 
+                                    <span className={keyStyle}>Max Temp:</span>
                                     <span className={valStyle}>{day.temperature2mMax}°C</span>
 
-                                    <span className={keyStyle}>Min Temp:</span> 
+                                    <span className={keyStyle}>Min Temp:</span>
                                     <span className={valStyle}>{day.temperature2mMin}°C</span>
 
-                                    <span className={keyStyle}>Rain:</span> 
+                                    <span className={keyStyle}>Rain:</span>
                                     <span className={valStyle}>{day.rainSum}mm</span>
 
-                                    <span className={keyStyle}>Max UV Index:</span> 
+                                    <span className={keyStyle}>Max UV Index:</span>
                                     <span className={valStyle}>{day.uvIndexMax}</span>
 
-                                    <span className={keyStyle}>Max Wind Speed:</span> 
+                                    <span className={keyStyle}>Max Wind Speed:</span>
                                     <span className={valStyle}>{day.windSpeed10mMax}m/s</span>
 
-                                    <span className={keyStyle}>Sunrise:</span> 
+                                    <span className={keyStyle}>Sunrise:</span>
                                     <span className={valStyle}>{localTimeDisplay(day.sunrise)}</span>
 
-                                    <span className={keyStyle}>Sunset:</span> 
+                                    <span className={keyStyle}>Sunset:</span>
                                     <span className={valStyle}>{localTimeDisplay(day.sunset)}</span>
 
                                 </div>
@@ -257,7 +257,7 @@ const Weather = () => {
                 <h2 className="font-bold mb-2">Current Weather</h2>
                 <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-blue-100 max-w-xs w-full">
                     <h4 className="text-lg font-semibold text-blue-700 mb-2">Your Location</h4>
-                    <div className="mb-2 text-gray-600">{ () => cityName }</div>
+                    <div className="mb-2 text-gray-600">{() => cityName}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                         <span className="font-medium text-gray-600">Temp:</span>
                         <span className="text-gray-800">{currentWeather.temperature2m}°C</span>
@@ -296,7 +296,7 @@ const Weather = () => {
                         className='border p-2 py-4 rounded-lg w-64 h-7 flex'
                     />
                     <div style={{ height: '1pt' }} />
-                    <button 
+                    <button
                         onClick={fetchSearchWeather}
                         className="bg-blue-600 
                             hover:bg-blue-700 
@@ -315,7 +315,7 @@ const Weather = () => {
                     >
                         Get Weather
                     </button>
-                    <div className="text-sm italic py-2 w-60">  
+                    <div className="text-sm italic py-2 w-60">
                         Open-Meteo API is used to fetch the weather data. Only the first 16 days of forecast is available, including today.
                     </div>
                 </div>
@@ -353,31 +353,31 @@ const Weather = () => {
                 <div style={{ height: '5px' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {days.map((day, i) => (
-                        <div 
-                            key={i} 
-                            className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full" 
+                        <div
+                            key={i}
+                            className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full"
                         >
                             <h4 className="text-lg font-semibold text-blue-700 mb-2">{day.time}</h4>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                                <span className={keyStyle}>Max Temp:</span> 
+                                <span className={keyStyle}>Max Temp:</span>
                                 <span className={valStyle}>{day.temperature2mMax}°C</span>
 
-                                <span className={keyStyle}>Min Temp:</span> 
+                                <span className={keyStyle}>Min Temp:</span>
                                 <span className={valStyle}>{day.temperature2mMin}°C</span>
 
-                                <span className={keyStyle}>Rain:</span> 
+                                <span className={keyStyle}>Rain:</span>
                                 <span className={valStyle}>{day.rainSum}mm</span>
 
-                                <span className={keyStyle}>Max UV Index:</span> 
+                                <span className={keyStyle}>Max UV Index:</span>
                                 <span className={valStyle}>{day.uvIndexMax}</span>
 
-                                <span className={keyStyle}>Max Wind Speed:</span> 
+                                <span className={keyStyle}>Max Wind Speed:</span>
                                 <span className={valStyle}>{day.windSpeed10mMax}m/s</span>
 
-                                <span className={keyStyle}>Sunrise:</span> 
+                                <span className={keyStyle}>Sunrise:</span>
                                 <span className={valStyle}>{localTimeDisplay(day.sunrise)}</span>
 
-                                <span className={keyStyle}>Sunset:</span> 
+                                <span className={keyStyle}>Sunset:</span>
                                 <span className={valStyle}>{localTimeDisplay(day.sunset)}</span>
 
                             </div>
@@ -388,15 +388,15 @@ const Weather = () => {
     };
 
     return (
-        <div className="flex flex-col gap-8 p-8">
+        <div className="start-block h-[570px] flex flex-col gap-8 p-8">
             <TabGroup>
                 <TabList className="flex justify-center gap-4 mb-6">
                     <Tab
-                    className={({ selected }) =>
+                        className={({ selected }) =>
                             `px-6 py-2 rounded-full font-semibold transition focus:outline-none
                             ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
-                    }
-                    
+                        }
+
                     >
                         Itinerary Weather
                     </Tab>
@@ -404,7 +404,7 @@ const Weather = () => {
                         className={({ selected }) =>
                             `px-6 py-2 rounded-full font-semibold transition focus:outline-none
                             ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
-                        }   
+                        }
                     >
                         General Weather
                     </Tab>
@@ -418,13 +418,15 @@ const Weather = () => {
                     </TabPanel>
                     <TabPanel>
                         {/* General Weather Content */}
-                        <div className="flex flex-row justify-center items-center w-full gap-40">
-                            {showCurrentWeather()}
-                            {showCityInput()}
-                        </div>
-                        <div style={{ height: '30pt' }} />
-                        <div style={{ height: '1em' }}>
-                            {showSearchForecast(weather, city)}
+                        <div className="overflow-y-scroll scrollbar h-[474px]">
+                            <div className="flex flex-row justify-center items-center w-full gap-40">
+                                {showCurrentWeather()}
+                                {showCityInput()}
+                            </div>
+                            <div style={{ height: '30pt' }} />
+                            <div style={{ height: '1em' }}>
+                                {showSearchForecast(weather, city)}
+                            </div>
                         </div>
                     </TabPanel>
                 </TabPanels>
