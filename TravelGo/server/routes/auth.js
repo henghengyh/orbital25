@@ -31,15 +31,22 @@ router.post("/register", async (req, res) => {
     /* If the promise resolves to null, it means no user was found.
     */
     const existingEmail = await User.findOne({ email });
-    if (existingEmail)
-      return res.status(400).json({ message: "Email already exists" });
+    if (existingEmail) return res.status(400).json({ message: "Email already exists" });
+
+    // Check password strength using zxcvbn API embedded in Node.js
+    const result = zxcvbn(password);
+    console.log('Password strength score:', result.score);
+    if (result.score < 2) {
+      return res.status(400).json({ success: false, message: 'Password is too weak', feedback: result.feedback.suggestions });
+    }
+
 
     const user = new User({ name, email, password });
 
     // Writes the user to the database
     await user.save();
 
-    res.status(201).json({ message: `User ${name} registered successfully` });
+    res.status(201).json({ success: true, message: `User ${name} registered successfully` });
   } catch (err) {
     // Pokemon Exception
     res.status(500).json({ message: "Server error" });
@@ -114,6 +121,169 @@ router.get("/getUserInfo", authenticateToken, async (req, res) => {
   }
 
   return res.status(200).json({ user: isUser, message: "User retrieved successfully" });
+});
+
+
+// Update username (TESTED SUCCESSFULL)
+router.post('/update-username', authenticateToken, async (req, res) => {
+    try {
+      const user = req.user;
+      const isUser = await User.findOne({ _id: user._id });
+      isUser.name = req.body.newName;
+
+      await isUser.save();
+      res.json({ success: true, updatedUser: isUser });
+    } catch (error) {
+      console.error('Error updating username:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+const { sendCodeToEmail } = require("../utilities/email-helper");
+
+// Request email change (SUCCESSFULLY TESTED)
+router.post('/request-email-change', authenticateToken, async (req, res) => {
+    try {
+      const user = req.user;
+      const isUser = await User.findOne({ _id: user._id });
+      const newEmail = req.body.newEmail;
+      if (!(newEmail.includes("@") && newEmail.includes("."))) {
+        return res.status(400).json({ success: false, message: 'Invalid email format' });
+      } 
+
+      const count = await User.countDocuments({ email: newEmail });
+      if (count > 0) return res.status(400).json({ message: "Email already exists" });
+
+      const code = Math.random().toString(36).slice(2, 10);
+      isUser.emailVerificationCode = code.toString();
+      isUser.pendingEmail = newEmail.toString();
+      await isUser.save();
+      
+      // Send email to new email address to verify ownership
+      sendCodeToEmail(newEmail, code);
+      res.json({ success: true, message: 'Verification code sent to new email address. Please verify to complete the change.' });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+//Verify email change (SUCCESSFULLY TESTED)
+router.post('/verify-email-change', authenticateToken, async (req, res) => {
+    try {
+      const user = req.user;
+      const isUser = await User.findOne({ _id: user._id });
+      const { userCode } = req.body;
+
+      // For safety precaution, check if user has pending email req
+      if (!isUser.emailVerificationCode || !isUser.pendingEmail) {
+        return res.status(400).json({ success: false, message: 'No pending email change.' });
+      }
+
+      if (userCode !== isUser.emailVerificationCode) {
+        return res.status(400).json({ success: false, message: 'Invalid verification code.' });
+      }
+
+      isUser.email = isUser.pendingEmail;
+      isUser.pendingEmail = undefined;
+      isUser.emailVerificationCode = undefined;
+      await isUser.save();
+
+      res.json({ success: true, message: 'Email updated successfully.' });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+const zxcvbn = require('zxcvbn');
+
+// Update password (TESTED SUCCESSFULL)
+router.post('/update-password', authenticateToken, async (req, res) => {
+    try {
+      const user = req.user;
+      const isUser = await User.findOne({ _id: user._id });
+      const { currentPassword, newPassword, confirmNewPassword } = req.body;
+      
+      if (!currentPassword || !newPassword || !confirmNewPassword) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+      } else if (newPassword !== confirmNewPassword) {
+        return res.status(400).json({ success: false, message: 'New passwords do not match' });
+      } else if (currentPassword === newPassword) {
+        return res.status(400).json({ success: false, message: 'New password cannot be the same as the current password' });
+      } else if (!(await isUser.comparePassword(currentPassword))) {
+        return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+      }
+
+      // Check password strength using zxcvbn API embedded in Node.js
+      const result = zxcvbn(newPassword);
+      if (result.score < 2) {
+        return res.status(400).json({ success: false, message: 'Password is too weak', feedback: result.feedback.suggestions });
+      }
+
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      isUser.password = await bcrypt.hash(newPassword, salt);
+      await isUser.save();
+      
+      res.json({ success: true, message: 'Password updated successfully', updatedUser: isUser });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+const fs = require('fs');
+const path = require('path');
+const upload = require('../middleware/upload');
+
+// Upload profile photo (TESTED SUCCESSFULL)
+router.post('/upload-profile-photo', authenticateToken, upload.single('photo'), async (req, res) => {
+  // Okay so basically, Multer handles the filenupload and attachs the file to req.file
+  try {
+    const user = req.user;
+    const isUser = await User.findOne({ _id: user._id });
+
+    //Check if file is uploaded
+    if (isUser.profilePhoto && isUser.profilePhoto.startsWith('/uploads/')) {
+      const oldPhotoPath = path.join(__dirname, "..", isUser.profilePhoto);
+      fs.unlink(oldPhotoPath, (err) => {
+        if (err) {
+          console.error('Failed to delete old profile photo:', err);
+        }
+      });
+    }
+
+    //Save new photo
+    isUser.profilePhoto = `/uploads/${req.file.filename}`;
+    await isUser.save();
+
+    res.json({ success: true, profilePhoto: isUser.profilePhoto });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Delete profile photo (TESTED SUCCESSFULL)
+router.post('/delete-profile-photo', authenticateToken, async (req, res) => {
+  // Okay so basically, Multer handles the filenupload and attachs the file to req.file
+  try {
+    const user = req.user;
+    const isUser = await User.findOne({ _id: user._id });
+
+    //Check if file is uploaded
+    if (isUser.profilePhoto && isUser.profilePhoto.startsWith('/uploads/')) {
+      const oldPhotoPath = path.join(__dirname, "..", isUser.profilePhoto);
+      fs.unlink(oldPhotoPath, (err) => {
+        if (err) {
+          console.error('Failed to delete old profile photo:', err);
+        }
+      });
+    } else {
+      return res.status(400).json({ success: false, message: 'No profile photo to delete' });
+    }
+
+    res.json({ success: true, message: 'Profile photo deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
 
 module.exports = router;
