@@ -165,10 +165,10 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 });
 
 /** Adding an activity */
-router.post("/:itineraryId/activities", authenticateToken, async (req, res) => {
+router.post("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -190,10 +190,10 @@ router.post("/:itineraryId/activities", authenticateToken, async (req, res) => {
 });
 
 /** Updating an activity */
-router.put("/:itineraryId/activities/:activityId", authenticateToken, async (req, res) => {
+router.put("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -222,10 +222,10 @@ router.put("/:itineraryId/activities/:activityId", authenticateToken, async (req
 });
 
 /** Removing an activity */
-router.delete("/:itineraryId/activities/:activityId", authenticateToken, async (req, res) => {
+router.delete("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -242,10 +242,10 @@ router.delete("/:itineraryId/activities/:activityId", authenticateToken, async (
 });
 
 /** Getting all activities */
-router.get("/:itineraryId/activities", authenticateToken, async (req, res) => {
+router.get("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -260,10 +260,10 @@ router.get("/:itineraryId/activities", authenticateToken, async (req, res) => {
 });
 
 /** Getting ONE Specific activity */
-router.get("/:itineraryId/activities/:activityId", authenticateToken, async (req, res) => {
+router.get("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        const itinerary = await findItineraryOr404(req.params.id, res);
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {

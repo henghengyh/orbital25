@@ -7,6 +7,7 @@ import Loading from "../../components/Loading/loading";
 
 export default function Itinerary() {
     const [error, setError] = useState("");
+    const [fetched, setFetched] = useState(false);
     const [itinerary, setItinerary] = useState(null);
     const [loading, setLoading] = useState(false);
     const [popup, setPopup] = useState(false);
@@ -20,7 +21,7 @@ export default function Itinerary() {
             .get(`/itineraries/${id}`)
             .then((res) => setItinerary(res.data.itinerary))
             .catch((err) => { console.error(err); setError(err.response.data.error); })
-            .finally(() => setLoading(false));
+            .finally(() => { setLoading(false); setFetched(true); });
     }, [id]);
 
     const editItinerary = async (data) => {
@@ -28,14 +29,14 @@ export default function Itinerary() {
             .put(`/itineraries/${id}`, data)
             .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
             .catch((err) => { console.error(err); setError(err.response.data.error); })
-    }
+    };
 
     const deleteItinerary = async () => {
         axiosInstance
             .delete(`/itineraries/${id}`)
             .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
             .catch((err) => { console.error(err); setError(err.response.data.error); })
-    }
+    };
 
     useEffect(() => {
         if (error) {
@@ -45,11 +46,13 @@ export default function Itinerary() {
                 setError("");
             }, 3000);
         }
-    }, [error])
+    }, [error]);
+
+    useEffect(() => {
+        if (fetched && !loading && !itinerary) return navigate('/dashboard', { state: { message: error } });
+    }, [fetched, loading, itinerary, navigate, error]);
 
     if (loading) return <Loading />;
-
-    if (!loading && !itinerary) return navigate('/dashboard', { state: { message: error } });
 
     return (
         <div className="start-block py-[35px]">
