@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 
 export default function ActivityLayout({
     mode, activity, date, onClose, addActivity, editActivitiy, deleteActivity }) {
-    const [activityName, setActivityName] = useState(activity?.name || "");
-    const [endTime, setEndTime] = useState(activity?.endTime || null);
+    const [activityName, setActivityName] = useState(activity?.activityName || "");
+    const [endTime, setEndTime] = useState(activity?.endTime || "");
     const [error, setError] = useState("");
     const [notes, setNotes] = useState(activity?.notes || "");
     const [popup, setPopup] = useState(false);
-    const [startTime, setStartTime] = useState(activity?.startTime || null);
+    const [startTime, setStartTime] = useState(activity?.startTime || "");
     const [type, setType] = useState(activity?.type || "-");
 
     const edit = mode === "edit";
@@ -48,7 +48,7 @@ export default function ActivityLayout({
                     <input
                         type="text"
                         placeholder="activity name"
-                        name="name"
+                        name="activityName"
                         value={activityName}
                         autoComplete="off"
                         required
@@ -129,13 +129,13 @@ export default function ActivityLayout({
                     ? <div className="flex gap-2 mt-7 w-full h-10">
                         <div onClick={(e) => {
                             e.preventDefault();
-                            editActivitiy();
+                            editActivitiy(activity._id, { activityName, date, startTime, endTime, type, notes });
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
                             Save
                         </div>
-                        <div onClick={(e) => { e.preventDefault(); deleteActivity() }}
+                        <div onClick={(e) => { e.preventDefault(); deleteActivity(activity._id) }}
                             className="itinerary-button bg-red-200 hover:bg-red-300">
                             <ion-icon name="trash"></ion-icon>
                             Delete
@@ -146,7 +146,6 @@ export default function ActivityLayout({
                             e.preventDefault();
                             if (endTime <= startTime) {
                                 setError("Invalid End Time");
-                                setPopup(true);
                             } else {
                                 addActivity({ activityName, date, startTime, endTime, type, notes });
                             }
