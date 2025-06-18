@@ -135,7 +135,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
                 itinerary[key] = req.body[key];
             }
             await itinerary.save();
-            res.status(200).json({ itinerary, message: "Itinerary edited" });
+            res.status(200).json({ itinerary, message: "Itinerary updated" });
         }
     } catch (error) {
         console.error("Error updating itinerary:", error);
@@ -182,7 +182,7 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
             return;
         }
         await itinerary.addActivity(x);
-        res.status(201).json(itinerary);
+        res.status(201).json({itinerary, message: "Activity added"});
     } catch (error) {
         console.error("Error adding activity:", error);
         res.status(500).json({ error: "Failed to add activity" });
@@ -213,7 +213,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                 console.error("Error sending email:", emailError);
                 // At this point, we can still return the saved itinerary even if the email is invalid.
             }
-            res.status(200).json(itinerary);
+            res.status(200).json({itinerary, message: "Activity updated"});
         }
     } catch (error) {
         res.status(500).json({ error: "Failed to update activity" });
@@ -233,11 +233,11 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
             return;
         } else {
             await itinerary.removeActivity(req.params.activityId);
-            res.json(itinerary);
+            res.json({itinerary, message: "Activity deleted"});
         }
     } catch (error) {
         console.error("Error removing activity:", error);
-        res.status(500).json({ error: "Failed to remove activity" });
+        res.status(500).json({ error: "Failed to delete activity" });
     }
 });
 
