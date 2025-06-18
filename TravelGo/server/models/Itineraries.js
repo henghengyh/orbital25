@@ -32,7 +32,7 @@ const ItinerarySchema = new mongoose.Schema({
 
 ItinerarySchema.index({ user: 1});
 ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1});
-ItinerarySchema.index({ user: 1, destination: 1, notes: 1});
+ItinerarySchema.index({ user: 1, tripName: 1, destination: 1});
 
 /** INSTANCE METHODS */
 
