@@ -61,7 +61,17 @@ router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
     const user = req.user;
 
     try {
-        const itinerary = await Itinerary.find({ user: user._id }).sort({ startDate: 1 });
+        const itinerary = await Itinerary
+            .find({ user: user._id })
+            .sort({ startDate: 1 })
+            .select({
+                tripName: 1,
+                destination: 1,
+                imageNumber: 1,
+                startDate: 1,
+                endDate: 1,
+                numberOfPeople: 1
+            });
         res.status(200).json({ itineraries: itinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
@@ -78,13 +88,23 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     }
 
     try {
-        const matchingItinerary = await Itinerary.find({
-            user: user._id,
-            $or: [
-                { destination: { $regex: new RegExp(query, "i") } },
-                { notes: { $regex: new RegExp(query, "i") } }
-            ],
-        }).sort({ startDate: 1 });
+        const matchingItinerary = await Itinerary
+            .find({
+                user: user._id,
+                $or: [
+                    { tripName: { $regex: new RegExp(query, "i") } },
+                    { destination: { $regex: new RegExp(query, "i") } }
+                ],
+            })
+            .sort({ startDate: 1 })
+            .select({
+                tripName: 1,
+                destination: 1,
+                imageNumber: 1,
+                startDate: 1,
+                endDate: 1,
+                numberOfPeople: 1
+            });
         return res.status(200).json({ itineraries: matchingItinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
@@ -97,11 +117,21 @@ router.get("/filter", authenticateToken, async (req, res) => {
     const { start, end } = req.query;
 
     try {
-        const matchingItinerary = await Itinerary.find({
-            user: user._id,
-            startDate: { $gte: new Date(start) },
-            endDate: { $lte: new Date(end) }
-        }).sort({ startDate: 1 });
+        const matchingItinerary = await Itinerary
+            .find({
+                user: user._id,
+                startDate: { $gte: new Date(start) },
+                endDate: { $lte: new Date(end) }
+            })
+            .sort({ startDate: 1 })
+            .select({
+                tripName: 1,
+                destination: 1,
+                imageNumber: 1,
+                startDate: 1,
+                endDate: 1,
+                numberOfPeople: 1
+            });
         return res.status(200).json({ itineraries: matchingItinerary });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
