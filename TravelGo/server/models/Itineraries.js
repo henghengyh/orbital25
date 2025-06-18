@@ -75,9 +75,9 @@ ItinerarySchema.methods.removeActivity = async function (activityId) {
 };
 
 ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {
-    const activity = this.activities.id(activityId);
+    const activity = this.activities.find(a => a._id.toString() === activityId.toString());
     if (activity) {
-        activity.updateActivity(updatedFields)
+        Object.assign(activity, updatedFields);
         return this.save();
     } else {
         throw new Error("Activity not found");
