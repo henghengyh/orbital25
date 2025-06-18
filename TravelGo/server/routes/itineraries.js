@@ -182,7 +182,7 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
             return;
         }
         await itinerary.addActivity(x);
-        res.status(201).json({itinerary, message: "Activity added"});
+        res.status(201).json({ itinerary, message: "Activity added" });
     } catch (error) {
         console.error("Error adding activity:", error);
         res.status(500).json({ error: "Failed to add activity" });
@@ -194,6 +194,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
     try {
         const user = req.user;
         const itinerary = await findItineraryOr404(req.params.id, res);
+
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
@@ -204,7 +205,17 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
             if (!activity) return;
             await itinerary.updateActivity(req.params.activityId, req.body);
 
-            const duration = activity.timeToStart(new Date()).toFixed(2)
+            function timeToStart(activity, now = new Date()) {
+                const [hours, minutes] = activity.startTime.split(':').map(Number);
+                const activityStart = new Date(activity.date);
+                activityStart.setHours(hours, minutes, 0, 0);
+
+                const diffMs = activityStart - now;
+                const diffHours = diffMs / (1000 * 60 * 60);
+                return diffHours;
+            }
+
+            const duration = timeToStart(activity, new Date()).toFixed(2);
             await itinerary.populate('user');
 
             try {
@@ -213,7 +224,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                 console.error("Error sending email:", emailError);
                 // At this point, we can still return the saved itinerary even if the email is invalid.
             }
-            res.status(200).json({itinerary, message: "Activity updated"});
+            res.status(200).json({ itinerary, message: "Activity updated" });
         }
     } catch (error) {
         res.status(500).json({ error: "Failed to update activity" });
@@ -233,7 +244,7 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
             return;
         } else {
             await itinerary.removeActivity(req.params.activityId);
-            res.json({itinerary, message: "Activity deleted"});
+            res.json({ itinerary, message: "Activity deleted" });
         }
     } catch (error) {
         console.error("Error removing activity:", error);
