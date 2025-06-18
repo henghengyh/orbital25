@@ -212,7 +212,7 @@ const Weather = () => {
         return (
             <>
                 <div className={`mt-8 border-l-4 p-4 ${bannerBgClass}`}>
-                    <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings</h2>
+                    <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings (Based on past 1 year data)</h2>
                     <div>
                         <span className="font-semibold">Destination:</span> {selectedItinerary.destination} &nbsp;|&nbsp;
                         <span className="font-semibold">Trip Period:</span> {tripStart} to {tripEnd}

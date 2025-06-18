@@ -1,3 +1,19 @@
+/**
+ * @file auth.js
+ * @route /users
+ * 
+ * This file contains the following routes:
+ * 1. POST /register - Register a new user
+ * 2. POST /login - Login a user
+ * 3. GET /getUserInfo - Get user information
+ * 4. POST /update-username - Update username
+ * 5. POST /request-email-change - Request email change
+ * 6. POST /verify-email-change - Verify email change
+ * 7. POST /update-password - Update password
+ * 8. POST /upload-profile-photo - Upload profile photo
+ * 9. POST /delete-profile-photo - Delete profile photo
+ */
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
