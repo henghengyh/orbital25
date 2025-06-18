@@ -10,12 +10,8 @@ import EmptyActivity from './emptyactivity';
 
 export default function ActivityCard({ date, activities, updateActivities }) {
     const [error, setError] = useState("");
-    const [openModal, setOpenModal] = useState({
-        shown: false,
-        type: "add",
-        data: null,
-        date: date,
-    });
+    const [message, setMessage] = useState("");
+    const [openModal, setOpenModal] = useState({ shown: false, type: "add", data: null, date: date, });
     const [popup, setPopup] = useState(false);
 
     const { id } = useParams();
@@ -30,12 +26,13 @@ export default function ActivityCard({ date, activities, updateActivities }) {
                 return 0;
             });
     }
+
     const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
 
     const addActivity = async (data) => {
         axiosInstance
             .post(`/itineraries/${id}/activities`, data)
-            .then((res) => updateActivities())
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
             .catch((err) => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
@@ -43,7 +40,7 @@ export default function ActivityCard({ date, activities, updateActivities }) {
     const editActivitiy = async (activityId, data) => {
         axiosInstance
             .put(`/itineraries/${id}/activities/${activityId}`, data)
-            .then((res) => updateActivities())
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
             .catch((err) => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
@@ -51,7 +48,7 @@ export default function ActivityCard({ date, activities, updateActivities }) {
     const deleteActivity = async (activityId) => {
         axiosInstance
             .delete(`/itineraries/${id}/activities/${activityId}`)
-            .then((res) => updateActivities())
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
             .catch((err) => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
@@ -65,14 +62,28 @@ export default function ActivityCard({ date, activities, updateActivities }) {
             }, 3000);
             window.history.replaceState({}, document.title);
         }
-    }, [error]);
+
+        if (message) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setMessage("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error, message]);
 
     return (
         <div className="h-[428px] w-60 flex-shrink-0 bg-off-white rounded-md">
-            {popup && <div className="error">{error}</div>}
+            {popup &&
+                (error ? (<div className="error">{error}</div>)
+                    : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="p-2 bg-slate-200 rounded flex justify-between">
                 <span className="font-semibold justify-center items-center flex">{moment(date).format("Do MMM YYYY")}</span>
-                <div onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })} className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer">
+                <div
+                    onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })}
+                    className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer"
+                >
                     <ion-icon name="add"></ion-icon>
                     <span className="text-sm font-light">Add</span>
                 </div>
