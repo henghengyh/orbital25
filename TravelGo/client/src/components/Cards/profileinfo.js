@@ -1,11 +1,17 @@
 import { getInitials } from "../../utils/helper"
+import { useNavigate } from "react-router-dom";
+
 const REACT_PORT = 3000; //process.env.REACT_APP_API_PORT;
 
 const imageURL = (`http://localhost:${REACT_PORT}`);
 
 export default function ProfileInfo({ user, onLogout }) {
+    const navigate = useNavigate();
     return (
-        <div className="flex items-center justify-center gap-3 w-[180px]">
+        <div
+            className="flex items-center justify-center gap-3 w-[180px]"
+            onClick={() => navigate('/profile')}
+        >
             {user?.profilePhoto ? (
                 <img
                     src={`${imageURL}${user?.profilePhoto}`}
