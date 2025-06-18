@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const typeOfActivities = ["meal", "sightseeing", "transport", "shopping", "other"]
+const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
 
 /** ActivitySchema
  * @param {String} name - username
