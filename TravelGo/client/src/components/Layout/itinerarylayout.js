@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import ActivityCard from "../Cards/activitycard";
 import EmptyActivity from "../Cards/emptyactivity";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
@@ -14,6 +15,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [numberOfPeople, setNumberOfPeople] = useState(itinerary?.numberOfPeople || 1);
     const [startDate, setStartDate] = useState(itinerary?.startDate || null);
 
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const edit = mode === "edit";
@@ -38,6 +40,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     useEffect(() => {
         setDates(dateRange(startDate, endDate));
     }, [startDate, endDate]);
+
+    const updateActivities = () => {
+        axiosInstance
+        .get(`/itineraries/${id}/activities`)
+        .then((res) => setActivities(res.data))
+        .catch((err) => console.error(err));
+    }
 
     return (
         <div className="flex flex-col h-[500px] bg-white shadow-xl rounded-xl border-2">
@@ -174,7 +183,12 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     <div className="flex flex-row gap-2 px-1 overflow-x-scroll scrollbar border-slate-300 rounded bg-gray-300">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
-                                <ActivityCard key={idx} date={date} activities={activities} />
+                                <ActivityCard
+                                    key={idx}
+                                    date={date}
+                                    activities={activities}
+                                    updateActivities={updateActivities}
+                                />
                             ))
                             : <EmptyActivity dateSelected={false} />}
                     </div>

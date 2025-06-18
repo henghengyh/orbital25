@@ -78,6 +78,8 @@ ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {
     const activity = this.activities.find(a => a._id.toString() === activityId.toString());
     if (activity) {
         Object.assign(activity, updatedFields);
+        activity.markModified && activity.markModified();
+        this.markModified('activities');
         return this.save();
     } else {
         throw new Error("Activity not found");

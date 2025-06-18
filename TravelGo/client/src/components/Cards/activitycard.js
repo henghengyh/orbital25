@@ -1,53 +1,75 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import Modal from "react-modal";
 import moment from "moment/moment";
 
 import Activity from "../Activity/activity";
-import ActivityLayout from "../Layout/addeditactivity";
-import EmptyActivity from './emptyactivity';
+import ActivityLayout from "../Layout/activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
+import EmptyActivity from './emptyactivity';
 
-export default function ActivityCard({ date, activities }) {
-    const [todayActivities, setTodayActivities] = useState([]);
+export default function ActivityCard({ date, activities, updateActivities }) {
+    const [error, setError] = useState("");
     const [openModal, setOpenModal] = useState({
         shown: false,
         type: "add",
         data: null,
         date: date,
     });
+    const [popup, setPopup] = useState(false);
 
     const { id } = useParams();
 
     const filterActivity = (date, activities) => {
         if (!date || !activities) return [];
-        return activities.filter((a) => moment(a.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD"));
+        return activities
+            .filter((a) => moment(a.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD"))
+            .sort((a, b) => {
+                if (a.startTime < b.startTime) return -1;
+                if (a.startTime > b.startTime) return 1;
+                return 0;
+            });
     }
-    useEffect(() => {
-        setTodayActivities(filterActivity(date, activities));
-    });
+    const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
 
     const addActivity = async (data) => {
         axiosInstance
-        .post(`/itineraries/${id}/activities`, data)
-        .then()
-        .catch()
+            .post(`/itineraries/${id}/activities`, data)
+            .then((res) => updateActivities())
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
-    const editActivitiy = async (data) => {
+
+    const editActivitiy = async (activityId, data) => {
         axiosInstance
-        .post()
-        .then()
-        .catch()
+            .put(`/itineraries/${id}/activities/${activityId}`, data)
+            .then((res) => updateActivities())
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
-    const deleteActivity = async (data) => {
+
+    const deleteActivity = async (activityId) => {
         axiosInstance
-        .post()
-        .then()
-        .catch()
+            .delete(`/itineraries/${id}/activities/${activityId}`)
+            .then((res) => updateActivities())
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
+
+    useEffect(() => {
+        if (error) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error]);
 
     return (
         <div className="h-[428px] w-60 flex-shrink-0 bg-off-white rounded-md">
+            {popup && <div className="error">{error}</div>}
             <div className="p-2 bg-slate-200 rounded flex justify-between">
                 <span className="font-semibold justify-center items-center flex">{moment(date).format("Do MMM YYYY")}</span>
                 <div onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })} className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer">
@@ -61,7 +83,7 @@ export default function ActivityCard({ date, activities }) {
                     ? todayActivities.map((activity) => (
                         <Activity
                             key={activity._id}
-                            name={activity.name}
+                            activityName={activity.activityName}
                             startTime={activity.startTime}
                             endTime={activity.endTime}
                             type={activity.type}
