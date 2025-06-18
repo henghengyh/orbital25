@@ -45,6 +45,7 @@ export default function Itinerary() {
                 setPopup(false);
                 setError("");
             }, 3000);
+            window.history.replaceState({}, document.title);
         }
     }, [error]);
 
@@ -56,7 +57,7 @@ export default function Itinerary() {
 
     return (
         <div className="start-block py-[35px]">
-            {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
+            {popup && <div className="error">{error}</div>}
             <ItineraryLayout
                 mode="edit"
                 itinerary={itinerary}

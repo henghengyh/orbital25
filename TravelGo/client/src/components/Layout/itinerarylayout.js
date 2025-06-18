@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import ActivityCard from "../Activity/activitycard";
+import ActivityCard from "../Cards/activitycard";
 import EmptyActivity from "../Cards/emptyactivity";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
@@ -149,12 +149,12 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 e.preventDefault();
                                 editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
                             }}
-                                className="itinerary-button bg-green-100 hover:bg-green-200">
+                                className="itinerary-button bg-green-200 hover:bg-green-300">
                                 <ion-icon name="pencil"></ion-icon>
                                 Save
                             </div>
                             <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
-                                className="itinerary-button bg-red-100 hover:bg-red-200">
+                                className="itinerary-button bg-red-200 hover:bg-red-300">
                                 <ion-icon name="trash"></ion-icon>
                                 Delete
                             </div>
@@ -164,7 +164,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 e.preventDefault();
                                 addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
                             }}
-                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-100 hover:bg-green-200">
+                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
                             Add
                         </div>}
