@@ -1,4 +1,3 @@
-// For haohao's checking and implementation
 import { useState, useEffect } from 'react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 
@@ -7,8 +6,8 @@ import axiosInstance from '../../utils/axiosInstance';
 
 const Weather = () => {
     // Itinerary Weather
-    const [itineraryWeather, setItineraryWeather] = useState(null);
     const [allItineraries, setAllItineraries] = useState([]);
+    const [itineraryWeather, setItineraryWeather] = useState(null);
     const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [selectedItineraryId, setSelectedItineraryId] = useState('');
     const [weatherWarnings, setWeatherWarnings] = useState(null);
@@ -16,10 +15,11 @@ const Weather = () => {
 
     // General Weather
     const [city, setCity] = useState('');
-    const [weather, setWeather] = useState(null);
-    const [currentWeather, setCurrentWeather] = useState(null);
-    const [loadingCurrent, setLoadingCurrent] = useState(false);
     const [cityName, setCityName] = useState('');
+    const [currentWeather, setCurrentWeather] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [loadingCurrent, setLoadingCurrent] = useState(false);
+    const [weather, setWeather] = useState(null);
 
     function localTimeDisplay(timeInfo) {
         const hr24String = new Date(timeInfo).toUTCString().slice(17, 22);
@@ -39,7 +39,7 @@ const Weather = () => {
         fetchAllItineraries();
         fetchTripWeather(null);
         fetchWeatherWarnings(null);
-        fetchCurrentWeather();        
+        fetchCurrentWeather();
     }, []);
 
     //A1. Fetch all itineraries
@@ -49,7 +49,7 @@ const Weather = () => {
             setAllItineraries(response_itinerary.data.itineraries);
             console.log('All itineraries fetched:', response_itinerary.data.itineraries);
         } catch (error) {
-            console.log('Error fetching itineraries:', error);
+            console.error('Error fetching itineraries:', error);
         }
     }
 
@@ -59,22 +59,23 @@ const Weather = () => {
             if (!selectedItinerary) {
                 setItineraryWeather(null);
             } else {
+                setLoading(true);
                 destination = selectedItinerary.destination;
                 const tripStart = selectedItinerary.startDate.slice(0, 10);
                 const tripEnd = selectedItinerary.endDate.slice(0, 10);
                 const response_weather = await axiosInstance.get(`/weather-forecast/trip-forecast/${destination}?tripStart=${tripStart}&tripEnd=${tripEnd}`);
                 setItineraryWeather(response_weather.data);
-                console.log(response_weather.data);
+                setLoading(false);
             }
         } catch (error) {
-            console.log('Error fetching trip\'s weather data:', error);
+            console.error('Error fetching trip\'s weather data:', error);
         }
     }
 
     //A3. Dropdown to select itinerary
     const dropdownItinerary = () => {
         return (
-            <div className="mb-4">
+            <div className="mb-2">
                 <label htmlFor="itinerary-select" className="mr-2 font-medium text-gray-700">
                     Select Itinerary:
                 </label>
@@ -83,6 +84,7 @@ const Weather = () => {
                     className="border rounded px-2 py-1"
                     value={selectedItineraryId}
                     onChange={e => {
+                        setSelectedItinerary(e.target.value);
                         const selected = allItineraries.find(it => it._id === e.target.value);
                         try {
                             setSelectedItinerary(selected);
@@ -108,25 +110,27 @@ const Weather = () => {
     //A4. Display itinerary weather forecast
     const showTripForecast = () => {
         if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
-        if (!itineraryWeather) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
+        if (!selectedItinerary) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
+        if (weatherWarnings && loading) return (
+            <div className='flex flex-col justify-center items-center mt-4'>
+                <div className="w-12 h-12 border-4 border-black border-dashed rounded-full animate-spin"></div>
+                <p className="mt-2 ml-2">Loading...</p>
+            </div>);
+        if (!itineraryWeather) return;
         const pairs = Object.entries(itineraryWeather);
-      
+
         const keyStyle = "font-medium text-gray-600";
         const valStyle = "text-gray-800";
         console.log('Itinerary Weather Data:', itineraryWeather);
+
         return (
             <div>
-                <div className="mb-4 text-gray-700 text-base">
-                    Displaying weather forecast results for:&nbsp;
-                    <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
-                </div>
-                <div style={{ height: '5px' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {pairs.map(([key, day], i) => 
+                    {pairs.map(([key, day], i) =>
                         day === "Weather data not available" ? (
-                            <div 
-                                key={i} 
-                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full" 
+                            <div
+                                key={i}
+                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full h-[285px]"
                             >
                                 <h4 className="text-lg font-semibold text-blue-700 mb-2">{key.slice(0, 15)}</h4>
                                 <div className="grid grid-cols-1 gap-x-4 gap-y-1">
@@ -136,7 +140,7 @@ const Weather = () => {
                         ) : (
                             <div
                                 key={i}
-                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mb-6 mx-auto max-w w-full"
+                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full h-[285px]"
                             >
                                 <h4 className="text-lg font-semibold text-blue-700 mb-2">{key.slice(0, 15)}</h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -179,7 +183,7 @@ const Weather = () => {
             return year.toString() + date.slice(4, 10);
         }
         const tripStart = itinerary.startDate.slice(0, 10);
-        const tripEnd = itinerary.endDate.slice(0,10);
+        const tripEnd = itinerary.endDate.slice(0, 10);
         const historyStart = minusOneYear(tripStart);
         const historyEnd = minusOneYear(tripEnd);
         const city = itinerary.destination;
@@ -191,11 +195,15 @@ const Weather = () => {
     const showWeatherWarnings = () => {
         if (allItineraries.length === 0) return;
         if (!selectedItinerary) return;
-        
+
         const tripStart = selectedItinerary.startDate.slice(0, 10);
-        const tripEnd = selectedItinerary.endDate.slice(0,10);
-        
-        if (!weatherWarnings) return <div className="text-gray-500">Loading weather warnings...</div>;
+        const tripEnd = selectedItinerary.endDate.slice(0, 10);
+
+        if (!weatherWarnings) return (
+            <div className='flex flex-col justify-center items-center mt-2'>
+                <div className="w-12 h-12 border-4 border-black border-dashed rounded-full animate-spin"></div>
+                <p className="mt-2 ml-2">Loading...</p>
+            </div>);
 
         function numberOfWarnings() {
             let count = 0;
@@ -204,14 +212,14 @@ const Weather = () => {
             if (weatherWarnings.drasticTemperatureChange.alert) count++;
             return count;
         }
-        
+
         const bannerColour = numberOfWarnings() >= 1 ? "yellow" : "green";
         const bannerBgClass = bannerColour === "yellow" ? "bg-yellow-100 border-yellow-500 text-yellow-800" : "bg-green-100 border-green-500 text-green-800";
         const bannerTextClass = bannerColour === "yellow" ? "text-yellow-700" : "text-green-700";
-        
+
         return (
             <>
-                <div className={`mt-8 border-l-4 p-4 ${bannerBgClass}`}>
+                <div className={`mb-4 border-l-4 p-4 ${bannerBgClass}`}>
                     <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings</h2>
                     <div>
                         <span className="font-semibold">Destination:</span> {selectedItinerary.destination} &nbsp;|&nbsp;
@@ -220,10 +228,9 @@ const Weather = () => {
                     <div className={`mt-2 ${bannerTextClass}`}>
                         <p>{weatherWarnings.rainfall.msg}</p>
                         <p>{weatherWarnings.snowfall.msg}</p>
-                        <p>{weatherWarnings.drasticTemperatureChange.msg}</p>                   
+                        <p>{weatherWarnings.drasticTemperatureChange.msg}</p>
                     </div>
                 </div>
-                <div style={{ height: '30px' }} />
             </>
         );
     }
@@ -329,17 +336,25 @@ const Weather = () => {
             if (!city) {
                 setWeather(null);
             } else {
+                setLoading(true);
                 const response = await axiosInstance.get(`/weather-forecast/forecast/${city}`);
                 setWeather(response.data);
             }
         } catch (error) {
             setWeather(null);
             console.log('Error fetching weather data:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
     //C3. Forecast weather display lambda 
     const showSearchForecast = (weather, city) => {
+        if (loading) return (
+            <div className='flex flex-col justify-center items-center'>
+                <div className="w-12 h-12 border-4 border-black border-dashed rounded-full animate-spin"></div>
+                <p className="mt-2 ml-2">Loading...</p>
+            </div>);
         if (!weather) return <p>Key in a valid city above.</p>;
         const days = Object.values(weather);
         const keyStyle = "font-medium text-gray-600";
@@ -388,8 +403,8 @@ const Weather = () => {
     };
 
     return (
-        <div className="start-block h-[570px] flex flex-col gap-8 p-8">
-            <TabGroup>
+        <div className="start-block h-[570px] flex flex-col gap-8 px-8">
+            <TabGroup style={{ height: "528px" }}>
                 <TabList className="flex justify-center gap-4 mb-6">
                     <Tab
                         className={({ selected }) =>
@@ -410,11 +425,19 @@ const Weather = () => {
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel>
+                    <TabPanel style={{ height: "464px" }}>
                         {/* Itinerary Weather Content */}
                         {dropdownItinerary()}
-                        {showWeatherWarnings()}
-                        {showTripForecast()}
+                        {selectedItinerary && (
+                            <div className="mb-2 text-gray-700 text-base">
+                                Displaying weather forecast results for:&nbsp;
+                                <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
+                            </div>
+                        )}
+                        <div className='overflow-y-scroll scrollbar h-[390px]'>
+                            {showWeatherWarnings()}
+                            {showTripForecast()}
+                        </div>
                     </TabPanel>
                     <TabPanel>
                         {/* General Weather Content */}
