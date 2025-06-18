@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { DayPicker } from 'react-day-picker';
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";

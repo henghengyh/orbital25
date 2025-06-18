@@ -13,6 +13,14 @@ export default function ActivityLayout({
     const edit = mode === "edit";
     const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
 
+    const validInputCheck = (fn) => {
+        if (!activityName) { setError("Invalid Activity Name"); return; }
+        if (!startTime || (endTime && startTime >= endTime)) { setError("Invalid Start Time"); return; }
+        if (!endTime || endTime <= startTime) { setError("Invalid End Time"); return; }
+        if (!type || type === "-") { setError("Invalid Activity Type"); return; }
+        fn();
+    }
+
     useEffect(() => {
         if (error) {
             setPopup(true);
@@ -129,7 +137,7 @@ export default function ActivityLayout({
                     ? <div className="flex gap-2 mt-7 w-full h-10">
                         <div onClick={(e) => {
                             e.preventDefault();
-                            editActivitiy(activity._id, { activityName, date, startTime, endTime, type, notes });
+                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, notes }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -144,17 +152,13 @@ export default function ActivityLayout({
                     : <div
                         onClick={(e) => {
                             e.preventDefault();
-                            if (endTime <= startTime) {
-                                setError("Invalid End Time");
-                            } else {
-                                addActivity({ activityName, date, startTime, endTime, type, notes });
-                            }
+                            validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, notes }));
                         }}
                         className="flex gap-2 mt-7 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>
                         Add
                     </div>}
             </div>
-        </div>
+        </div >
     )
 }
