@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DayPicker } from 'react-day-picker';
-import moment from 'moment/moment';
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
@@ -10,6 +10,8 @@ import SearchLoading from "../../components/Loading/searchloading";
 
 export default function Dashboard() {
     const [dateRange, setDateRange] = useState({ from: null, to: null });
+    const [error, setError] = useState("");
+    const [popup, setPopup] = useState(false);
 
     const {
         allItineraries, setAllItineraries,
@@ -17,6 +19,8 @@ export default function Dashboard() {
         searched, setSearched,
         searchResults, setSearchResults
     } = useItinerary();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
@@ -49,7 +53,17 @@ export default function Dashboard() {
 
     const itineraries = searched ? searchResults : allItineraries;
 
-    const handleClick = () => { }
+    useEffect(() => {
+        if (location.state?.message) {
+            setError(location.state.message);
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state])
 
     const filterItineraryByDate = async (day) => {
         if (!day || !day.from || !day.to) {
@@ -58,9 +72,14 @@ export default function Dashboard() {
             return;
         }
 
+        const toUTCDate = (day) => {
+            const date = new Date(day);
+            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
+        }
+
         setLoading(true);
-        const start = moment(day.from).valueOf();
-        const end = moment(day.to).valueOf();
+        const start = toUTCDate(day.from);
+        const end = toUTCDate(day.to);
         axiosInstance
             .get('/itineraries/filter', { params: { start, end } })
             .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
@@ -76,31 +95,31 @@ export default function Dashboard() {
     return (
         <div className="start-block">
             <div className="flex gap-7">
+                {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
                 <div className="flex-1 h-[490px] overflow-y-scroll scrollbar">
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
                             ? (<div className="grid grid-cols-2 gap-4">
-                                    {itineraries.map((item) => {
-                                        return (
-                                            <ItineraryCard
-                                                key={item._id}
-                                                tripName={item.tripName}
-                                                destination={item.destination}
-                                                imageNumber={item.imageNumber}
-                                                startDate={item.startDate}
-                                                endDate={item.endDate}
-                                                numberOfPeople={item.numberOfPeople}
-                                                notes={item.notes}
-                                                onClick={() => handleClick(item)}
-                                            />
-                                        );
-                                    })}
-                                </div>)
+                                {itineraries.map((item) => {
+                                    return (
+                                        <ItineraryCard
+                                            key={item._id}
+                                            tripName={item.tripName}
+                                            destination={item.destination}
+                                            imageNumber={item.imageNumber}
+                                            startDate={item.startDate}
+                                            endDate={item.endDate}
+                                            numberOfPeople={item.numberOfPeople}
+                                            onClick={() => navigate(`/itinerary/${item._id}`)}
+                                        />
+                                    );
+                                })}
+                            </div>)
                             : (<EmptyCard />)}
                 </div>
 
                 <div className="w-[335px]">
-                    <div className="bg-off-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
+                    <div className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
                         <div className="p-3">
                             <DayPicker
                                 navLayout="around"
@@ -114,7 +133,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
+                <div onClick={() => navigate('/create-itinerary')} className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
                     <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
                 </div>
             </div>
