@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyCard from "../../components/Cards/emptycard";
-import ItineraryCard from "../../components/Cards/intinerarycard";
+import ItineraryCard from "../../components/Cards/itinerarycard";
 import SearchLoading from "../../components/Loading/searchloading";
 
 export default function Dashboard() {
