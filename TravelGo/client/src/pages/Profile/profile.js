@@ -4,11 +4,17 @@ import axiosInstance from "../../utils/axiosInstance";
 
 import basicInfo from "../../components/Profile/basicinfo";
 import DetailedInfo from "../../components/Profile/detailedInfo";
-import EditNameModal from "../../components/Modals/EditNameModal";
+import EditProfileModal from "../../components/Modals/EditProfileModal";
+import EditEmailModal from "../../components/Modals/EditEmailModal";
+import EditPasswordModal from "../../components/Modals/EditPasswordModal";
+import EditSignUpModal from "../../components/Modals/EditSignUpModal";
 
 function Profile() {
   const { user, setUser } = useUser();
-  const [editField, setEditField] = useState(null);
+  const [editEmailOpen, setEditEmailOpen] = useState(false);
+  const [editPWOpen, setEditPWOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [editSignUpOpen, setEditSignUpOpen] = useState(false);
 
   if (!user) return <div>Loading...</div>;
 
@@ -16,19 +22,49 @@ function Profile() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-        <EditNameModal
-            isOpen={editField === "name"}
-            currentName={user.name}
-            onClose={() => setEditField(null)}
-            onSave={async (newName) => {
-                await axiosInstance.post('/users/update-username', {newName: newName})
-                setEditField(null);
-                setUser((existing) => ({ ...existing, name: newName }));
+        <EditProfileModal
+            isOpen={editProfileOpen}
+            onClose={() => setEditProfileOpen(null)}
+            onSave={async (form) => {
+                const res = await axiosInstance.post('/users/update-profile', form);
+                setUser(res.data.updatedUser);
+                setEditProfileOpen(false);
+            }}
+            user={user}
+        />
+        <EditEmailModal
+            isOpen={editEmailOpen}
+            onClose={() => setEditEmailOpen(false)}
+            currentEmail={user.email}
+            onEmailUpdated={(newEmail) => setUser((prev) => ({ ...prev, email: newEmail }))}
+        />
+        <EditPasswordModal
+            isOpen={editPWOpen}
+            onClose={() => setEditPWOpen(false)}
+            onSave={async ({ currentPassword, newPassword, confirmPassword }) => {
+                await axiosInstance.post('/users/change-password', {
+                    currentPassword,
+                    newPassword,
+                    confirmPassword
+                });
+                setEditPWOpen(false);
             }}
         />
+        <EditSignUpModal
+            isOpen={editSignUpOpen}
+            onClose={() => setEditSignUpOpen(false)}
+            currentEmail={user.emailSignUp ? "Yes" : "No"}
+            onSave={async ({ emailSignUp }) => {
+                const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: emailSignUp === "Yes" });
+                setUser(res.data.updatedUser);
+                setEditSignUpOpen(false);
+            }}
+        />
+
+
         {basicInfo(user)}
         <hr className="my-4 border-gray-300" />
-        <DetailedInfo user={user} onEditField={setEditField} />
+        <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} />
         <hr className="my-4 border-gray-300" />
         <div className="flex justify-center gap-1.5">
             <button onClick={() => (null)} className={buttonStyle}>

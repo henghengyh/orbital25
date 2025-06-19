@@ -18,6 +18,10 @@ const bodyTextHtml = function(user, note) {
  */
 function sendCreateEmail(itinerary) {
   const user = itinerary.user;
+  if (user.emailSignUp === false) {
+    console.log('User has opted out of email notifications.');
+    return;
+  }
   const note = `Your itinerary to <strong>${itinerary.destination}</strong> has been successfully created!<br><br>
     
     Start Date: <strong>${itinerary.startDate.toDateString()}</strong><br>
@@ -45,6 +49,10 @@ function sendCreateEmail(itinerary) {
  */
 function sendUpdateEmail(itinerary, activity, duration) {
   const user = itinerary.user;
+  if (user.emailSignUp === false) {
+    console.log('User has opted out of email notifications.');
+    return;
+  }
   const note = `WARNING: The activity ${activity.name}, which is scheduled to start in ${duration} hours, has been updated.\n`;
   const msg = {    
     to: user.email, 
