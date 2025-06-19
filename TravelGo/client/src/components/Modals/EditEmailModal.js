@@ -47,7 +47,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
                     setMessage("");
                     setStep(1);
                     setCode("");
-                    onEmailUpdated && onEmailUpdated(newEmail); // update parent/user context if needed
+                    onEmailUpdated && onEmailUpdated(newEmail); 
                     onClose();
                 }, 1500);
             }
