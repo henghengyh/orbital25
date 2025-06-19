@@ -18,6 +18,10 @@ const bodyTextHtml = function(user, note) {
  */
 function sendCreateEmail(itinerary) {
   const user = itinerary.user;
+  if (user.emailSignUp === false) {
+    console.log('User has opted out of email notifications.');
+    return;
+  }
   const note = `Your itinerary to <strong>${itinerary.destination}</strong> has been successfully created!<br><br>
     
     Start Date: <strong>${itinerary.startDate.toDateString()}</strong><br>
@@ -45,6 +49,10 @@ function sendCreateEmail(itinerary) {
  */
 function sendUpdateEmail(itinerary, activity, duration) {
   const user = itinerary.user;
+  if (user.emailSignUp === false) {
+    console.log('User has opted out of email notifications.');
+    return;
+  }
   const note = `WARNING: The activity ${activity.name}, which is scheduled to start in ${duration} hours, has been updated.\n`;
   const msg = {    
     to: user.email, 
@@ -58,4 +66,25 @@ function sendUpdateEmail(itinerary, activity, duration) {
   .then(() => console.log('Email successfully sent to ' + user.email))
 };
 
-module.exports = { sendCreateEmail, sendUpdateEmail };
+/** sendCodeToEmail
+ * @param {string} email - The email address to send the code to
+ * @param {string} code - The verification code to send
+ */
+function sendCodeToEmail(email, code) {
+  const msg = {    
+    to: email, 
+    from: senderEmail,
+    subject: 'TravelGO: Verification Code',
+    text: `Your verification code is: ${code}`,
+    html: `<strong>Your verification code is: ${code}</strong>`,
+  };
+
+  sgMail.send(msg)
+  .then(() => console.log('Verification code sent to ' + email))
+  .catch(error => {
+    console.error('Error sending verification code:', error);
+    throw new Error('Failed to send verification code');
+  });
+};
+
+module.exports = { sendCreateEmail, sendUpdateEmail, sendCodeToEmail };

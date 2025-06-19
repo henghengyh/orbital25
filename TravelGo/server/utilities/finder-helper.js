@@ -14,7 +14,7 @@ async function findItineraryOr404(itineraryId, res) {
 }
 
 async function findActivityOr404(itinerary, activityId, res) {
-    const activity = itinerary.activities.id(activityId);
+    const activity = itinerary.activities.find(a => a._id.toString() === activityId.toString());
     if (!activity) {
         res.status(404).json({ error: "Activity not found" });
         return null;

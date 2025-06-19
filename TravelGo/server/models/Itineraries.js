@@ -32,7 +32,7 @@ const ItinerarySchema = new mongoose.Schema({
 
 ItinerarySchema.index({ user: 1});
 ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1});
-ItinerarySchema.index({ user: 1, destination: 1, notes: 1});
+ItinerarySchema.index({ user: 1, tripName: 1, destination: 1});
 
 /** INSTANCE METHODS */
 
@@ -75,9 +75,11 @@ ItinerarySchema.methods.removeActivity = async function (activityId) {
 };
 
 ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {
-    const activity = this.activities.id(activityId);
+    const activity = this.activities.find(a => a._id.toString() === activityId.toString());
     if (activity) {
-        activity.updateActivity(updatedFields)
+        Object.assign(activity, updatedFields);
+        activity.markModified && activity.markModified();
+        this.markModified('activities');
         return this.save();
     } else {
         throw new Error("Activity not found");
