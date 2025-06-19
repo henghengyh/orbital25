@@ -101,10 +101,9 @@ ItinerarySchema.methods.moveActivity = function (activityId, newIndex) {
 ItinerarySchema.methods.occursOnTrip = function (activity) {
     const itineraryStart = new Date(this.startDate);
     const itineraryEnd = new Date(this.endDate);
-    const activityStart = new Date(this.startTime);
-    const activityEnd = new Date(this.endTime);
+    const activityDate = new Date(activity.date);
 
-    return (activityStart < itineraryStart || activityEnd > itineraryEnd) ? false : true;
+    return activityDate >= itineraryStart && activityDate <= itineraryEnd;
 }
 
 /** STATIC METHODS
