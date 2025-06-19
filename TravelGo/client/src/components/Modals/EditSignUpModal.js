@@ -4,14 +4,14 @@ import { useUser } from "../../context/UserContext/usercontext";
 export default function EditSignUpModal({ isOpen, onClose, onSave }) {
     const { user, setUser } = useUser();
     const [form, setForm] = useState({
-        emailSignUp: user.emailSignUp || ""
+        emailSignUp: user.emailSignUp ? "Yes" : "No"
     });
 
     useEffect(() => {
         setForm({
-            emailSignUp: user.emailSignUp || "",
+            emailSignUp: user.emailSignUp ? "Yes" : "No"
         });
-    }, [user]);
+    }, [user, isOpen]);
 
     if (!isOpen) return null;
 
@@ -54,6 +54,7 @@ export default function EditSignUpModal({ isOpen, onClose, onSave }) {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        console.log(e.target.name);
     };
 
     return (

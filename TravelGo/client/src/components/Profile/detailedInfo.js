@@ -15,7 +15,7 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
                 <span className="col-start-3 col-span-6">
                     <div className="flex grid grid-cols-6 items-center">
                         <span className="col-start-1 col-span-5">
-                            {profileInfo ? (user.profileInfo[fieldKey]) : (user[fieldKey] ? user[fieldKey] : "NA")}
+                            {profileInfo[fieldKey] ? (user.profileInfo[fieldKey]) : (user[fieldKey] ? user[fieldKey] : "-")}
                         </span>
                     </div>
                 </span>
@@ -52,14 +52,14 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
             </>
         )
     }
-    const DOBentry = (fieldName, profileInfo=false, fieldKey) => {
+    const DOBentry = (fieldName, profileInfo=true, fieldKey) => {
         return (
             <>
                 <span className="col-span-2">{fieldName}</span>
                 <span className="col-start-3 col-span-6">
                     <div className="flex grid grid-cols-6 items-center">
                         <span className="col-start-1 col-span-5">
-                            {profileInfo ? (user.profileInfo[fieldKey].slice(0,10)) : (user[fieldKey] ? user[fieldKey].slice(0,10) : "NA")}
+                            {profileInfo[fieldKey] ? (user.profileInfo[fieldKey].slice(0,10)) : (user[fieldKey] ? user[fieldKey].slice(0,10) : "-")}
                         </span>
                     </div>
                 </span>

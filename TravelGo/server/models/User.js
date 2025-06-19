@@ -53,10 +53,6 @@ UserSchema.pre("save", async function (next) {
 
 /** INSTANCE METHODS */
 
-UserSchema.methods.comparePassword = function(newPass) {
-    return bcrypt.compare(newPass, this.password);
-};
-
 /** STATIC METHODS */
 
 UserSchema.statics.listAllUsers = function() {
