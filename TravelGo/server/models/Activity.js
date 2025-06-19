@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const typeOfActivities = ["meal", "sightseeing", "transport", "shopping", "other"]
+const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
 
 /** ActivitySchema
- * @param {String} name - username
+ * @param {String} activityName - username
  * @param {Date} date - date of activity (currently supports only one date)
  * @param {String} startTime 
  * @param {String} endTime 
@@ -10,7 +10,7 @@ const typeOfActivities = ["meal", "sightseeing", "transport", "shopping", "other
  * @param {String} notes - remarks
  */
 const ActivitySchema = new mongoose.Schema({
-    name: String,
+    activityName: String,
     date: Date,
     startTime: String,
     endTime: String,
