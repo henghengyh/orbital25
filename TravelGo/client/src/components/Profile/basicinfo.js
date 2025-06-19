@@ -12,11 +12,8 @@ function basicInfo(user) {
                     />
                 </span>
                 <span className="col-start-3 col-span-6 font-bold text-2xl"> {user.name}</span>
-
-                <span className="col-start-8 col-span-1"></span>
-
                 <span className="col-start-1 col-span-8 text-center text-sm text-gray-500">
-                    Insert your bio. This is a placeholder for your bio text.
+                    {user.profileInfo.bio}
                 </span>
             </div>
         </div>

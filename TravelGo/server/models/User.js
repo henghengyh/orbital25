@@ -16,9 +16,19 @@ const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    accountCreatedOn: { type: Date, default: Date.now },
     emailVerificationCode: { type: String },
     pendingEmail: { type: String },
-    profilePhoto: { type: String }
+    profilePhoto: { type: String },
+    profileInfo: {
+        bio: { type: String, default: "" },
+        favouriteDestination: { type: String, default: "" },
+        gender: { type: String, default: "" },
+        dateOfBirth: { type: Date, default: null },
+        location: { type: String, default: "" },
+    },
+    friendsWith: {type: [String], default: []},
+    emailSignUp: { type: Boolean, default: true },
 }, {
     // SECURITY! To remove the password field from the response
     toJSON: {
