@@ -107,7 +107,6 @@ const Weather = () => {
 
     //A4. Display itinerary weather forecast
     const showTripForecast = () => {
-        if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
         if (!itineraryWeather) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
         const pairs = Object.entries(itineraryWeather);
         
