@@ -1,6 +1,20 @@
-/** itineraries.js
- * This file contains the Express routes for managing itineraries and activities.
- * CREATE, DELETE and UDPATE itineraries and activities.
+/**
+ * @file itineraries.js
+ * @route /users
+ * 
+ * This file contains the following routes:
+ * 1. POST / - Create a new itinerary
+ * 2. GET /get-all-itineraries - Get all itineraries for the authenticated user
+ * 3. GET /search-itineraries - Search for itineraries by
+ *    destination or notes
+ * 4. GET /filter - Filter itineraries by start and end dates
+ * 5. PUT /:itineraryId - Update an itinerary by ID
+ * 6. DELETE /:itineraryId - Delete an itinerary by ID
+ * 7. POST /:itineraryId/activities - Add an activity
+ * 8. PUT /:itineraryId/activities/:activityId - Update an activity by ID
+ * 9. DELETE /:itineraryId/activities/:activityId - Remove an activity by ID
+ * 10. GET /:itineraryId/activities - Get all activities for an itinerary
+ * 11. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
