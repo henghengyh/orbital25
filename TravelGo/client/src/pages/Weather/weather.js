@@ -110,7 +110,14 @@ const Weather = () => {
 
     //A4. Display itinerary weather forecast
     const showTripForecast = () => {
-        if (!itineraryWeather) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
+        if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
+        if (!selectedItinerary) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
+        if (weatherWarnings && loading) return (
+            <div className='flex flex-col justify-center items-center mt-4'>
+                <div className="w-12 h-12 border-4 border-black border-dashed rounded-full animate-spin"></div>
+                <p className="mt-2 ml-2">Loading...</p>
+            </div>);
+        if (!itineraryWeather) return;
         const pairs = Object.entries(itineraryWeather);
 
         const keyStyle = "font-medium text-gray-600";
