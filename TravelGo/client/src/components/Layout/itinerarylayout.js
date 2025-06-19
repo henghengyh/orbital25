@@ -1,14 +1,23 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+import ActivityCard from "../Cards/activitycard";
+import axiosInstance from "../../utils/axiosInstance";
+import EmptyActivity from "../Cards/emptyactivity";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
+    const [activities, setActivities] = useState(itinerary?.activities || []);
+    const [dates, setDates] = useState([]);
     const [destination, setDestination] = useState(itinerary?.destination || "");
     const [endDate, setEndDate] = useState(itinerary?.endDate || null);
-    const [tripName, setTripName] = useState(itinerary?.tripName || "");
+    const [error, setError] = useState("");
     const [notes, setNotes] = useState(itinerary?.notes || "");
     const [numberOfPeople, setNumberOfPeople] = useState(itinerary?.numberOfPeople || 1);
+    const [popup, setPopup] = useState(false);
     const [startDate, setStartDate] = useState(itinerary?.startDate || null);
+    const [tripName, setTripName] = useState(itinerary?.tripName || "");
 
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const edit = mode === "edit";
@@ -18,22 +27,61 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
         return date.slice(0, 10);
     }
 
+    const dateRange = (startDate, endDate) => {
+        if (!startDate || !endDate) return [];
+
+        const dates = [];
+        let curr = new Date(startDate);
+        while (curr <= new Date(endDate)) {
+            dates.push(curr.toISOString().slice(0, 10));
+            curr.setDate(curr.getDate() + 1);
+        }
+        return dates;
+    }
+
+    useEffect(() => {
+        setDates(dateRange(startDate, endDate));
+    }, [startDate, endDate]);
+
+    const updateActivities = () => {
+        axiosInstance
+            .get(`/itineraries/${id}/activities`)
+            .then((res) => setActivities(res.data))
+            .catch((err) => console.error(err));
+    }
+
+    const validInputCheck = (fn) => {
+        if (!tripName) { setError("Invalid Trip Name"); return; }
+        if (!destination) { setError("Invalid Destination"); return; }
+        if (!startDate) { setError("Invalid Start Date"); return; }
+        if (!endDate || formatDate(endDate) < formatDate(startDate)) { setError("Invalid End Date"); return; }
+        fn();
+    }
+
+    useEffect(() => {
+        if (error) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error])
+
     return (
         <div className="flex flex-col h-[500px] bg-white shadow-xl rounded-xl border-2">
+            {popup && <div className="error">{error}</div>}
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
                 <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
                     <ion-icon
                         name="close"
-                        style={{
-                            alignItems: "center",
-                            display: "flex",
-                            height: "20px",
-                            width: "20px"
-                        }}
+                        style={{ alignItems: "center", display: "flex", height: "20px", width: "20px" }}
                     />
                 </div>
             </div>
+
             <div className="flex gap-7 h-[444px] pb-4">
                 <div className="w-[320px] pl-4">
                     <div>
@@ -42,7 +90,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                             <input
                                 type="text"
                                 placeholder="trip name"
-                                name="trip name"
+                                name="tripName"
                                 value={tripName}
                                 autoComplete="off"
                                 required
@@ -70,9 +118,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     <input
                                         type="date"
                                         name="startDate"
-                                        placeholder="dd/mm/yyyy"
-                                        autoComplete="off"
-                                        max={endDate ? endDate : undefined}
+                                        max={endDate ? formatDate(endDate) : undefined}
                                         value={formatDate(startDate)}
                                         required
                                         className="text-input w-[146px] cursor-text"
@@ -86,9 +132,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     <input
                                         type="date"
                                         name="endDate"
-                                        placeholder="dd/mm/yyyy"
-                                        autoComplete="off"
-                                        min={startDate ? startDate : undefined}
+                                        min={startDate ? formatDate(startDate) : undefined}
                                         value={formatDate(endDate)}
                                         required
                                         className="text-input w-[146px] cursor-text"
@@ -129,14 +173,14 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
                             <div onClick={(e) => {
                                 e.preventDefault();
-                                editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
+                                validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
                             }}
-                                className="itinerary-button bg-green-100 hover:bg-green-200">
+                                className="itinerary-button bg-green-200 hover:bg-green-300">
                                 <ion-icon name="pencil"></ion-icon>
                                 Save
                             </div>
                             <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
-                                className="itinerary-button bg-red-100 hover:bg-red-200">
+                                className="itinerary-button bg-red-200 hover:bg-red-300">
                                 <ion-icon name="trash"></ion-icon>
                                 Delete
                             </div>
@@ -144,16 +188,27 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         : <div
                             onClick={(e) => {
                                 e.preventDefault();
-                                addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes });
+                                validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
                             }}
-                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-100 hover:bg-green-200">
+                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
                             Add
                         </div>}
                 </div>
 
                 <div className="w-[816px] pr-4">
-                    itineraries
+                    <div className="flex flex-row gap-2 px-1 overflow-x-scroll scrollbar border-slate-300 rounded bg-gray-300">
+                        {dates.length > 0
+                            ? dates.map((date, idx) => (
+                                <ActivityCard
+                                    key={idx}
+                                    date={date}
+                                    activities={activities}
+                                    updateActivities={updateActivities}
+                                />
+                            ))
+                            : <EmptyActivity dateSelected={false} />}
+                    </div>
                 </div>
             </div>
         </div>

@@ -14,10 +14,7 @@ export default function CreateItinerary() {
         axiosInstance
             .post('/itineraries', data)
             .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
-            .catch((err) => {
-                console.error(err);
-                setError(err.response.data.error);
-            });
+            .catch((err) => { console.error(err); setError(err.response.data.error); });
     }
 
     useEffect(() => {
@@ -27,12 +24,13 @@ export default function CreateItinerary() {
                 setPopup(false);
                 setError("");
             }, 3000);
+            window.history.replaceState({}, document.title);
         }
     }, [error])
 
     return (
         <div className="start-block py-[35px]">
-            {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
+            {popup && <div className="error">{error}</div>}
             <ItineraryLayout mode="create" addItinerary={addItinerary} />
         </div>
     )
