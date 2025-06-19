@@ -1,6 +1,6 @@
 import moment from 'moment/moment';
 
-import { imageList } from './intineraryimage';
+import { imageList } from './itineraryimage';
 
 export default function ItineraryCard({
     destination,
