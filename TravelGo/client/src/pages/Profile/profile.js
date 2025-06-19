@@ -42,7 +42,7 @@ function Profile() {
             isOpen={editPWOpen}
             onClose={() => setEditPWOpen(false)}
             onSave={async ({ currentPassword, newPassword, confirmPassword }) => {
-                await axiosInstance.post('/users/change-password', {
+                await axiosInstance.post('/users/update-password', {
                     currentPassword,
                     newPassword,
                     confirmPassword
@@ -53,9 +53,10 @@ function Profile() {
         <EditSignUpModal
             isOpen={editSignUpOpen}
             onClose={() => setEditSignUpOpen(false)}
-            currentEmail={user.emailSignUp ? "Yes" : "No"}
-            onSave={async ({ emailSignUp }) => {
-                const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: emailSignUp === "Yes" });
+            onSave={async (form) => {
+                const newBool = form.emailSignUp === "Yes" ? true : false;
+                const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: newBool });
+                
                 setUser(res.data.updatedUser);
                 setEditSignUpOpen(false);
             }}
