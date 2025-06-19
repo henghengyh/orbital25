@@ -14,6 +14,7 @@ import ProtectedRoutes from './components/ProtectedRoutes/protectedroutes';
 import RegisterPage from './pages/Login&Register/register';
 import UserProvider from './context/UserContext/usercontext';
 import WeatherPage from './pages/Weather/weather';
+import Profile from './pages/Profile/profile';
 
 function App() {
     return (
@@ -23,7 +24,6 @@ function App() {
                     <Route path="/" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route element={<ProtectedRoutes />}>
-                        {/* Render the Navbar on all protected routes */}
                         <Route element={
                             <UserProvider>
                                 <ItineraryProvider>
@@ -31,13 +31,14 @@ function App() {
                                 </ItineraryProvider>
                             </UserProvider>
                         }>
-                            {/* Protected routes that require authentication */}
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/create-itinerary" element={<CreateItineraryPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/itinerary/:id" element={<ItineraryPage />} />
                             <Route path="/maps" element={<MapsPage />} />
                             <Route path="/weather" element={<WeatherPage />} />
+                            <Route path="/profile" element={<Profile />} />
+                            {/* This path is newly added, WIP */}
                         </Route>
                     </Route>
                 </Routes>

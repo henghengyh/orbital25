@@ -30,6 +30,7 @@ const Weather = () => {
             return hour.toString() + hr24String.slice(2,) + " " + behind;
         } else {
             behind = "PM";
+            if (hour === 12) return hr24String + " " + behind; 
             return (hour - 12).toString() + hr24String.slice(2,) + " " + behind;
         }
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
@@ -219,8 +220,8 @@ const Weather = () => {
 
         return (
             <>
-                <div className={`mb-4 border-l-4 p-4 ${bannerBgClass}`}>
-                    <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings</h2>
+                <div className={`mt-8 border-l-4 p-4 ${bannerBgClass}`}>
+                    <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings (Based on past 1 year data)</h2>
                     <div>
                         <span className="font-semibold">Destination:</span> {selectedItinerary.destination} &nbsp;|&nbsp;
                         <span className="font-semibold">Trip Period:</span> {tripStart} to {tripEnd}
