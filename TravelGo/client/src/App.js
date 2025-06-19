@@ -3,6 +3,7 @@ import './App.css';
 
 import AboutPage from './pages/About/about';
 import AuthProvider from './context/AuthContext/authcontext';
+import CreateItineraryPage from './pages/Itinerary/createitinerary';
 import DashboardPage from './pages/Dashboard/dashboard';
 import ItineraryPage from './pages/Itinerary/itinerary';
 import ItineraryProvider from './context/ItineraryContext/itinerarycontext';
@@ -31,10 +32,11 @@ function App() {
                             </UserProvider>
                         }>
                             <Route path="/about" element={<AboutPage />} />
+                            <Route path="/create-itinerary" element={<CreateItineraryPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
-                            <Route path="/weather" element={<WeatherPage />} />
-                            <Route path="/itinerary" element={<ItineraryPage />} />
+                            <Route path="/itinerary/:id" element={<ItineraryPage />} />
                             <Route path="/maps" element={<MapsPage />} />
+                            <Route path="/weather" element={<WeatherPage />} />
                             <Route path="/profile" element={<Profile />} />
                             {/* This path is newly added, WIP */}
                         </Route>

@@ -60,12 +60,8 @@
     @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center text-center;
   }
 
-  .about-outer-div {
-    @apply flex flex-row justify-center m-2 h-auto;
-  }
-
   .about-inner-div {
-    @apply flex-[50%] bg-blue-100 rounded-lg shadow-lg mr-2;
+    @apply flex-[50%] bg-blue-100 rounded-lg shadow-lg;
   }
 
   .about-h4 {
@@ -86,5 +82,17 @@
 
   .about-img-label {
     @apply text-left text-lg flex-[70%] pl-3;
+  }
+
+  .text-input {
+    @apply text-sm bg-off-white rounded py-2 px-3 outline-none;
+  }
+
+  .text-label {
+    @apply px-2 items-center flex;
+  }
+
+  .itinerary-button {
+    @apply w-[50%] rounded-xl items-center justify-center gap-2 flex cursor-pointer hover:shadow-sm hover:shadow-slate-300;
   }
 }
