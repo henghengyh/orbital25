@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditSignUpModal({ isOpen, onClose, onSave }) {
-    const { user, setUser } = useUser();
+    const { user } = useUser();
     const [form, setForm] = useState({
         emailSignUp: user.emailSignUp ? "Yes" : "No"
     });
@@ -14,24 +14,6 @@ export default function EditSignUpModal({ isOpen, onClose, onSave }) {
     }, [user, isOpen]);
 
     if (!isOpen) return null;
-
-    const inputBox = (type, name, placeholder, value) => {
-        return (
-            <div className="flex items-center mb-3">
-                <label className="w-40 mr-2">
-                    {name.charAt(0).toUpperCase() + name.slice(1)}
-                </label>
-                <input
-                    type={type}
-                    name={name}
-                    placeholder={"Enter new " + placeholder}
-                    value={value}
-                    onChange={handleChange}
-                    className="w-full border rounded px-2 py-1"
-                />
-            </div>
-        );
-    }
 
     const dropdownBox = (display, name, options, value) => {
         return (

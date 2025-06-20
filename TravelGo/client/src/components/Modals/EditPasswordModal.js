@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useUser } from "../../context/UserContext/usercontext";
+import { useState } from "react";
 
 export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail }) {
     const [currentPassword, setCurrentPassword] = useState("");
