@@ -38,7 +38,8 @@ router.post("/", authenticateToken, async (req, res) => {
             numberOfPeople,
             notes
         });
-        
+
+        // allow activities to be created along with the new itinerary
         if (Array.isArray(activities)) {
             for (const activityData of activities) {
                 const newActivity = Activity.newActivity(activityData);
@@ -200,7 +201,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
     }
 });
 
-/** Adding an activity */
+/** Adding an activity to exisitng itinerary */
 router.post("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -224,7 +225,7 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
     }
 });
 
-/** Updating an activity */
+/** Updating an activity to exisitng itinerary */
 router.put("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -237,7 +238,18 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         } else {
             const activity = await findActivityOr404(itinerary, req.params.activityId, res);
             if (!activity) return;
-            await itinerary.updateActivity(req.params.activityId, req.body);
+
+            const isSame = Object.keys(req.body)
+                .every(key => JSON.stringify(activity[key]) === JSON.stringify(req.body[key]));
+            if (!isSame) {
+                const temp = Activity.newActivity(req.body);
+                temp._id = activity._id;
+                if (!isValidActivity(itinerary, temp)) {
+                    return res.status(400).json({ error: "Invalid activity" });
+                }
+            }
+
+            await itinerary.updateActivity(activity, req.body);
 
             function timeToStart(activity, now = new Date()) {
                 const [hours, minutes] = activity.startTime.split(':').map(Number);
@@ -266,7 +278,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
     }
 });
 
-/** Removing an activity */
+/** Removing an activity to exisitng itinerary */
 router.delete("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -286,7 +298,7 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
     }
 });
 
-/** Getting all activities */
+/** Getting all activities to exisitng itinerary */
 router.get("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -304,7 +316,7 @@ router.get("/:id/activities", authenticateToken, async (req, res) => {
     }
 });
 
-/** Getting ONE Specific activity */
+/** Getting ONE Specific activity to exisitng itinerary */
 router.get("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;

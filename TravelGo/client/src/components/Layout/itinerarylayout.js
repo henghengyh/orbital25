@@ -173,7 +173,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
                             <div onClick={(e) => {
                                 e.preventDefault();
-                                validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
+                                validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
                             }}
                                 className="itinerary-button bg-green-200 hover:bg-green-300">
                                 <ion-icon name="pencil"></ion-icon>
