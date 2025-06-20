@@ -223,7 +223,6 @@ router.post('/update-password', authenticateToken, async (req, res) => {
         const isUser = await User.findOne({ _id: user._id });
         const { currentPassword, newPassword, confirmPassword } = req.body;
 
-        console.log("HERE");
         if (currentPassword == null || newPassword == undefined || confirmPassword == undefined) {
             return res.status(400).json({ success: false, message: 'All fields are required' });
         } else if (newPassword !== confirmPassword) {
@@ -234,20 +233,15 @@ router.post('/update-password', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Current password is incorrect' });
         }
 
-        console.log("THERE");
         // Check password strength using zxcvbn API embedded in Node.js
         const result = zxcvbn(newPassword);
         if (result.score < 2) {
             return res.status(400).json({ success: false, message: 'Password is too weak', feedback: result.feedback.suggestions });
         }
-        console.log('Password strength score:', result.score);
+
         // Hash the new password
-        const salt = await bcrypt.genSalt(10);
-        console.log('Password strength score:', result.score);
-        isUser.password = await bcrypt.hash(newPassword, salt);
-        console.log('Password strength score:', result.score);
+        isUser.password = newPassword;
         await isUser.save();
-        console.log('Password strength score:', result.score);
 
         res.json({ success: true, message: 'Password updated successfully', updatedUser: isUser });
     } catch (error) {
