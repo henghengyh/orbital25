@@ -8,7 +8,7 @@ import ActivityLayout from "../Layout/activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from './emptyactivity';
 
-export default function ActivityCard({ date, activities, updateActivities }) {
+export default function ActivityCard({ date, activities, setActivities, updateActivities }) {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const [openModal, setOpenModal] = useState({ shown: false, type: "add", data: null, date: date, });
@@ -30,6 +30,14 @@ export default function ActivityCard({ date, activities, updateActivities }) {
     const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
 
     const addActivity = async (data) => {
+        if (!id) {
+            const tempId = Date.now().toString();
+            setActivities(prev => [...prev, {...data, _id: tempId}]);
+            setMessage("Activity added");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
         axiosInstance
             .post(`/itineraries/${id}/activities`, data)
             .then((res) => { updateActivities(); setMessage(res.data.message); })
@@ -38,6 +46,13 @@ export default function ActivityCard({ date, activities, updateActivities }) {
     }
 
     const editActivitiy = async (activityId, data) => {
+        if (!id) {
+            setActivities(prev => prev.map(a => a._id === activityId ? {...a, ...data} : a));
+            setMessage("Activity updated");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
         axiosInstance
             .put(`/itineraries/${id}/activities/${activityId}`, data)
             .then((res) => { updateActivities(); setMessage(res.data.message); })
@@ -46,6 +61,13 @@ export default function ActivityCard({ date, activities, updateActivities }) {
     }
 
     const deleteActivity = async (activityId) => {
+        if (!id) {
+            setActivities(prev => prev.filter(a => a._id !== activityId));
+            setMessage("Activity deleted");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
         axiosInstance
             .delete(`/itineraries/${id}/activities/${activityId}`)
             .then((res) => { updateActivities(); setMessage(res.data.message); })
