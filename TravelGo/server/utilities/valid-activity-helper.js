@@ -21,6 +21,7 @@ function isValidActivity(itinerary, activity) {
     let counter = 0;
     for (const existingActivity of itinerary.activities) {
         if (new Date(existingActivity.date).toDateString() !== new Date(activity.date).toDateString()) continue;
+        if (existingActivity._id.toString() === activity._id.toString()) continue;
 
         const activityStart = parseDateTime(activity.date, activity.startTime);
         const activityEnd = parseDateTime(activity.date, activity.endTime);

@@ -30,9 +30,9 @@ const ItinerarySchema = new mongoose.Schema({
     notes: { type: String, default: "" }
 }, { timestamps: true });
 
-ItinerarySchema.index({ user: 1});
-ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1});
-ItinerarySchema.index({ user: 1, tripName: 1, destination: 1});
+ItinerarySchema.index({ user: 1 });
+ItinerarySchema.index({ user: 1, startDate: 1, endDate: 1 });
+ItinerarySchema.index({ user: 1, tripName: 1, destination: 1 });
 
 /** INSTANCE METHODS */
 
@@ -74,11 +74,10 @@ ItinerarySchema.methods.removeActivity = async function (activityId) {
     return this;
 };
 
-ItinerarySchema.methods.updateActivity = function (activityId, updatedFields) {
-    const activity = this.activities.find(a => a._id.toString() === activityId.toString());
-    if (activity) {
-        Object.assign(activity, updatedFields);
-        activity.markModified && activity.markModified();
+ItinerarySchema.methods.updateActivity = function (oldActivity, updatedFields) {
+    if (oldActivity) {
+        Object.assign(oldActivity, updatedFields);
+        oldActivity.markModified && oldActivity.markModified();
         this.markModified('activities');
         return this.save();
     } else {
