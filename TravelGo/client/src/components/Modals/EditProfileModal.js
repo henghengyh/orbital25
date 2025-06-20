@@ -3,6 +3,8 @@ import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditProfileModal({ isOpen, onClose, onSave }) {
     const { user } = useUser();
+    const [message, setMessage] = useState("");
+    const [success, setSuccess] = useState(false);
     const [form, setForm] = useState({
         newName: user.name || "",
         bio: user.profileInfo?.bio || "",
@@ -78,6 +80,11 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
                     {inputBox("Date", "Date of Birth", "dateOfBirth", form.dateOfBirth)}
                     {inputBox("text", "Location", "location", form.location)}
                 </div>
+                {message && (
+                    <div className={`mb-2 text-sm ${success ? "text-green-600" : "text-red-600"}`}>
+                        {message}
+                    </div>
+                )}
                 <div className="flex justify-end gap-2 mt-4">
                     <button
                         className="px-3 py-1 bg-gray-300 rounded"
@@ -87,7 +94,17 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
                     </button>
                     <button
                         className="px-3 py-1 bg-blue-600 text-white rounded"
-                        onClick={() => onSave(form)}
+                        onClick={async () => { 
+                            const res = await onSave(form)
+                            setMessage("Profile updated successfully!");
+                            setSuccess(res.data.success);
+                            if (res.data.success) {
+                                setTimeout(() => {
+                                    onClose();
+                                    setMessage("");
+                                }, 3000);
+                            }
+                        }}
                     >
                         Save
                     </button>
