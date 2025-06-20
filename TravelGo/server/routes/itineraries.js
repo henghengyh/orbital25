@@ -38,7 +38,7 @@ router.post("/", authenticateToken, async (req, res) => {
             numberOfPeople,
             notes
         });
-
+        
         if (Array.isArray(activities)) {
             for (const activityData of activities) {
                 const newActivity = Activity.newActivity(activityData);
