@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail }) {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -7,6 +7,12 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
     const [message, setMessage] = useState("");
     const [success, setSuccess] = useState(false);
     
+    useEffect(() => {
+        if (isOpen) {
+            setMessage("");
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     const inputBox = (type, f, placeholder, value) => {
@@ -24,17 +30,20 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
     const handleSave = async () => {
         try {
             const res = await onSave({ currentPassword, newPassword, confirmPassword });
+            console.log(res);
             setMessage(res.data.message);
+            setSuccess(res.data.success);
             if (res.data.success) {
                 setTimeout(() => {
                     setMessage("Password updated successfully!");
-                    setSuccess(true);
+                    setSuccess(false);
                     onClose();
                 }, 3000);
             } else {
                 setMessage(res.data.message || "Error updating password");
             }
         } catch (err) {
+
             setMessage(err.response?.data?.message || "Error updating password!!!!!");
             setSuccess(false);
         }

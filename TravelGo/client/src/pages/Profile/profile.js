@@ -28,7 +28,7 @@ function Profile() {
             onSave={async (form) => {
                 const res = await axiosInstance.post('/users/update-profile', form);
                 setUser(res.data.updatedUser);
-                setEditProfileOpen(false);
+                return res;
             }}
             user={user}
         />
@@ -42,12 +42,12 @@ function Profile() {
             isOpen={editPWOpen}
             onClose={() => setEditPWOpen(false)}
             onSave={async ({ currentPassword, newPassword, confirmPassword }) => {
-                await axiosInstance.post('/users/update-password', {
+                const res = await axiosInstance.post('/users/update-password', {
                     currentPassword,
                     newPassword,
                     confirmPassword
                 });
-                setEditPWOpen(false);
+                return res;
             }}
         />
         <EditSignUpModal
