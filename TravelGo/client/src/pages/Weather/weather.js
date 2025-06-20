@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 
 import axiosInstance from '../../utils/axiosInstance';
-//import { get } from '../../../../server/routes/weather-openmeteo-forecast';
 
 const Weather = () => {
     // Itinerary Weather
@@ -11,11 +10,11 @@ const Weather = () => {
     const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [selectedItineraryId, setSelectedItineraryId] = useState('');
     const [weatherWarnings, setWeatherWarnings] = useState(null);
-    let destination;
+    const destination = useRef();
 
     // General Weather
     const [city, setCity] = useState('');
-    const [cityName, setCityName] = useState('');
+    const [cityName] = useState('');
     const [currentWeather, setCurrentWeather] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingCurrent, setLoadingCurrent] = useState(false);
@@ -36,13 +35,6 @@ const Weather = () => {
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
     }
 
-    useEffect(() => {
-        fetchAllItineraries();
-        fetchTripWeather(null);
-        fetchWeatherWarnings(null);
-        fetchCurrentWeather();
-    }, []);
-
     //A1. Fetch all itineraries
     const fetchAllItineraries = async () => {
         try {
@@ -55,23 +47,31 @@ const Weather = () => {
     }
 
     //A2. Fetch weather based on selected itinerary
-    const fetchTripWeather = async (selectedItinerary) => {
+    const fetchTripWeather = useCallback(async (selectedItinerary) => {
         try {
             if (!selectedItinerary) {
                 setItineraryWeather(null);
             } else {
                 setLoading(true);
-                destination = selectedItinerary.destination;
+                destination.current = selectedItinerary.destination;
                 const tripStart = selectedItinerary.startDate.slice(0, 10);
                 const tripEnd = selectedItinerary.endDate.slice(0, 10);
-                const response_weather = await axiosInstance.get(`/weather-forecast/trip-forecast/${destination}?tripStart=${tripStart}&tripEnd=${tripEnd}`);
+                const response_weather = await axiosInstance.get(`/weather-forecast/trip-forecast/${destination.current}?tripStart=${tripStart}&tripEnd=${tripEnd}`);
                 setItineraryWeather(response_weather.data);
                 setLoading(false);
             }
         } catch (error) {
             console.error('Error fetching trip\'s weather data:', error);
         }
-    }
+    }, []);
+
+    
+    useEffect(() => {
+        fetchAllItineraries();
+        fetchTripWeather(null);
+        fetchWeatherWarnings(null);
+        fetchCurrentWeather();
+    }, [fetchTripWeather]);
 
     //A3. Dropdown to select itinerary
     const dropdownItinerary = () => {
@@ -82,7 +82,7 @@ const Weather = () => {
                 </label>
                 <select
                     id="itinerary-select"
-                    className="border rounded px-2 py-1"
+                    className="w-64 border rounded px-2 py-1"
                     value={selectedItineraryId}
                     onChange={e => {
                         setSelectedItinerary(e.target.value);
@@ -110,7 +110,6 @@ const Weather = () => {
 
     //A4. Display itinerary weather forecast
     const showTripForecast = () => {
-        if (allItineraries.length === 0) return <div className="flex text-gray-500 justify-center items-center">No future itinerary detected! Go and start your travelling journey now!</div>;
         if (!selectedItinerary) return <div className="flex text-gray-500 justify-center items-center">Select an Itinerary!</div>;
         if (weatherWarnings && loading) return (
             <div className='flex flex-col justify-center items-center mt-4'>
@@ -126,6 +125,7 @@ const Weather = () => {
 
         return (
             <div>
+                <div style={{ height: '10pt' }} />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {pairs.map(([key, day], i) =>
                         day === "Weather data not available" ? (
@@ -220,7 +220,7 @@ const Weather = () => {
 
         return (
             <>
-                <div className={`mt-8 border-l-4 p-4 ${bannerBgClass}`}>
+                <div className={`border-l-4 p-4 ${bannerBgClass}`}>
                     <h2 className={`font-bold mb-2 ${bannerBgClass.split(' ')[2]}`}>Weather Warnings (Based on past 1 year data)</h2>
                     <div>
                         <span className="font-semibold">Destination:</span> {selectedItinerary.destination} &nbsp;|&nbsp;
@@ -243,11 +243,13 @@ const Weather = () => {
             try {
                 const response = await axiosInstance.get(`/weather-forecast/current?lat=${latitude}&lon=${longitude}`);
                 setCurrentWeather(response.data);
+                console.log('Current Weather Data:', response.data);
 
-                const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const geoData = await geoRes.json();
-                const name = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.state || '';
-                setCityName(name);
+                //Some errors with API responses
+                //const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`); 
+                //const geoData = await geoRes.json();
+                //const name = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.state || '';
+                //setCityName(name);
             } catch (error) {
                 console.error('Error setting current weather:', error);
                 setCurrentWeather(null);
