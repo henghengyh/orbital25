@@ -1,24 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import Modal from "react-modal";
+import moment from "moment/moment";
 
-export default function ActivityLayout({
-    mode, activity, date, onClose, addActivity, editActivitiy, deleteActivity }) {
-    const [activityName, setActivityName] = useState(activity?.activityName || "");
-    const [endTime, setEndTime] = useState(activity?.endTime || "");
+import ActivityCard from "../Cards/activitycard";
+import ActivityModal from "../Modals/activitymodal";
+import axiosInstance from "../../utils/axiosInstance";
+import EmptyActivity from '../Cards/emptyactivity';
+
+export default function ActivityLayout({ date, activities, setActivities, updateActivities }) {
     const [error, setError] = useState("");
-    const [notes, setNotes] = useState(activity?.notes || "");
+    const [message, setMessage] = useState("");
+    const [openModal, setOpenModal] = useState({ shown: false, type: "add", data: null, date: date, });
     const [popup, setPopup] = useState(false);
-    const [startTime, setStartTime] = useState(activity?.startTime || "");
-    const [type, setType] = useState(activity?.type || "-");
 
-    const edit = mode === "edit";
-    const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
+    const { id } = useParams();
 
-    const validInputCheck = (fn) => {
-        if (!activityName) { setError("Invalid Activity Name"); return; }
-        if (!startTime || (endTime && startTime >= endTime)) { setError("Invalid Start Time"); return; }
-        if (!endTime || endTime <= startTime) { setError("Invalid End Time"); return; }
-        if (!type || type === "-") { setError("Invalid Activity Type"); return; }
-        fn();
+    const filterActivity = (date, activities) => {
+        if (!date || !activities) return [];
+        return activities
+            .filter((a) => moment(a.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD"))
+            .sort((a, b) => {
+                if (a.startTime < b.startTime) return -1;
+                if (a.startTime > b.startTime) return 1;
+                return 0;
+            });
+    }
+
+    const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
+
+    const addActivity = async (data) => {
+        if (!id) {
+            const tempId = Date.now().toString();
+            setActivities(prev => [...prev, {...data, _id: tempId}]);
+            setMessage("Activity added");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
+        axiosInstance
+            .post(`/itineraries/${id}/activities`, data)
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
+    }
+
+    const editActivitiy = async (activityId, data) => {
+        if (!id) {
+            setActivities(prev => prev.map(a => a._id === activityId ? {...a, ...data} : a));
+            setMessage("Activity updated");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
+        axiosInstance
+            .put(`/itineraries/${id}/activities/${activityId}`, data)
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
+    }
+
+    const deleteActivity = async (activityId) => {
+        if (!id) {
+            setActivities(prev => prev.filter(a => a._id !== activityId));
+            setMessage("Activity deleted");
+            setOpenModal({ shown: false, type: "add", data: null, date: date });
+            return;
+        }
+
+        axiosInstance
+            .delete(`/itineraries/${id}/activities/${activityId}`)
+            .then((res) => { updateActivities(); setMessage(res.data.message); })
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 
     useEffect(() => {
@@ -30,135 +84,82 @@ export default function ActivityLayout({
             }, 3000);
             window.history.replaceState({}, document.title);
         }
-    }, [error]);
+
+        if (message) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setMessage("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error, message]);
 
     return (
-        <div className="flex flex-col w-full h-full">
-            {popup && <div className="error">{error}</div>}
-            <div className="flex items-center justify-between pl-5 pr-3 py-2">
-                <h5 className="text-xl font-semibold">{edit ? "Edit Activity" : "Add Activity"}</h5>
-                <div onClick={onClose} className="cursor-pointer rounded-full hover:bg-slate-200">
-                    <ion-icon
-                        name="close"
-                        style={{
-                            alignItems: "center",
-                            display: "flex",
-                            height: "20px",
-                            width: "20px"
-                        }}
-                    />
+        <div className="h-[428px] w-60 flex-shrink-0 bg-off-white rounded-md">
+            {popup &&
+                (error ? (<div className="error">{error}</div>)
+                    : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
+            <div className="p-2 bg-slate-200 rounded flex justify-between">
+                <span className="font-semibold justify-center items-center flex">{moment(date).format("Do MMM YYYY")}</span>
+                <div
+                    onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })}
+                    className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer"
+                >
+                    <ion-icon name="add"></ion-icon>
+                    <span className="text-sm font-light">Add</span>
                 </div>
             </div>
 
-            <div className="px-3">
-                <div className="flex flex-col gap-3">
-                    <h6 className="text-label">Activity Name:</h6>
-                    <input
-                        type="text"
-                        placeholder="activity name"
-                        name="activityName"
-                        value={activityName}
-                        autoComplete="off"
-                        required
-                        className="text-input"
-                        onChange={(e) => setActivityName(e.target.value)}
-                    />
-                </div>
-                <div className="pt-2 flex gap-5">
-                    <div className="flex flex-col gap-3">
-                        <h6 className="text-label">Date:</h6>
-                        <input
-                            type="text"
-                            value={date}
-                            disabled
-                            className="text-input w-[142px]"
+            <div className="flex flex-col gap-2 mt-1 overflow-y-auto scrollbar h-[380px]">
+                {todayActivities.length > 0
+                    ? todayActivities.map((activity) => (
+                        <ActivityCard
+                            key={activity._id}
+                            activityName={activity.activityName}
+                            startTime={activity.startTime}
+                            endTime={activity.endTime}
+                            type={activity.type}
+                            onClick={() => setOpenModal({ shown: true, type: "edit", data: activity, date: date })}
                         />
-                    </div>
-                    <div className="flex flex-col gap-3">
-                        <h6 className="text-label">Start Time:</h6>
-                        <div className="flex">
-                            <input
-                                type="time"
-                                name="startTime"
-                                max={endTime ? endTime : undefined}
-                                value={startTime}
-                                required
-                                className="text-input w-[142px] cursor-text"
-                                onChange={(e) => setStartTime(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                        <h6 className="text-label">End Time:</h6>
-                        <div className="flex">
-                            <input
-                                type="time"
-                                name="endTime"
-                                min={startTime ? startTime : undefined}
-                                value={endTime}
-                                required
-                                className="text-input w-[142px] cursor-text"
-                                onChange={(e) => setEndTime(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex gap-5 pt-4">
-                    <h6 className="text-label">Type:</h6>
-                    <select
-                        value={type}
-                        required
-                        onChange={(e) => setType(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none cursor-pointer"
-                    >
-                        <option disabled value="-">Select type</option>
-                        {typeOfActivities.map((activityType) => (
-                            <option key={activityType} value={activityType}>
-                                {activityType}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="flex flex-col gap-3 pt-2">
-                    <h6 className="text-label">Notes:</h6>
-                    <textarea
-                        type="text"
-                        placeholder="notes"
-                        name="notes"
-                        rows={4}
-                        autoComplete="off"
-                        value={notes}
-                        className="text-input overflow-y-scroll scrollbar"
-                        onChange={(e) => setNotes(e.target.value)}
-                    />
-                </div>
-
-                {edit
-                    ? <div className="flex gap-2 mt-7 w-full h-10">
-                        <div onClick={(e) => {
-                            e.preventDefault();
-                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, notes }));
-                        }}
-                            className="itinerary-button bg-green-200 hover:bg-green-300">
-                            <ion-icon name="pencil"></ion-icon>
-                            Save
-                        </div>
-                        <div onClick={(e) => { e.preventDefault(); deleteActivity(activity._id) }}
-                            className="itinerary-button bg-red-200 hover:bg-red-300">
-                            <ion-icon name="trash"></ion-icon>
-                            Delete
-                        </div>
-                    </div>
-                    : <div
-                        onClick={(e) => {
-                            e.preventDefault();
-                            validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, notes }));
-                        }}
-                        className="flex gap-2 mt-7 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
-                        <ion-icon name="pencil"></ion-icon>
-                        Add
-                    </div>}
+                    ))
+                    : <EmptyActivity dateSelected={true} />}
             </div>
-        </div >
+
+            <Modal
+                isOpen={openModal.shown}
+                onRequestClose={() => setOpenModal({ shown: false, type: "add", data: null, date: date })}
+                style={{
+                    overlay: {
+                        background: "rgba(0,0,0,0.4)",
+                        zIndex: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    },
+                    content: {
+                        position: "static",
+                        inset: "unset",
+                        display: "flex",
+                        width: "512px",
+                        height: "505px",
+                        margin: "63.167px 384px auto",
+                        background: "#f8fafc",
+                        padding: "10px",
+                    },
+                }}
+                appElement={document.getElementById("root")}
+            >
+                <ActivityModal
+                    mode={openModal.type}
+                    activity={openModal.data}
+                    date={openModal.date}
+                    onClose={() => setOpenModal({ shown: false, type: "add", data: null, date: date })}
+                    addActivity={addActivity}
+                    editActivitiy={editActivitiy}
+                    deleteActivity={deleteActivity}
+                />
+            </Modal>
+        </div>
     )
 }

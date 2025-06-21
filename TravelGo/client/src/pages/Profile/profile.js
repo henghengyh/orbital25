@@ -1,20 +1,21 @@
 import { useState } from "react";
+
 import { useUser } from "../../context/UserContext/usercontext";
 import { useAuth } from "../../context/AuthContext/authcontext";
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from "../../utils/logoutUser";
 import axiosInstance from "../../utils/axiosInstance";
-
 import basicInfo from "../../components/Profile/basicinfo";
 import DetailedInfo from "../../components/Profile/detailedInfo";
-import EditProfileModal from "../../components/Modals/EditProfileModal";
 import EditEmailModal from "../../components/Modals/EditEmailModal";
 import EditPasswordModal from "../../components/Modals/EditPasswordModal";
+import EditProfileModal from "../../components/Modals/EditProfileModal";
 import EditSignUpModal from "../../components/Modals/EditSignUpModal";
 import EditPFPModal from "../../components/Modals/EditPFPModal";
 import LogoutModal from "../../components/Modals/LogoutModal";
 
 function Profile() {
+
     const { user, setUser } = useUser();
     const [editEmailOpen, setEditEmailOpen] = useState(false);
     const [editPWOpen, setEditPWOpen] = useState(false);
@@ -66,7 +67,6 @@ function Profile() {
                 onSave={async (form) => {
                     const newBool = form.emailSignUp === "Yes" ? true : false;
                     const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: newBool });
-
                     setUser(res.data.updatedUser);
                     setEditSignUpOpen(false);
                 }}

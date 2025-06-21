@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import ActivityCard from "../Cards/activitycard";
+import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
 
@@ -163,7 +163,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 rows={3}
                                 autoComplete="off"
                                 value={notes}
-                                className="text-input overflow-y-scroll scrollbar"
+                                className="text-input overflow-y-auto scrollbar"
                                 onChange={(e) => setNotes(e.target.value)}
                             />
                         </div>
@@ -188,7 +188,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         : <div
                             onClick={(e) => {
                                 e.preventDefault();
-                                validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
+                                validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
                             }}
                             className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -197,13 +197,14 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 </div>
 
                 <div className="w-[816px] pr-4">
-                    <div className="flex flex-row gap-2 px-1 overflow-x-scroll scrollbar border-slate-300 rounded bg-gray-300">
+                    <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
-                                <ActivityCard
+                                <ActivityLayout
                                     key={idx}
                                     date={date}
                                     activities={activities}
+                                    setActivities={setActivities}
                                     updateActivities={updateActivities}
                                 />
                             ))

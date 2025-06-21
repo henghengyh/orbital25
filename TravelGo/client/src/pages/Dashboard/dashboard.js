@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyCard from "../../components/Cards/emptycard";
-import ItineraryCard from "../../components/Cards/intinerarycard";
+import ItineraryCard from "../../components/Cards/itinerarycard";
 import SearchLoading from "../../components/Loading/searchloading";
 
 export default function Dashboard() {
@@ -96,7 +96,7 @@ export default function Dashboard() {
         <div className="start-block">
             <div className="flex gap-7">
                 {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
-                <div className="flex-1 h-[490px] overflow-y-scroll scrollbar">
+                <div className="flex-1 h-[490px] overflow-y-auto scrollbar">
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
                             ? (<div className="grid grid-cols-2 gap-4">

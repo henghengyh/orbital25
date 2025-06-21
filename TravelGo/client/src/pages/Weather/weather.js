@@ -29,7 +29,7 @@ const Weather = () => {
             return hour.toString() + hr24String.slice(2,) + " " + behind;
         } else {
             behind = "PM";
-            if (hour === 12) return hr24String + " " + behind; 
+            if (hour === 12) return hr24String + " " + behind;
             return (hour - 12).toString() + hr24String.slice(2,) + " " + behind;
         }
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
@@ -65,7 +65,7 @@ const Weather = () => {
         }
     }, []);
 
-    
+
     useEffect(() => {
         fetchAllItineraries();
         fetchTripWeather(null);
@@ -437,14 +437,14 @@ const Weather = () => {
                                 <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
                             </div>
                         )}
-                        <div className='overflow-y-scroll scrollbar h-[390px]'>
+                        <div className='overflow-y-auto scrollbar h-[390px]'>
                             {showWeatherWarnings()}
                             {showTripForecast()}
                         </div>
                     </TabPanel>
                     <TabPanel>
                         {/* General Weather Content */}
-                        <div className="overflow-y-scroll scrollbar h-[474px]">
+                        <div className="overflow-y-auto scrollbar h-[474px]">
                             <div className="flex flex-row justify-center items-center w-full gap-40">
                                 {showCurrentWeather()}
                                 {showCityInput()}
