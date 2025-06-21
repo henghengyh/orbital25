@@ -437,14 +437,14 @@ const Weather = () => {
                                 <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
                             </div>
                         )}
-                        <div className='overflow-y-scroll scrollbar h-[390px]'>
+                        <div className='overflow-y-auto scrollbar h-[390px]'>
                             {showWeatherWarnings()}
                             {showTripForecast()}
                         </div>
                     </TabPanel>
                     <TabPanel>
                         {/* General Weather Content */}
-                        <div className="overflow-y-scroll scrollbar h-[474px]">
+                        <div className="overflow-y-auto scrollbar h-[474px]">
                             <div className="flex flex-row justify-center items-center w-full gap-40">
                                 {showCurrentWeather()}
                                 {showCityInput()}

@@ -96,7 +96,7 @@ export default function Dashboard() {
         <div className="start-block">
             <div className="flex gap-7">
                 {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
-                <div className="flex-1 h-[490px] overflow-y-scroll scrollbar">
+                <div className="flex-1 h-[490px] overflow-y-auto scrollbar">
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
                             ? (<div className="grid grid-cols-2 gap-4">
