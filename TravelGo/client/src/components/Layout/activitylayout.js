@@ -111,7 +111,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2 mt-1 overflow-y-scroll scrollbar h-[380px]">
+            <div className="flex flex-col gap-2 mt-1 overflow-y-auto scrollbar h-[380px]">
                 {todayActivities.length > 0
                     ? todayActivities.map((activity) => (
                         <ActivityCard
