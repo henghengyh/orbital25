@@ -128,7 +128,7 @@ export default function ActivityModal({
                         rows={4}
                         autoComplete="off"
                         value={notes}
-                        className="text-input overflow-y-scroll scrollbar"
+                        className="text-input overflow-y-auto scrollbar"
                         onChange={(e) => setNotes(e.target.value)}
                     />
                 </div>
