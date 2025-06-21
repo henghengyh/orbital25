@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, currentEmail }) {

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditProfileModal({ isOpen, onClose, onSave }) {

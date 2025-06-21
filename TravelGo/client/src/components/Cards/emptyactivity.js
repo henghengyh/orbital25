@@ -9,7 +9,7 @@ export default function EmptyActivity({ dateSelected }) {
             <p className="w-3/4 text-sm font-medium text-slate-700 text-center leading-7 mt-5">
                 {dateSelected
                     ? "Click the '+ Add' button to start adding your activity."
-                    : "Please selected the start and end dates to start adding activities for your itinerary."}
+                    : "Please select the start and end dates to start adding activities for your itinerary."}
             </p>
         </div>
     )
