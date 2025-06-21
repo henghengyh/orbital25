@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext/authcontext";
 
 import { navbarItems } from './navbaritems';
-import { useAuth } from "../../context/AuthContext/authcontext";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
 import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
+import { logoutUser } from "../../utils/logoutUser";
+
+import LogoutModal from "../../components/Modals/LogoutModal";
 
 export default function Navbar({ user }) {
     const [searchValue, setSearchValue] = useState('');
 
-    const { setAuth } = useAuth();
     const { setLoading, setSearched, setSearchResults } = useItinerary();
     const location = useLocation();
+    const [logoutOpen, setLogoutOpen] = useState(false);
+    
+    const { setAuth } = useAuth();
     const navigate = useNavigate();
 
     const isDashboard = location.pathname === '/dashboard';
@@ -27,21 +32,13 @@ export default function Navbar({ user }) {
             .finally(() => setLoading(false));
     }
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setAuth({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            loading: false,
-            logout: true,
-        });
-        navigate('/');
-    }
-
     return (
         <nav className='bg-sky-100 px-4 w-full h-[60px] shadow-md flex justify-between items-center'>
+            <LogoutModal
+                isOpen={logoutOpen}
+                onClose={() => setLogoutOpen(false)}
+                onLogout={() => logoutUser(setAuth, navigate)}
+            />
             <div className='flex flex-row items-center justify-center gap-4 w-[240px] h-full'>
                 <img
                     src={travelgo}
@@ -70,7 +67,7 @@ export default function Navbar({ user }) {
                     )
                 })}
 
-                <ProfileInfo user={user} onLogout={logout} />
+                <ProfileInfo user={user} setLogoutOpen={(b) => setLogoutOpen(b)} />
             </ul>
         </nav>
     )

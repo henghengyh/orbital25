@@ -23,13 +23,14 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
         )
     }
     const emailEntry = (fieldName, fieldKey) => {
+        const display = (!user[fieldKey] || user[fieldKey].length >= 7) ? user[fieldKey].toString().slice(0, 3) + "*".repeat(user[fieldKey].length - 6) + user[fieldKey].toString().slice(-3) : user[fieldKey].toString().slice(0, 1) + "*".repeat(user[fieldKey].length -  1);
         return (
             <>
                 <span className="col-span-2">{fieldName}</span>
                 <span className="col-start-3 col-span-6">
                     <div className="flex grid grid-cols-6 items-center">
                         <span className="col-start-1 col-span-5 text-gray-500">
-                            {user[fieldKey].toString().slice(0, 3) + "*".repeat(user[fieldKey].length - 6) + user[fieldKey].toString().slice(-3)}
+                            {display}
                         </span>
                         <span className="col-start-6 col-span-1">{editButton(onEditEmail)}</span>
                     </div>
