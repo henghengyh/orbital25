@@ -29,7 +29,7 @@ const Weather = () => {
             return hour.toString() + hr24String.slice(2,) + " " + behind;
         } else {
             behind = "PM";
-            if (hour === 12) return hr24String + " " + behind; 
+            if (hour === 12) return hr24String + " " + behind;
             return (hour - 12).toString() + hr24String.slice(2,) + " " + behind;
         }
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
@@ -65,7 +65,7 @@ const Weather = () => {
         }
     }, []);
 
-    
+
     useEffect(() => {
         fetchAllItineraries();
         fetchTripWeather(null);

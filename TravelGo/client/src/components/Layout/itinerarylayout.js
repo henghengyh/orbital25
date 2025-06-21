@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import ActivityCard from "../Cards/activitycard";
+import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
 
@@ -200,7 +200,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     <div className="flex flex-row gap-2 px-1 overflow-x-scroll scrollbar border-slate-300 rounded bg-gray-300">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
-                                <ActivityCard
+                                <ActivityLayout
                                     key={idx}
                                     date={date}
                                     activities={activities}

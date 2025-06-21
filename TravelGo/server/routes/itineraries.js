@@ -1,12 +1,11 @@
 /**
  * @file itineraries.js
- * @route /users
+ * @route /itineraries
  * 
  * This file contains the following routes:
  * 1. POST / - Create a new itinerary
  * 2. GET /get-all-itineraries - Get all itineraries for the authenticated user
- * 3. GET /search-itineraries - Search for itineraries by
- *    destination or notes
+ * 3. GET /search-itineraries - Search for itineraries by trip name or destination
  * 4. GET /filter - Filter itineraries by start and end dates
  * 5. PUT /:itineraryId - Update an itinerary by ID
  * 6. DELETE /:itineraryId - Delete an itinerary by ID
@@ -46,7 +45,7 @@ router.post("/", authenticateToken, async (req, res) => {
             user: userId,
             tripName,
             destination,
-            imageNumber: getRndInteger(1, 8),
+            imageNumber: getRndInteger(1, 20),
             startDate,
             endDate,
             numberOfPeople,
