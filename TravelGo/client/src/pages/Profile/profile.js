@@ -11,6 +11,7 @@ import EditProfileModal from "../../components/Modals/EditProfileModal";
 import EditEmailModal from "../../components/Modals/EditEmailModal";
 import EditPasswordModal from "../../components/Modals/EditPasswordModal";
 import EditSignUpModal from "../../components/Modals/EditSignUpModal";
+import EditPFPModal from "../../components/Modals/EditPFPModal";
 import LogoutModal from "../../components/Modals/LogoutModal";
 
 function Profile() {
@@ -19,6 +20,7 @@ function Profile() {
     const [editPWOpen, setEditPWOpen] = useState(false);
     const [editProfileOpen, setEditProfileOpen] = useState(false);
     const [editSignUpOpen, setEditSignUpOpen] = useState(false);
+    const [editPFPOpen, setEditPFPOpen] = useState(false);
     const [logoutOpen, setLogoutOpen] = useState(false);
 
     const { setAuth } = useAuth();
@@ -26,7 +28,7 @@ function Profile() {
 
     if (!user) return <div>Loading...</div>;
 
-    const buttonStyle = "bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
+    const buttonStyle = "bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
@@ -69,6 +71,11 @@ function Profile() {
                     setEditSignUpOpen(false);
                 }}
             />
+            <EditPFPModal
+                isOpen={editPFPOpen}
+                onClose={() => setEditPFPOpen(false)}
+                onPhotoUpdated={(newPhoto) => setUser((prev) => ({ ...prev, profilePhoto: newPhoto }))}
+            />
             <LogoutModal
                 isOpen={logoutOpen}
                 onClose={() => setLogoutOpen(false)}
@@ -78,7 +85,7 @@ function Profile() {
 
             {basicInfo(user)}
             <hr className="my-4 border-gray-300" />
-            <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} />
+            <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} onEditPFPOpen={() => setEditPFPOpen(true)} />
             <hr className="my-4 border-gray-300" />
             <div className="flex justify-center gap-1.5">
                 <button onClick={() => setLogoutOpen(true)} className={buttonStyle}>
