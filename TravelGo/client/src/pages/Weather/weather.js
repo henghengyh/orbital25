@@ -131,7 +131,7 @@ const Weather = () => {
                         day === "Weather data not available" ? (
                             <div
                                 key={i}
-                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full h-[285px]"
+                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full"
                             >
                                 <h4 className="text-lg font-semibold text-blue-700 mb-2">{key.slice(0, 15)}</h4>
                                 <div className="grid grid-cols-1 gap-x-4 gap-y-1">
@@ -141,7 +141,7 @@ const Weather = () => {
                         ) : (
                             <div
                                 key={i}
-                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full h-[285px]"
+                                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-2 border border-blue-100 mx-auto mb-6 max-w w-full"
                             >
                                 <h4 className="text-lg font-semibold text-blue-700 mb-2">{key.slice(0, 15)}</h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
