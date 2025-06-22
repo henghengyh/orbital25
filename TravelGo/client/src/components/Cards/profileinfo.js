@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getInitials } from "../../utils/helper";
 
 const REACT_PORT = 3000; //process.env.REACT_APP_API_PORT;
-const imageURL = (`https://travelgo-tl7w.onrender.com`); // (`http://localhost:${REACT_PORT}`);
+const imageURL = (`https://travelgo-tl7w.onrender.com/server`); // (`http://localhost:${REACT_PORT}`);
 
 export default function ProfileInfo({ user, setLogoutOpen }) {
     const navigate = useNavigate();
