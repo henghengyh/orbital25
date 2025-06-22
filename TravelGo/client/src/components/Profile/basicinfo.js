@@ -1,3 +1,9 @@
+/** Render Deployment
+ *  URL: (`http://localhost:3000`); <=> (`https://travelgo-tl7w.onrender.com`);
+*/ 
+
+const URL = (`https://travelgo-tl7w.onrender.com`); // (`http://localhost:3000`);
+
 function basicInfo(user) {
     return (
         <div>
@@ -6,7 +12,7 @@ function basicInfo(user) {
             <div className="flex grid grid-cols-8 items-center gap-y-4">
                 <span className="col-span-8 flex justify-center items-center">
                     <img
-                        src={user.profilePhoto ? `http://localhost:3000${user.profilePhoto}` : "/default-avatar.png"}
+                        src={user.profilePhoto ? `${URL}${user.profilePhoto}` : "/default-avatar.png"}
                         alt="Profile"
                         className="w-60 h-60 rounded-full object-cover border"
                     />
