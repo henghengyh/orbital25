@@ -42,7 +42,7 @@
   }
 
   body {
-    @apply bg-off-white mx-auto w-[1280px] overflow-x-hidden;
+    @apply bg-off-white mx-auto ;
   }
 }
 
