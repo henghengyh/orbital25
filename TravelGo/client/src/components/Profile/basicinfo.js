@@ -2,7 +2,7 @@
  *  URL: (`http://localhost:3000`); <=> (`https://travelgo-tl7w.onrender.com`);
 */ 
 
-const URL = (`https://travelgo-tl7w.onrender.com`); // (`http://localhost:3000`);
+const URL = (`https://travelgo-tl7w.onrender.com/server`); // (`http://localhost:3000`);
 
 function basicInfo(user) {
     return (
