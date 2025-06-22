@@ -143,7 +143,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
                         display: "flex",
                         width: "512px",
                         height: "505px",
-                        margin: "63.167px 384px auto",
+                        margin: "auto",
                         background: "#f8fafc",
                         padding: "10px",
                     },

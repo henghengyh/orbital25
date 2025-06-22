@@ -96,10 +96,10 @@ export default function Dashboard() {
         <div className="start-block">
             <div className="flex gap-7">
                 {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
-                <div className="flex-1 h-[490px] overflow-y-auto scrollbar">
+                <div className="flex-1 overflow-y-auto scrollbar">
                     {loading ? <SearchLoading />
                         : itineraries.length > 0
-                            ? (<div className="grid grid-cols-2 gap-4">
+                            ? (<div className="grid grid-cols-2 gap-6">
                                 {itineraries.map((item) => {
                                     return (
                                         <ItineraryCard
@@ -131,10 +131,12 @@ export default function Dashboard() {
                             />
                         </div>
                     </div>
-                </div>
 
-                <div onClick={() => navigate('/create-itinerary')} className="absolute bottom-10 right-0 bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
-                    <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
+                    <div className="mt-24 items-end justify-end flex">
+                        <div onClick={() => navigate('/create-itinerary')} className="bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
+                            <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

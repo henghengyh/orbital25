@@ -406,8 +406,8 @@ const Weather = () => {
     };
 
     return (
-        <div className="start-block h-[570px] flex flex-col gap-8 px-8">
-            <TabGroup style={{ height: "528px" }}>
+        <div className="start-block flex flex-col gap-8 px-8">
+            <TabGroup>
                 <TabList className="flex justify-center gap-4 mb-6">
                     <Tab
                         className={({ selected }) =>
@@ -428,7 +428,7 @@ const Weather = () => {
                     </Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel style={{ height: "464px" }}>
+                    <TabPanel>
                         {/* Itinerary Weather Content */}
                         {dropdownItinerary()}
                         {selectedItinerary && (
@@ -437,14 +437,12 @@ const Weather = () => {
                                 <span className="font-bold text-blue-700">{selectedItinerary.tripName}</span>
                             </div>
                         )}
-                        <div className='overflow-y-auto scrollbar h-[390px]'>
-                            {showWeatherWarnings()}
-                            {showTripForecast()}
-                        </div>
+                        {showWeatherWarnings()}
+                        {showTripForecast()}
                     </TabPanel>
                     <TabPanel>
                         {/* General Weather Content */}
-                        <div className="overflow-y-auto scrollbar h-[474px]">
+                        <div>
                             <div className="flex flex-row justify-center items-center w-full gap-40">
                                 {showCurrentWeather()}
                                 {showCityInput()}
