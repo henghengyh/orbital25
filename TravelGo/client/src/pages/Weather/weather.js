@@ -35,6 +35,16 @@ const Weather = () => {
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
     }
 
+    async function getWithRetry(url, options, retries = 5) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await axiosInstance.get(url, options);
+        } catch (error) {
+            if (i === retries - 1) throw error;
+        }
+    }
+}
+
     //A1. Fetch all itineraries
     const fetchAllItineraries = async () => {
         try {
@@ -56,7 +66,7 @@ const Weather = () => {
                 destination.current = selectedItinerary.destination;
                 const tripStart = selectedItinerary.startDate.slice(0, 10);
                 const tripEnd = selectedItinerary.endDate.slice(0, 10);
-                const response_weather = await axiosInstance.get(`/weather-forecast/trip-forecast/${destination.current}?tripStart=${tripStart}&tripEnd=${tripEnd}`);
+                const response_weather = await getWithRetry(`/weather-forecast/trip-forecast/${destination.current}?tripStart=${tripStart}&tripEnd=${tripEnd}`, { timeout: 7000 });
                 setItineraryWeather(response_weather.data);
                 setLoading(false);
             }
@@ -64,14 +74,6 @@ const Weather = () => {
             console.error('Error fetching trip\'s weather data:', error);
         }
     }, []);
-
-
-    useEffect(() => {
-        fetchAllItineraries();
-        fetchTripWeather(null);
-        fetchWeatherWarnings(null);
-        fetchCurrentWeather();
-    }, [fetchTripWeather]);
 
     //A3. Dropdown to select itinerary
     const dropdownItinerary = () => {
@@ -176,7 +178,7 @@ const Weather = () => {
     };
 
     // A5. Fetch weather warnings for the selected itinerary
-    const fetchWeatherWarnings = async (itinerary) => {
+    const fetchWeatherWarnings = useCallback(async (itinerary) => {
         if (!itinerary) return;
 
         function minusOneYear(date) {
@@ -188,9 +190,9 @@ const Weather = () => {
         const historyStart = minusOneYear(tripStart);
         const historyEnd = minusOneYear(tripEnd);
         const city = itinerary.destination;
-        const response = await axiosInstance.get(`weather-history/${city}/${historyStart}_${historyEnd}`, { timeout: 7000 }); //INTRODUCED TIMEOUT HERE
+        const response = await getWithRetry(`weather-history/${city}/${historyStart}_${historyEnd}`, { timeout: 7000 }); //INTRODUCED TIMEOUT HERE
         setWeatherWarnings(response.data);
-    }
+    },[]);
 
     //A6. Display itinerary weather warnings
     const showWeatherWarnings = () => {
@@ -237,14 +239,12 @@ const Weather = () => {
     }
 
     //B1. Fetch current weather based on geolocation
-    const fetchCurrentWeather = async () => {
+    const fetchCurrentWeather = useCallback(async () => {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude } = pos.coords;
             try {
-                const response = await axiosInstance.get(`/weather-forecast/current?lat=${latitude}&lon=${longitude}`);
+                const response = await getWithRetry(`/weather-forecast/current?lat=${latitude}&lon=${longitude}`, { timeout: 7000 });
                 setCurrentWeather(response.data);
-                console.log('Current Weather Data:', response.data);
-
                 //Some errors with API responses
                 //const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`); 
                 //const geoData = await geoRes.json();
@@ -256,7 +256,14 @@ const Weather = () => {
             }
             setLoadingCurrent(false);
         }, () => setLoadingCurrent(false));
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchAllItineraries();
+        fetchTripWeather(null);
+        fetchWeatherWarnings(null);
+        fetchCurrentWeather();
+    }, [fetchTripWeather, fetchWeatherWarnings, fetchCurrentWeather]);
 
     //B2. Current weather display lambda
     const showCurrentWeather = () => {
