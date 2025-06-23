@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require('fs');
 const app = express();
 const path = require('path');
 const connectDB = require("./config/db");
@@ -27,6 +28,11 @@ app.use("/weather", require("./routes/weather"));
 app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/weather-forecast", require("./routes/weather-openmeteo-forecast"));
 app.use("/users", require("./routes/auth"));
+
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
 app.use('/uploads', express.static('uploads'));
 
 // Serve static files from the React app
@@ -35,6 +41,7 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 // All other GET requests (INVALID) not handled before will return the React app
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  console.log(`GET request to ${req.url} served by index.html`);
 });
 
 // Finally, start the server
