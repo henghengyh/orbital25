@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditProfileModal({ isOpen, onClose, onSave }) {
+    const { user } = useUser();
     const [form, setForm] = useState({
         newName: user.name || "",
         bio: user.profileInfo?.bio || "",
@@ -13,8 +14,6 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
     });
     const [message, setMessage] = useState("");
     const [success, setSuccess] = useState(false);
-
-    const { user } = useUser();
 
     useEffect(() => {
         setForm({

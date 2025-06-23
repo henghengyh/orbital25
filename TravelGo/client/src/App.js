@@ -4,6 +4,7 @@ import './App.css';
 import AboutPage from './pages/About/about';
 import AuthProvider from './context/AuthContext/authcontext';
 import BudgetPage from './pages/Budget/budget';
+import BudgetLayoutPage from './components/Layout/budgetlayout';
 import CreateItineraryPage from './pages/Itinerary/createitinerary';
 import DashboardPage from './pages/Dashboard/dashboard';
 import ItineraryPage from './pages/Itinerary/itinerary';
@@ -34,6 +35,7 @@ function App() {
                         }>
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/budget" element={<BudgetPage />} />
+                            <Route path="/budget/:id" element={<BudgetLayoutPage />} />
                             <Route path="/create-itinerary" element={<CreateItineraryPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/itinerary/:id" element={<ItineraryPage />} />
