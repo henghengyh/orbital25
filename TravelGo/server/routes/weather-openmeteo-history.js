@@ -18,11 +18,8 @@ const { WeatherHistory } = require('../utilities/weather-helper.js');
 
 async function cityToLatLong(city) {
     const apiKey = process.env.WEATHER_API_KEY;
-    console.log(`In cityToLatLong: Fetching latitude and longitude for city: ${city}`); // For debugging purposes
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=1&appid=${apiKey}`;
-    console.log(`In cityToLatLong: URL constructed: ${url}`); // For debugging purposes
     const response = await axios.get(url);
-    console.log(`In cityToLatLong: Response received: ${JSON.stringify(response.data)}`); // For debugging purposes
     if (response.data && response.data.length > 0) {
         const { lat, lon } = response.data[0];
         return { latitude: lat, longitude: lon };
@@ -69,11 +66,8 @@ function decodeWeatherData(responses) {
 };
 
 router.get('/:city/:period', async (req, res) => {
-    console.log(`Fetching weather history for city: ${req.params.city} and period: ${req.params.period}`); //For debugging purposes
     const { latitude, longitude } = await cityToLatLong(req.params.city);
-    console.log(`Latitude: ${latitude}, Longitude: ${longitude}`); //For debugging purposes
     const [startDate, endDate] = req.params.period.split('_');
-    console.log(`Start Date: ${startDate}, End Date: ${endDate}`); //For debugging purposes
     const params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -88,8 +82,8 @@ router.get('/:city/:period', async (req, res) => {
         const weatherRawData = new WeatherHistory(decodeWeatherData(responses));
         res.json(weatherRawData.getAlerts());
     } catch (error) { 
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch weather data' });
+        console.error('Weather API error:', error); 
+        res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
 
