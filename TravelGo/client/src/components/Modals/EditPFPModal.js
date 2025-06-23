@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/UserContext/usercontext";
+import { getInitials } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
@@ -113,8 +114,16 @@ export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
                 <h2 className="text-lg font-bold mb-4">Edit Profile Photo</h2>
                 <text className="mb-4">Note: Max Upload limit is 10 MB</text>
                 <div className="mb-4 flex flex-col items-center">
-                    <img src={preview} alt="Profile Preview" className="w-32 h-32 rounded-full object-cover border mb-2"
-                    />
+                    {preview ? (
+                        <img src={preview} alt="Profile Preview" className="w-32 h-32 rounded-full object-cover border mb-2"
+                        />
+                    ) : (
+                        <div 
+                            className="w-32 h-32 flex items-center justify-center rounded-full object-cover border text-3xl font-medium bg-blue-100 cursor-pointer"
+                        >
+                            {getInitials(user.name)}
+                        </div>
+                    )}
                     <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef}
                         className="mb-2"
                     />
