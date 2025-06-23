@@ -188,7 +188,7 @@ const Weather = () => {
         const historyStart = minusOneYear(tripStart);
         const historyEnd = minusOneYear(tripEnd);
         const city = itinerary.destination;
-        const response = await axiosInstance.get(`weather-history/${city}/${historyStart}_${historyEnd}`);
+        const response = await axiosInstance.get(`weather-history/${city}/${historyStart}_${historyEnd}`, { timeout: 7000 }); //INTRODUCED TIMEOUT HERE
         setWeatherWarnings(response.data);
     }
 
