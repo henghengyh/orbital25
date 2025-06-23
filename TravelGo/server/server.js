@@ -24,7 +24,7 @@ connectDB();
  */
 app.use("/itineraries", require("./routes/itineraries"));
 app.use("/protected", require("./routes/protected"));
-app.use("/weather", require("./routes/weather"));
+// app.use("/weather", require("./routes/weather"));
 app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/weather-forecast", require("./routes/weather-openmeteo-forecast"));
 app.use("/users", require("./routes/auth"));
