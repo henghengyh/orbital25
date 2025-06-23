@@ -295,11 +295,13 @@ router.post('/delete-profile-photo', authenticateToken, async (req, res) => {
                     console.error('Failed to delete old profile photo:', err);
                 }
             });
+            isUser.profilePhoto = undefined;
+            await isUser.save();
         } else {
             return res.status(400).json({ success: false, message: 'No profile photo to delete' });
         }
 
-        res.json({ success: true, message: 'Profile photo deleted successfully' });
+        return res.json({ success: true, message: 'Profile photo deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
