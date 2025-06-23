@@ -35,7 +35,7 @@ const Weather = () => {
         // Note that the raw data given is alr in local time, doing toLocaleTimeString() will apply double conversion!
     }
 
-    async function getWithRetry(url, options, retries = 5) {
+    async function getWithRetry(url, options, retries = 10) {
     for (let i = 0; i < retries; i++) {
         try {
             return await axiosInstance.get(url, options);
@@ -347,7 +347,7 @@ const Weather = () => {
                 setWeather(null);
             } else {
                 setLoading(true);
-                const response = await axiosInstance.get(`/weather-forecast/forecast/${city}`);
+                const response = await getWithRetry(`/weather-forecast/forecast/${city}`, { timeout: 7000 });
                 setWeather(response.data);
             }
         } catch (error) {
