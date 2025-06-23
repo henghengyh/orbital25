@@ -4,6 +4,10 @@ export const navbarItems = [
         url: "/dashboard",
     },
     {
+        title: "Budget",
+        url: "/budget",
+    },
+    {
         title: "Weather",
         url: "/weather",
     },

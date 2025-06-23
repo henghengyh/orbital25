@@ -1,21 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { useUser } from "../../context/UserContext/usercontext";
 import axiosInstance from "../../utils/axiosInstance";
 
-export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
-    const { user } = useUser();
-
-    // this code requires file importing
-    const [selectedFile, setSelectedFile] = useState(null);
-    // can preview (tried and tested)
-    const [preview, setPreview] = useState("");
-    const [message, setMessage] = useState("");
-    const [success, setSuccess] = useState(false);
-
+export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) { 
     // this part, new thing implemented to check if the upload is in progress 
     // so won't have multiple uploads to jam the system (defensive coding?)
     const [loading, setLoading] = useState(false);
-
+    const [message, setMessage] = useState("");
+    // can preview (tried and tested)
+    const [preview, setPreview] = useState("");
+    // this code requires file importing
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [success, setSuccess] = useState(false);
+    
+    const { user } = useUser();
     // NEW THING LEARNT: Reference to the file input element
     const fileInputRef = useRef();
     // EXAMPLE USAGE: <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} />
