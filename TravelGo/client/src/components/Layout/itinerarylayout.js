@@ -70,7 +70,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     }, [error])
 
     return (
-        <div className="flex flex-col h-[500px] bg-white shadow-xl rounded-xl border-2">
+        <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
@@ -82,8 +82,8 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 </div>
             </div>
 
-            <div className="flex gap-7 h-[444px] pb-4">
-                <div className="w-[320px] pl-4">
+            <div className="flex gap-7 pb-4">
+                <div className="w-27vw pl-4">
                     <div>
                         <div className="flex flex-col gap-2">
                             <h6 className="text-label">Trip Name:</h6>
@@ -196,7 +196,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         </div>}
                 </div>
 
-                <div className="w-[816px] pr-4">
+                <div className="w-71vw pr-4 overflow-x-auto scrollbar">
                     <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
