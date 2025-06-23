@@ -133,8 +133,8 @@ router.get('/current', async (req, res) => {
         res.json(weatherRawData.getCurrentWeather());
         params.latitude, params.longitude = null, null; 
     } catch (error) { 
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch weather data' });
+        console.error('Weather API error:', error); 
+        res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
 
@@ -150,8 +150,8 @@ router.get('/forecast/:city', async (req, res) => {
         res.json(weatherRawData.get16DayForecast());
         params.latitude, params.longitude = null, null; 
     } catch (error) { 
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch weather data' });
+        console.error('Weather API error:', error); 
+        res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
 
@@ -172,8 +172,8 @@ router.get('/trip-forecast/:city', async (req, res) => {
         res.json(weatherRawData.getTripForecast(tripStart, tripEnd));
         params.latitude, params.longitude = null, null; 
     } catch (error) { 
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch weather data' });
+        console.error('Weather API error:', error); 
+        res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
 

@@ -1,3 +1,7 @@
+/** Render Deployment
+ *  imageURL: (`http://localhost:${REACT_PORT}`); <=> (`https://travelgo-tl7w.onrender.com`);
+*/ 
+
 import { useNavigate } from "react-router-dom";
 
 import { getInitials } from "../../utils/helper";
