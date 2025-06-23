@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditSignUpModal({ isOpen, onClose, onSave }) {
+    const { user } = useUser();
     const [form, setForm] = useState({
         emailSignUp: user.emailSignUp ? "Yes" : "No"
     });
-    
-    const { user } = useUser();
 
     useEffect(() => {
         setForm({
