@@ -6,7 +6,7 @@ function basicInfo(user) {
             <div className="flex grid grid-cols-8 items-center gap-y-4">
                 <span className="col-span-8 flex justify-center items-center">
                     <img
-                        src={user.profilePhoto ? `http://localhost:3000${user.profilePhoto}` : "/default-avatar.png"}
+                        src={user.profilePhoto || "/default-avatar.png"}
                         alt="Profile"
                         className="w-60 h-60 rounded-full object-cover border"
                     />

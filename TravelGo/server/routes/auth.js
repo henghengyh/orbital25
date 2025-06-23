@@ -19,6 +19,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authenticateToken");
+const cloudinary = require('../utilities/cloudinary');
+const streamifier = require('streamifier');
+const multer = require('multer');
+const upload = multer();
 
 const router = express.Router();
 
@@ -161,7 +165,7 @@ router.post('/update-profile', authenticateToken, async (req, res) => {
 
 const { sendCodeToEmail } = require("../utilities/email-helper");
 
-// Request email change (SUCCESSFULLY TESTED)
+// Request email change
 router.post('/request-email-change', authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -187,7 +191,7 @@ router.post('/request-email-change', authenticateToken, async (req, res) => {
     }
 });
 
-//Verify email change (SUCCESSFULLY TESTED)
+//Verify email change
 router.post('/verify-email-change', authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -216,7 +220,7 @@ router.post('/verify-email-change', authenticateToken, async (req, res) => {
 
 const zxcvbn = require('zxcvbn');
 
-// Update password (TESTED SUCCESSFULL)
+// Update password
 router.post('/update-password', authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -249,30 +253,36 @@ router.post('/update-password', authenticateToken, async (req, res) => {
     }
 });
 
-const fs = require('fs');
-const path = require('path');
-const upload = require('../middleware/upload');
-
-// Upload profile photo (TESTED SUCCESSFULL)
+// Upload profile photo
 router.post('/upload-profile-photo', authenticateToken, upload.single('photo'), async (req, res) => {
-    // Okay so basically, Multer handles the filenupload and attachs the file to req.file
     try {
         const user = req.user;
         const isUser = await User.findOne({ _id: user._id });
-
-        //Check if file is uploaded
-        if (isUser.profilePhoto && isUser.profilePhoto.startsWith('/uploads/')) {
-            const oldPhotoPath = path.join(__dirname, "..", isUser.profilePhoto);
-            fs.unlink(oldPhotoPath, (err) => {
-                if (err) {
-                    console.error('Failed to delete old profile photo:', err);
-                }
-            });
+        console.log('File received:', req.file);
+        if (isUser.profilePhotoPublicId) {
+            await cloudinary.uploader.destroy(isUser.profilePhotoPublicId);
         }
+        console.log('Uploading new profile photo...');
+        const streamUpload = (buffer) => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "profile_photos" },
+                    (error, result) => {
+                        if (result) resolve(result);
+                        else reject(error);
+                    }
+                );
+                streamifier.createReadStream(buffer).pipe(stream);
+            });
+        };
+        console.log('Stream upload function created, uploading...');
+        const result = await streamUpload(req.file.buffer);
+        console.log('Upload result:', result);
+        isUser.profilePhoto = result.secure_url;
+        isUser.profilePhotoPublicId = result.public_id;
 
-        //Save new photo
-        isUser.profilePhoto = `/uploads/${req.file.filename}`;
         await isUser.save();
+        console.log('Profile photo uploaded successfully:', isUser.profilePhoto);
 
         res.json({ success: true, profilePhoto: isUser.profilePhoto });
     } catch (error) {
@@ -280,28 +290,22 @@ router.post('/upload-profile-photo', authenticateToken, upload.single('photo'), 
     }
 });
 
-// Delete profile photo (TESTED SUCCESSFULL)
+// Delete profile photo
 router.post('/delete-profile-photo', authenticateToken, async (req, res) => {
     // Okay so basically, Multer handles the filenupload and attachs the file to req.file
     try {
         const user = req.user;
         const isUser = await User.findOne({ _id: user._id });
 
-        //Check if file is uploaded
-        if (isUser.profilePhoto && isUser.profilePhoto.startsWith('/uploads/')) {
-            const oldPhotoPath = path.join(__dirname, "..", isUser.profilePhoto);
-            fs.unlink(oldPhotoPath, (err) => {
-                if (err) {
-                    console.error('Failed to delete old profile photo:', err);
-                }
-            });
+        if (isUser.profilePhotoPublicId) {
+            await cloudinary.uploader.destroy(isUser.profilePhotoPublicId);
             isUser.profilePhoto = undefined;
+            isUser.profilePhotoPublicId = undefined;
             await isUser.save();
+            return res.json({ success: true, message: 'Profile photo deleted successfully' });
         } else {
             return res.status(400).json({ success: false, message: 'No profile photo to delete' });
         }
-
-        return res.json({ success: true, message: 'Profile photo deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
