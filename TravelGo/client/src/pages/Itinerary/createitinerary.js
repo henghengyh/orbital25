@@ -29,7 +29,7 @@ export default function CreateItinerary() {
     }, [error])
 
     return (
-        <div className="start-block py-[35px]">
+        <div className="start-block py-8">
             {popup && <div className="error">{error}</div>}
             <ItineraryLayout mode="create" addItinerary={addItinerary} />
         </div>
