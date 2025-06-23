@@ -8,7 +8,9 @@ import Loading from '../../components/Loading/loading';
 
 export default function Budget() {
     const [allItineraries, setAllItineraries] = useState([]);
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [popup, setPopup] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState("");
 
     const navigate = useNavigate();
@@ -33,10 +35,30 @@ export default function Budget() {
         return () => controller.abort();
     }, [getAllItinerary, setLoading]);
 
+    const startBudget = () => {
+        if (selectedTrip === "") {
+            setError("Please Select a Trip");
+        } else {
+            navigate(`/budget/${selectedTrip}`);
+        }
+    };
+
+    useEffect(() => {
+        if (error) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error])
+
     if (loading) return <Loading />
 
     return (
         <div className="relative mx-auto">
+            {popup && <div className="error">{error}</div>}
             <img src={analyticsImage} alt="Analytics" className="w-64 h-64 absolute top-5 left-32 z-0 object-contain" />
 
             <div className="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md relative z-10 top-20 bg-opacity-95">
@@ -61,8 +83,8 @@ export default function Budget() {
                     </select>
                 </div>
 
-                <div onClick={() => navigate(`/budget/${selectedTrip}`)} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
-                    <ion-icon name="card" style={{ fontSize: "30px"}}></ion-icon>
+                <div onClick={startBudget} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
+                    <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
                     <span>Start Budgeting</span>
                 </div>
 
