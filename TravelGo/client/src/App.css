@@ -106,4 +106,12 @@
   .itinerary-button {
     @apply w-[50%] rounded-xl items-center justify-center gap-2 flex cursor-pointer hover:shadow-sm hover:shadow-slate-300;
   }
+
+  .card {
+    @apply bg-white p-6 rounded-xl shadow-md shadow-gray-100 border border-gray-200/50;
+  }
+
+  .card-button {
+    @apply flex items-center gap-3 text-[12px] font-medium text-gray-700 hover:text-purple-500 bg-gray-50 hover:bg-purple-50 px-4 py-1.5 rounded-lg border border-gray-200/50 cursor-pointer;
+  }
 }
