@@ -7,13 +7,15 @@
  * 2. GET /get-all-itineraries - Get all itineraries for the authenticated user
  * 3. GET /search-itineraries - Search for itineraries by trip name or destination
  * 4. GET /filter - Filter itineraries by start and end dates
- * 5. PUT /:itineraryId - Update an itinerary by ID
- * 6. DELETE /:itineraryId - Delete an itinerary by ID
- * 7. POST /:itineraryId/activities - Add an activity
- * 8. PUT /:itineraryId/activities/:activityId - Update an activity by ID
- * 9. DELETE /:itineraryId/activities/:activityId - Remove an activity by ID
- * 10. GET /:itineraryId/activities - Get all activities for an itinerary
- * 11. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
+ * 5. GET /:id - Get a specific itinerary
+ * 6. PUT /:itineraryId - Update an itinerary by ID
+ * 7. DELETE /:itineraryId - Delete an itinerary by ID
+ * 
+ * 8. POST /:itineraryId/activities - Add an activity
+ * 9. PUT /:itineraryId/activities/:activityId - Update an activity by ID
+ * 10. DELETE /:itineraryId/activities/:activityId - Remove an activity by ID
+ * 11. GET /:itineraryId/activities - Get all activities for an itinerary
+ * 12. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
