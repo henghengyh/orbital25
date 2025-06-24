@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useUser } from "../../context/UserContext/usercontext";
+import { getInitials } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) { 
@@ -34,6 +35,13 @@ export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
         const file = e.target.files[0];
         setSelectedFile(file);
         if (file) {
+            if (file.size > 10 * 1024 * 1024) { // 10MB in bytes
+                setMessage("File size must be less than 10MB.");
+                setSelectedFile(null);
+                setPreview(user.profilePhoto || "");
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
             reader.readAsDataURL(file);
@@ -103,9 +111,18 @@ export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-96 shadow-lg flex flex-col items-center">
                 <h2 className="text-lg font-bold mb-4">Edit Profile Photo</h2>
+                <text className="mb-4">Note: Max Upload limit is 10 MB</text>
                 <div className="mb-4 flex flex-col items-center">
-                    <img src={preview} alt="Profile Preview" className="w-32 h-32 rounded-full object-cover border mb-2"
-                    />
+                    {preview ? (
+                        <img src={preview} alt="Profile Preview" className="w-32 h-32 rounded-full object-cover border mb-2"
+                        />
+                    ) : (
+                        <div 
+                            className="w-32 h-32 flex items-center justify-center rounded-full object-cover border text-3xl font-medium bg-blue-100 cursor-pointer"
+                        >
+                            {getInitials(user.name)}
+                        </div>
+                    )}
                     <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef}
                         className="mb-2"
                     />

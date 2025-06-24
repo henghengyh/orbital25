@@ -1,9 +1,10 @@
+/** Render Deployment
+ *  imageURL: (`http://localhost:${REACT_PORT}`); <=> (`https://travelgo-tl7w.onrender.com`);
+*/ 
+
 import { useNavigate } from "react-router-dom";
 
 import { getInitials } from "../../utils/helper";
-
-const REACT_PORT = 3000; //process.env.REACT_APP_API_PORT;
-const imageURL = (`http://localhost:${REACT_PORT}`);
 
 export default function ProfileInfo({ user, setLogoutOpen }) {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function ProfileInfo({ user, setLogoutOpen }) {
         >
             {user?.profilePhoto ? (
                 <img
-                    src={`${imageURL}${user?.profilePhoto}`}
+                    src={user?.profilePhoto}
                     alt="Profile"
                     className="w-12 h-12 rounded-full object-cover cursor-pointer"
                     onClick={() => navigate('/profile')}

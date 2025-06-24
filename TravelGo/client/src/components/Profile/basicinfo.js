@@ -1,3 +1,5 @@
+import { getInitials } from "../../utils/helper";
+
 function basicInfo(user) {
     return (
         <div>
@@ -5,11 +7,19 @@ function basicInfo(user) {
 
             <div className="flex grid grid-cols-8 items-center gap-y-4">
                 <span className="col-span-8 flex justify-center items-center">
-                    <img
-                        src={user.profilePhoto ? `http://localhost:3000${user.profilePhoto}` : "/default-avatar.png"}
-                        alt="Profile"
-                        className="w-60 h-60 rounded-full object-cover border"
-                    />
+                    {user?.profilePhoto ? (
+                        <img
+                            src={user.profilePhoto || "/default-avatar.png"}
+                            alt="Profile"
+                            className="w-60 h-60 rounded-full object-cover border"
+                        />
+                    ) : (
+                        <div 
+                            className="w-60 h-60 flex items-center justify-center rounded-full object-cover border text-6xl font-medium bg-blue-100 cursor-pointer"
+                        >
+                            {getInitials(user.name)}
+                        </div>
+                    )}
                 </span>
                 <span className="col-start-4 col-span-2 font-bold items-center text-center text-2xl"> {user.name}</span>
                 <span className="col-start-1 col-span-8 text-center text-sm text-gray-500">

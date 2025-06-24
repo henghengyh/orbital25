@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema({
     emailVerificationCode: { type: String },
     pendingEmail: { type: String },
     profilePhoto: { type: String },
+    profilePhotoPublicId: { type: String },
     profileInfo: {
         bio: { type: String, default: "" },
         favouriteDestination: { type: String, default: "" },
