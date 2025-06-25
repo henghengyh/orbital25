@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 
+import DailyOverview from "../Cards/dailyoverview";
 import ExpensesOverview from "../Cards/expensesoverview";
 import LatestEvents from "../Cards/lastestevents";
+import AllExpenses from "../Cards/allexpenses";
 
 export default function BudgetLayout({ budget, itinerary }) {
     const [remainingAmount, setRemainingAmount] = useState(0);
@@ -21,6 +23,15 @@ export default function BudgetLayout({ budget, itinerary }) {
     const styleAmount = (amount) => amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const seeMore = () => { }
+
+
+    const data = [
+        { name: "Day 1", food: 100, travel: 50, accommodation: 150 },
+        { name: "Day 2", food: 80, travel: 70, accommodation: 130 },
+        { name: "Day 3", food: 800, travel: 70, accommodation: 130 },
+        { name: "Day 4", food: 80, travel: 705, accommodation: 130 },
+        { name: "Day 5", food: 80, travel: 70, accommodation: 10 },
+    ];
 
     return (
         <div className="flex flex-col mb-10">
@@ -55,8 +66,8 @@ export default function BudgetLayout({ budget, itinerary }) {
                     seeMore={seeMore}
                 />
                 <LatestEvents />
-                <div className="bg-blue-500 w-[1080px] h-[430px] col-span-2"></div>
-                <div className="bg-blue-500 w-[540px] h-[430px]"></div>
+                <DailyOverview data={data} />
+                <AllExpenses seeMore={seeMore} />
             </div>
         </div>
     )
