@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail }) {
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [newPassword, setNewPassword] = useState("");
     const [success, setSuccess] = useState(false);
     
     useEffect(() => {
