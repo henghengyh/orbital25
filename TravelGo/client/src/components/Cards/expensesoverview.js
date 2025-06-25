@@ -3,9 +3,9 @@ import PieChartOverview from "../Charts/piechartoverview";
 export default function ExpensesOverview({ budget, totalExpenses, remainingAmount, seeMore }) {
     const colors = ['#875CF5', '#FA2C37', '#FF6900'];
     const data = [
-        {name:"Budget", amount: budget},
-        {name:"Total Expenses", amount: totalExpenses},
-        {name:"Remaining Amount", amount: remainingAmount},
+        { name: "Budget", amount: budget },
+        { name: "Total Expenses", amount: totalExpenses },
+        { name: "Remaining Amount", amount: remainingAmount },
     ];
 
     return (
@@ -14,12 +14,12 @@ export default function ExpensesOverview({ budget, totalExpenses, remainingAmoun
                 <h5 className="text-lg">Expenses Overview</h5>
             </div>
 
-            <PieChartOverview 
-            data={data}
-            label="Total Expenses"
-            totalAmount={`$${totalExpenses}`}
-            colors={colors}
-            showTextAnchor
+            <PieChartOverview
+                data={data}
+                label="Total Expenses"
+                totalAmount={`$${totalExpenses}`}
+                colors={colors}
+                showTextAnchor
             />
         </div>
     )

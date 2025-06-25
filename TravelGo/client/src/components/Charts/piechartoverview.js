@@ -21,8 +21,8 @@ export default function PieChartOverview({ data, label, totalAmount, colors, sho
                         <Cell key={`cell-${idx}`} fill={colors[idx % colors.length]} />
                     ))}
                 </Pie>
-                <Tooltip content={CustomTooltip}/>
-                <Legend content={CustomLegend}/>
+                <Tooltip content={CustomTooltip} />
+                <Legend content={CustomLegend} />
 
                 {showTextAnchor && (
                     <>
