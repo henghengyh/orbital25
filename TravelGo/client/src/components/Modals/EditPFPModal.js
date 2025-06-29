@@ -71,7 +71,7 @@ export default function EditPFPModal({ isOpen, onClose, onPhotoUpdated }) {
                     setMessage("");
                     setSuccess(false);
                     onClose();
-                }, 2000);
+                }, 1000);
             }  else {
                 setMessage(res.data.message || "Error updating profile photo");
             }

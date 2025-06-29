@@ -42,7 +42,7 @@
   }
 
   body {
-    @apply bg-off-white mx-auto ;
+    @apply bg-off-white mx-auto;
   }
 }
 
@@ -68,7 +68,7 @@
   }
 
   .error {
-    @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 w-60 p-4 rounded shadow-lg z-50 flex justify-center items-center text-center;
+    @apply bg-red-100 text-red-800 fixed top-4 left-1/2 transform -translate-x-1/2 min-w-60 max-w-96 p-4 rounded shadow-lg z-50 flex justify-center items-center text-center;
   }
 
   .about-inner-div {
