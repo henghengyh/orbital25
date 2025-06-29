@@ -45,15 +45,9 @@ export default function ActivityLayout({ date, activities, setActivities, update
             const existingEnd = parseDateTime(date, exisitng.endTime);
             const activityStart = parseDateTime(date, data.startTime);
             const activityEnd = parseDateTime(date, data.endTime);
-            console.log("es: " + existingStart);
-            console.log("ee: " + existingEnd);
-            console.log("as: " + activityStart);
-            console.log("ae: " + activityEnd);
 
             const overlap = activityStart < existingEnd && activityEnd > existingStart;
             if (overlap) {
-                console.log(data.type);
-                console.log(exisitng.type);
                 if (data.type !== "Other" && exisitng.type !== "Other") return false;
                 counter++;
             }
