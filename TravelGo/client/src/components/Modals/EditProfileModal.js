@@ -103,7 +103,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
                                 setTimeout(() => {
                                     onClose();
                                     setMessage("");
-                                }, 3000);
+                                }, 1000);
                             }
                         }}
                     >
