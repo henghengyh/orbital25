@@ -1,25 +1,24 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from "../../context/AuthContext/authcontext";
 
-import { navbarItems } from './navbaritems';
+import { logoutUser } from "../../utils/logoutUser";
+import { useAuth } from "../../context/AuthContext/authcontext";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
+import { navbarItems } from './navbaritems';
 import axiosInstance from "../../utils/axiosInstance";
 import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
-import { logoutUser } from "../../utils/logoutUser";
 
 import LogoutModal from "../../components/Modals/LogoutModal";
 
 export default function Navbar({ user }) {
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');
 
+    const { setAuth } = useAuth();
     const { setLoading, setSearched, setSearchResults } = useItinerary();
     const location = useLocation();
-    const [logoutOpen, setLogoutOpen] = useState(false);
-    
-    const { setAuth } = useAuth();
     const navigate = useNavigate();
 
     const isDashboard = location.pathname === '/dashboard';
@@ -55,7 +54,7 @@ export default function Navbar({ user }) {
                 onClearSearch={() => { setSearchValue(''); setSearchResults([]); setSearched(false); }}
             />
 
-            <ul className='flex-row gap-4 flex list-none  items-center justify-center'>
+            <ul className='flex-row gap-2 flex list-none items-center justify-center'>
                 {navbarItems.map((item, index) => {
                     return (
                         <li

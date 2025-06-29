@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
 const { ActivitySchema } = require("./Activity");
 
-/** NOTES to Frontend Developer HAOHAOOOOOO:
- * You should consider the possibility of 
- * including optional activities and notes. 
- * On top of the compulsory fields below to 
- * create an itinerary.
-*/
-
 /** ItinerarySchema
  * @param {ObjectId} user - User ID Object
  * @param {string} destination - Destination
