@@ -9,13 +9,12 @@ export default function DailyOverview() {
         { date: "2025-06-29", food: 30, transport: 15, shopping: 80, accommodation: 54, activities: 34, gift: 43, others: 18 },
         { date: "2025-06-30", food: 70, transport: 17, shopping: 20, accommodation: 40, activities: 47, gift: 10, others: 23 },
         { date: "2025-07-01", food: 35, transport: 13, shopping: 35, accommodation: 60, activities: 17, gift: 60, others: 35 },
-        { date: "2025-07-02", food: 26, transport: 19, shopping: 28, accommodation: 32, activities: 21, gift: 20, others: 12 },
     ];
 
     return (
         <div className="col-span-2 card">
             <div className="flex items-center justify-between">
-                <h5 className="text-lg">Daily Overview</h5>
+                <h5 className="text-lg">Weekly Overview</h5>
             </div>
 
             <BarChartOverview data={data} />
