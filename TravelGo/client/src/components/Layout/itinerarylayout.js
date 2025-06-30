@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
+import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
@@ -16,6 +17,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [popup, setPopup] = useState(false);
     const [startDate, setStartDate] = useState(itinerary?.startDate || null);
     const [tripName, setTripName] = useState(itinerary?.tripName || "");
+    const [showInviteModal, setShowInviteModal] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -72,19 +74,40 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}
+            {showInviteModal && (
+                <InviteCollaboratorModal
+                    onClose={() => setShowInviteModal(false)}
+                    onInvite={async (email, message) => {
+                        const res = await axiosInstance.post(`/itineraries/${id}/invite-collaborator`, {invitedEmail: email, message});
+                        return res;
+
+                    }}
+                    itinerary={itinerary}
+                />
+            )}
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
-                <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
-                    <ion-icon
-                        name="close"
-                        style={{ alignItems: "center", display: "flex", height: "20px", width: "20px" }}
-                    />
+                <div className="flex items-center gap-8">
+                    <button
+                        className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
+                        
+                        onClick={() => setShowInviteModal(true)}
+                    >
+                        <ion-icon name="person-add-outline"></ion-icon>
+                        Invite Collaborators
+                    </button>
+                    <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
+                        <ion-icon
+                            name="close"
+                            style={{ alignItems: "center", display: "flex", height: "20px", width: "20px" }}
+                        />
+                    </div>
                 </div>
             </div>
 
             <div className="flex gap-7 pb-4">
                 <div className="w-27vw pl-4">
-                    <div>
+                    <div className="pb-14">
                         <div className="flex flex-col gap-2">
                             <h6 className="text-label">Trip Name:</h6>
                             <input
@@ -167,37 +190,40 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 onChange={(e) => setNotes(e.target.value)}
                             />
                         </div>
-                    </div>
-
-                    {edit
-                        ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
-                            <div onClick={(e) => {
-                                e.preventDefault();
-                                validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
-                            }}
-                                className="itinerary-button bg-green-200 hover:bg-green-300">
+                    
+                        <div>
+                        {edit
+                            ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
+                                <div onClick={(e) => {
+                                    e.preventDefault();
+                                    validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
+                                }}
+                                    className="itinerary-button bg-green-200 hover:bg-green-300">
+                                    <ion-icon name="pencil"></ion-icon>
+                                    Save
+                                </div>
+                                <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
+                                    className="itinerary-button bg-red-200 hover:bg-red-300">
+                                    <ion-icon name="trash"></ion-icon>
+                                    Delete
+                                </div>
+                            </div>
+                            : <div
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
+                                }}
+                                className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                                 <ion-icon name="pencil"></ion-icon>
-                                Save
+                                Add
                             </div>
-                            <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
-                                className="itinerary-button bg-red-200 hover:bg-red-300">
-                                <ion-icon name="trash"></ion-icon>
-                                Delete
-                            </div>
+                        }
                         </div>
-                        : <div
-                            onClick={(e) => {
-                                e.preventDefault();
-                                validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
-                            }}
-                            className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
-                            <ion-icon name="pencil"></ion-icon>
-                            Add
-                        </div>}
+                    </div>
                 </div>
 
                 <div className="w-71vw pr-4 overflow-x-auto scrollbar">
-                    <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300">
+                    <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300 flex h-[428px]">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
                                 <ActivityLayout
