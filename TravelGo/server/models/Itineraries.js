@@ -99,6 +99,14 @@ ItinerarySchema.methods.occursOnTrip = function (activity) {
     return activityDate >= itineraryStart && activityDate <= itineraryEnd;
 }
 
+ItinerarySchema.methods.getListOfCollaborators = async function () {
+    await this.populate('collaborators');
+    return this.collaborators.map(c => ({
+        name: c.name,
+        email: c.email
+    }));
+}
+
 /** STATIC METHODS
  * To be invoked on the ItinerarySchema model (resembles a class in Java)
  * But can directly access the entire collection of itineraries in our MongoDB database

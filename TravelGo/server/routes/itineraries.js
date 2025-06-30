@@ -17,7 +17,8 @@
  * 11. GET /:itineraryId/activities - Get all activities for an itinerary
  * 12. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
  * 
- * 13. POST /:itineraryId/invite-collaborator - Invite a collaborator to an itinerary using ID
+ * 13. GET /:itineraryId/collaborators - Get all collaborators for an itinerary
+ * 14. POST /:itineraryId/invite-collaborator - Invite a collaborator to an itinerary using ID
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
@@ -356,6 +357,15 @@ router.get("/:id/activities/:activityId", authenticateToken, async (req, res) =>
     }
 });
 
+/** Getting all existing collaborators */
+router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+    const collaborators = await itinerary.getListOfCollaborators();
+    res.json({ collaborators });
+});
+
 /** Sending a collaboration invite to ONE user */
 router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, res) => {
     
@@ -368,17 +378,17 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
         if (!itinerary) {
             return;
         } else if (!hasAccessToItinerary(itinerary, user)) {
-            return res.status(403).json({ error: "You do not have permission to access this itinerary" });
+            return res.status(403).json({ success: false, error: "You do not have permission to access this itinerary" });
         } else {
             const { invitedEmail, message } = req.body;
             const invitedUser = await User.findByEmail(invitedEmail);
-            if (!invitedUser) return res.status(404).json({ error: "User not found" });
+            if (!invitedUser) return res.status(404).json({ success: false, error: "User not found" });
             const invitingUser = await User.findById(user._id);
 
             const token = crypto.randomBytes(32).toString('hex');
 
             if (itinerary.collaborators.some(id => id.toString() === invitedUser._id.toString())) {
-                return res.status(400).json({ error: "User is already a collaborator on this itinerary" });
+                return res.status(400).json({ success: false, error: "User is already a collaborator on this itinerary" });
             }
 
             const invitation = new Invitation({
@@ -391,11 +401,11 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
             await invitation.save();
 
             email.sendCollabInvitation(invitedEmail, invitingUser.name, invitedUser.name, itinerary.tripName, message, req.params.itineraryId, token);
-            return res.status(200).json({ message: `Invitation sent to ${invitedEmail}` });
+            return res.status(200).json({ success: true, message: `Invitation sent to ${invitedEmail}` });
         }        
     } catch (error) {
         console.error("Error inviting collaborator:", error);
-        return res.status(500).json({ error: "Failed to invite collaborator" });
+        return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
     }
 });
 
