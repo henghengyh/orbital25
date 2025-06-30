@@ -37,7 +37,7 @@ export default function EventInfoCard({ title, date, amount, type, hideDelete })
 
                 <div className="flex items-center gap-2">
                     {!hideDelete && (
-                        <button className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={onDelete}>
+                        <button onClick={onDelete} className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                             <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
                         </button>
                     )}
