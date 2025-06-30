@@ -79,18 +79,6 @@ ItinerarySchema.methods.updateActivity = function (oldActivity, updatedFields) {
     }
 };
 
-ItinerarySchema.methods.moveActivity = function (activityId, newIndex) {
-    const idx = this.activities.findIndex(a => a._id.toString() === activityId.toString());
-    if (idx === -1) throw new Error("Activity not found");
-
-    // what happens here is we remove the activity from its current pos
-    const [activity] = this.activities.splice(idx, 1);
-
-    // thenw e insert it in
-    this.activities.splice(newIndex, 0, activity);
-    return this.save();
-};
-
 ItinerarySchema.methods.occursOnTrip = function (activity) {
     const itineraryStart = new Date(this.startDate);
     const itineraryEnd = new Date(this.endDate);
@@ -107,6 +95,21 @@ ItinerarySchema.methods.getListOfCollaborators = async function () {
     }));
 }
 
+ItinerarySchema.methods.getOwner = async function () {
+    await this.populate('user');
+    return {
+        userId: this.user._id,
+        name: this.user.name,
+        email: this.user.email
+    };
+}
+
+ItinerarySchema.methods.removeCollaborator = async function (userID) {
+    this.collaborators = this.collaborators.filter(c => c.toString() !== userID.toString());
+    await this.save();
+    return this;
+}
+
 /** STATIC METHODS
  * To be invoked on the ItinerarySchema model (resembles a class in Java)
  * But can directly access the entire collection of itineraries in our MongoDB database
@@ -118,6 +121,15 @@ ItinerarySchema.statics.findByUser = function (userId) {
 
 ItinerarySchema.statics.findByDestination = function (destination) {
     return this.find({ destination });
+};
+
+ItinerarySchema.statics.findAccessibleByUser = function(userId) {
+    return this.find({
+        $or: [
+            { user: userId },
+            { collaborators: userId }
+        ]
+    });
 };
 
 module.exports = mongoose.model('Itinerary', ItinerarySchema);
