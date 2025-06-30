@@ -5,8 +5,9 @@ import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
 import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
+import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
 
-export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary }) {
+export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
     const [dates, setDates] = useState([]);
     const [destination, setDestination] = useState(itinerary?.destination || "");
@@ -18,6 +19,9 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [startDate, setStartDate] = useState(itinerary?.startDate || null);
     const [tripName, setTripName] = useState(itinerary?.tripName || "");
     const [showInviteModal, setShowInviteModal] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [confirmAction, setConfirmAction] = useState(""); // "Delete" or "Leave"
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -71,6 +75,30 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
         }
     }, [error])
 
+
+    useEffect(() => {
+        async function fetchOwnerStatus() {
+            const resOwner = await axiosInstance.get(`/itineraries/${id}/isOwner`);
+            setIsOwner(resOwner.data.isOwner);
+        }
+        if (itinerary?._id) fetchOwnerStatus();
+    }, [itinerary, id]);
+
+    const handleDeleteLeaveClick = () => {
+        setConfirmAction(isOwner ? "Delete" : "Leave");
+        setShowConfirmModal(true);
+    };
+
+    const handleConfirmAction = () => {
+        setShowConfirmModal(false);
+        if (confirmAction === "Delete") {
+            deleteItinerary();
+        } else {
+            leaveItinerary();
+        }
+    };
+
+
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}
@@ -85,6 +113,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     itinerary={itinerary}
                 />
             )}
+            <ConfirmDeleteLeaveModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onAction={handleConfirmAction}
+                itinerary={itinerary}
+                actionString={confirmAction}
+            />
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
                 <div className="flex items-center gap-8">
@@ -202,10 +237,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     <ion-icon name="pencil"></ion-icon>
                                     Save
                                 </div>
-                                <div onClick={(e) => { e.preventDefault(); deleteItinerary(); }}
+                                <div onClick={(e) => { 
+                                    e.preventDefault(); 
+                                    handleDeleteLeaveClick();
+                                }}
                                     className="itinerary-button bg-red-200 hover:bg-red-300">
                                     <ion-icon name="trash"></ion-icon>
-                                    Delete
+                                    {isOwner ? "Delete" : "Leave"}
                                 </div>
                             </div>
                             : <div

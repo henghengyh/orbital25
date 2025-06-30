@@ -6,16 +6,19 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
     const [message, setMessage] = useState("");
     const [feedback, setFeedback] = useState("");
     const [loading, setLoading] = useState(false);
+    const [owner, setOwner] = useState({});
     const [showAll, setShowAll] = useState(false);
 
     const [collaborators, setCollaborators] = useState([]);
-    const [collaboratorsLoading, setCollaboratorsLoading] = useState(true);
+    const [collabDataLoading, setCollabDataLoading] = useState(true);
 
     useEffect(() => {
         async function fetchCollaborators() {
-            const res = await axiosInstance.get(`/itineraries/${itinerary._id}/collaborators`);
-            setCollaborators(res.data.collaborators);
-            setCollaboratorsLoading(false);
+            const resOwner = await axiosInstance.get(`/itineraries/${itinerary._id}/owner`);
+            const resColl = await axiosInstance.get(`/itineraries/${itinerary._id}/collaborators`);
+            setOwner(resOwner.data.owner);
+            setCollaborators(resColl.data.collaborators);
+            setCollabDataLoading(false);
         }
         if (itinerary?._id) fetchCollaborators();
     }, [itinerary]);
@@ -40,7 +43,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
         setLoading(false);
     };
 
-    return collaboratorsLoading ? null : (
+    return collabDataLoading ? null : (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-[500px] shadow-lg relative">
                 <button
@@ -50,24 +53,38 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                     <ion-icon name="close" size="large"></ion-icon>
                 </button>
                 <h2 className="text-xl font-bold mb-4">Invite Collaborator</h2>
-                <div className="mb-2">
-                    <div className="font-semibold mb-1">Current Collaborators</div>
-                    <ul className="text-sm">
-                        {collaborators.slice(0, 3).map((c, idx) => (
-                            <li key={idx} className="flex justify-between py-1 border-b last:border-b-0">
-                                <span>{c.name}</span>
-                                <span className="text-gray-500">{c.email}</span>
+                <div>
+                    <div className="mb-4">
+                        <div className="font-semibold mb-1">Owner</div>
+                        <ul className="text-sm">
+                            <li className="flex justify-between py-1 border-b last:border-b-0">
+                                    <span>{owner.name}</span>
+                                    <span className="text-gray-500">{owner.email}</span>
                             </li>
-                        ))}
-                    </ul>
-                    {collaborators.length > 3 && !showAll && (
-                        <button
-                            className="text-blue-600 hover:underline mt-1 text-xs"
-                            onClick={() => setShowAll(true)}
-                        >
-                            More...
-                        </button>
-                    )}
+                        </ul>
+                    </div>
+                    {collaborators.length > 0 ? (
+                        <div className="mb-4">
+                            <hr className="mb-4"></hr>
+                            <div className="italic mb-1 text-gray-600">{collaborators ? "Collaborators" : null}</div>
+                            <ul className="text-sm">
+                                {collaborators.slice(0, 3).map((c, idx) => (
+                                    <li key={idx} className="flex justify-between py-1 border-b last:border-b-0">
+                                        <span>{c.name}</span>
+                                        <span className="text-gray-500">{c.email}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            {collaborators.length > 3 && !showAll && (
+                                <button
+                                    className="text-blue-600 hover:underline mt-1 text-xs"
+                                    onClick={() => setShowAll(true)}
+                                >
+                                    More...
+                                </button>
+                            )}
+                        </div>
+                    ) : null}
                 </div>
                 {showAll && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

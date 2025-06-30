@@ -19,6 +19,7 @@
  * 
  * 13. GET /:itineraryId/collaborators - Get all collaborators for an itinerary
  * 14. POST /:itineraryId/invite-collaborator - Invite a collaborator to an itinerary using ID
+ * 15. GET /:itineraryId/owner - Get the owner of an itinerary
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
@@ -93,7 +94,7 @@ router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
 
     try {
         const itinerary = await Itinerary
-            .find({ user: user._id })
+            .findAccessibleByUser(user._id)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -357,6 +358,28 @@ router.get("/:id/activities/:activityId", authenticateToken, async (req, res) =>
     }
 });
 
+/** Getting the owner of itinerary */
+router.get('/:itineraryId/owner', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+    const owner = await itinerary.getOwner();
+    res.json({ owner });
+});
+
+/** Getting the owner of itinerary */
+router.get('/:itineraryId/isOwner', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+
+    const user = req.user;
+
+    console.log(itinerary.user.toString(), user._id.toString());
+    const isOwner = itinerary.user.toString() === user._id.toString();
+    res.json({ isOwner });
+});
+
 /** Getting all existing collaborators */
 router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) => {
     const { itineraryId } = req.params;
@@ -406,6 +429,25 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
     } catch (error) {
         console.error("Error inviting collaborator:", error);
         return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
+    }
+});
+
+/** Getting all existing collaborators */
+router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
+     try {
+        const user = req.user;
+        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        if (!itinerary) {
+            return;
+        } else {
+            console.log("trying to remove collaborator");
+            await itinerary.removeCollaborator(user._id);
+            console.log("collaborator removed");
+            return res.status(200).json({ message: "You have left the itinerary" });
+        }
+    } catch (error) {
+        console.error("Error leaving itinerary:", error);
+        return res.status(500).json({ error: "Failed to leave itinerary" });
     }
 });
 
