@@ -46,7 +46,7 @@ export default function Register() {
                 }
             })
             .catch((err) => {
-                const message = err.response?.data?.message || "Something went wrong. Please try again.";
+                const message = ("Password too weak. " + err.response?.data?.feedback?.[0]) || err.response?.data?.message || "Something went wrong. Please try again.";
                 console.error("Registration error:", message);
                 setError(message);
             });
