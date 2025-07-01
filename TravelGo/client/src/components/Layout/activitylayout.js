@@ -29,10 +29,41 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
     const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
 
+    const isValidActivity = (data) => {
+        let counter = 0;
+        for (const exisitng of todayActivities) {
+            if (data._id.toString() === exisitng._id.toString()) continue;
+
+            const parseDateTime = (date, timeStr) => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                const result = new Date(date);
+                result.setHours(hours, minutes, 0, 0);
+                return result;
+            }
+
+            const existingStart = parseDateTime(date, exisitng.startTime);
+            const existingEnd = parseDateTime(date, exisitng.endTime);
+            const activityStart = parseDateTime(date, data.startTime);
+            const activityEnd = parseDateTime(date, data.endTime);
+
+            const overlap = activityStart < existingEnd && activityEnd > existingStart;
+            if (overlap) {
+                if (data.type !== "Other" && exisitng.type !== "Other") return false;
+                counter++;
+            }
+        }
+        return counter < 2;
+    };
+
     const addActivity = async (data) => {
         if (!id) {
             const tempId = Date.now().toString();
-            setActivities(prev => [...prev, {...data, _id: tempId}]);
+            if (isValidActivity({ ...data, _id: tempId })) {
+                setActivities(prev => [...prev, { ...data, _id: tempId }]);
+            } else {
+                setError("Invalid activity");
+                return;
+            }
             setMessage("Activity added");
             setOpenModal({ shown: false, type: "add", data: null, date: date });
             return;
@@ -47,7 +78,12 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
     const editActivitiy = async (activityId, data) => {
         if (!id) {
-            setActivities(prev => prev.map(a => a._id === activityId ? {...a, ...data} : a));
+            if (isValidActivity({ ...data, _id: activityId })) {
+                setActivities(prev => prev.map(a => a._id === activityId ? { ...a, ...data } : a));
+            } else {
+                setError("Invalid activity");
+                return;
+            }
             setMessage("Activity updated");
             setOpenModal({ shown: false, type: "add", data: null, date: date });
             return;

@@ -49,7 +49,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
                     setCode("");
                     onEmailUpdated && onEmailUpdated(newEmail); 
                     onClose();
-                }, 1500);
+                }, 1000);
             }
         } catch (err) {
             setMessage(err.response?.data?.message || "Verification failed.");
