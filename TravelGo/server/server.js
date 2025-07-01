@@ -28,6 +28,8 @@ app.use("/protected", require("./routes/protected"));
 app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/weather-forecast", require("./routes/weather-openmeteo-forecast"));
 app.use("/users", require("./routes/auth"));
+app.use("/budget", require("./routes/budget"));
+app.use("/expenses", require("./routes/expenses"));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
