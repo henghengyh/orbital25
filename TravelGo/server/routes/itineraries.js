@@ -118,16 +118,10 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     if (!query) {
         return res.status(400).json({ error: true, message: "Search query required" })
     }
-
     try {
         const matchingItinerary = await Itinerary
-            .find({
-                user: user._id,
-                $or: [
-                    { tripName: { $regex: new RegExp(query, "i") } },
-                    { destination: { $regex: new RegExp(query, "i") } }
-                ],
-            })
+            .findAccessibleByUser(user._id)
+            .searchByText(query)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -149,12 +143,8 @@ router.get("/filter", authenticateToken, async (req, res) => {
     const { start, end } = req.query;
 
     try {
-        const matchingItinerary = await Itinerary
-            .find({
-                user: user._id,
-                startDate: { $gte: new Date(start) },
-                endDate: { $lte: new Date(end) }
-            })
+        const matchingItinerary = await Itinerary.findAccessibleByUser(user._id)
+            .withinDateRange(start, end)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -374,8 +364,6 @@ router.get('/:itineraryId/isOwner', authenticateToken, async (req, res) => {
     if (!itinerary) return res.status(404).json({ error: "Not found" });
 
     const user = req.user;
-
-    console.log(itinerary.user.toString(), user._id.toString());
     const isOwner = itinerary.user.toString() === user._id.toString();
     res.json({ isOwner });
 });

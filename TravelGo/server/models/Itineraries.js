@@ -110,6 +110,36 @@ ItinerarySchema.methods.removeCollaborator = async function (userID) {
     return this;
 }
 
+ItinerarySchema.query.withinDateRange = function(startDate, endDate) {
+    if (startDate && endDate) {
+        return this.where({
+            startDate: { $gte: new Date(startDate) },
+            endDate: { $lte: new Date(endDate) }
+        });
+    }
+    return this;
+};
+
+ItinerarySchema.query.searchByText = function(searchQuery) {
+    if (searchQuery && searchQuery.trim()) {
+        const trimmedQuery = searchQuery.trim();
+
+        const result = this.find({
+            $and: [
+                this.getQuery(),
+                {
+                    $or: [
+                        { tripName: { $regex: new RegExp(trimmedQuery, "i") } },
+                        { destination: { $regex: new RegExp(trimmedQuery, "i") } }
+                    ]
+                }
+            ]
+        });
+        return result;
+    }
+    return this;
+};
+
 /** STATIC METHODS
  * To be invoked on the ItinerarySchema model (resembles a class in Java)
  * But can directly access the entire collection of itineraries in our MongoDB database
@@ -123,6 +153,7 @@ ItinerarySchema.statics.findByDestination = function (destination) {
     return this.find({ destination });
 };
 
+// Returns query objects NOTT document instances
 ItinerarySchema.statics.findAccessibleByUser = function(userId) {
     return this.find({
         $or: [

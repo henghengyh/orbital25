@@ -6,6 +6,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
 import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
 import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
+import WarningModal from "../Modals/WarningModal";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
@@ -21,7 +22,8 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [isOwner, setIsOwner] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [confirmAction, setConfirmAction] = useState(""); // "Delete" or "Leave"
+    const [confirmAction, setConfirmAction] = useState(""); 
+    const [showWarningModal, setShowWarningModal] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -99,6 +101,8 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     };
 
 
+
+
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}
@@ -106,7 +110,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 <InviteCollaboratorModal
                     onClose={() => setShowInviteModal(false)}
                     onInvite={async (email, message) => {
-                        const res = await axiosInstance.post(`/itineraries/${id}/invite-collaborator`, {invitedEmail: email, message});
+                        const res = await axiosInstance.post(`/itineraries/${id}/invite-collaborator`, { invitedEmail: email, message });
                         return res;
 
                     }}
@@ -120,17 +124,36 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 itinerary={itinerary}
                 actionString={confirmAction}
             />
+            {showWarningModal && (
+                <WarningModal
+                    isOpen={showWarningModal}
+                    onClickFunction={() => setShowWarningModal(false)}
+                    title="Unable to Invite Collaborators"
+                    text="Please create the itinerary first before inviting collaborators."
+                    exitText="OK"
+                />
+            )}
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
                 <div className="flex items-center gap-8">
-                    <button
-                        className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
-                        
-                        onClick={() => setShowInviteModal(true)}
-                    >
-                        <ion-icon name="person-add-outline"></ion-icon>
-                        Invite Collaborators
-                    </button>
+                    {edit ? (
+                        <button
+                            className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
+                            onClick={() => setShowInviteModal(true)}
+                        >
+                            <ion-icon name="person-add-outline"></ion-icon>
+                            Invite Collaborators
+                        </button>
+                    ) : null}
+                    {!edit ? (
+                        <button
+                            className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
+                            onClick={() => setShowWarningModal(true)}
+                        >
+                            <ion-icon name="person-add-outline"></ion-icon>
+                            Invite Collaborators
+                        </button>
+                    ) : null}
                     <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
                         <ion-icon
                             name="close"
@@ -225,37 +248,37 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 onChange={(e) => setNotes(e.target.value)}
                             />
                         </div>
-                    
+
                         <div>
-                        {edit
-                            ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
-                                <div onClick={(e) => {
-                                    e.preventDefault();
-                                    validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
-                                }}
-                                    className="itinerary-button bg-green-200 hover:bg-green-300">
+                            {edit
+                                ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
+                                    <div onClick={(e) => {
+                                        e.preventDefault();
+                                        validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
+                                    }}
+                                        className="itinerary-button bg-green-200 hover:bg-green-300">
+                                        <ion-icon name="pencil"></ion-icon>
+                                        Save
+                                    </div>
+                                    <div onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDeleteLeaveClick();
+                                    }}
+                                        className="itinerary-button bg-red-200 hover:bg-red-300">
+                                        <ion-icon name="trash"></ion-icon>
+                                        {isOwner ? "Delete" : "Leave"}
+                                    </div>
+                                </div>
+                                : <div
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
+                                    }}
+                                    className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                                     <ion-icon name="pencil"></ion-icon>
-                                    Save
+                                    Add
                                 </div>
-                                <div onClick={(e) => { 
-                                    e.preventDefault(); 
-                                    handleDeleteLeaveClick();
-                                }}
-                                    className="itinerary-button bg-red-200 hover:bg-red-300">
-                                    <ion-icon name="trash"></ion-icon>
-                                    {isOwner ? "Delete" : "Leave"}
-                                </div>
-                            </div>
-                            : <div
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
-                                }}
-                                className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
-                                <ion-icon name="pencil"></ion-icon>
-                                Add
-                            </div>
-                        }
+                            }
                         </div>
                     </div>
                 </div>
