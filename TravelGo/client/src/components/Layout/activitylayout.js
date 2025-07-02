@@ -132,7 +132,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
     }, [error, message]);
 
     return (
-        <div className="h-[428px] w-60 flex-shrink-0 bg-off-white rounded-md">
+        <div className="w-60 flex-shrink-0 bg-off-white rounded-md flex flex-col">
             {popup &&
                 (error ? (<div className="error">{error}</div>)
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
@@ -147,7 +147,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2 mt-1 overflow-y-auto scrollbar h-[380px]">
+            <div className="flex flex-col gap-2 mt-1 overflow-y-auto scrollbar flex-1">
                 {todayActivities.length > 0
                     ? todayActivities.map((activity) => (
                         <ActivityCard

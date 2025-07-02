@@ -61,7 +61,17 @@ UserSchema.statics.listAllUsers = function() {
 };
 
 UserSchema.statics.findByEmail = function(email) {
+    if (typeof email === "object" && email.email) {
+        return this.findOne({ email: email.email });
+    }
     return this.findOne({ email });
+};
+
+UserSchema.statics.findById = function(id) {
+    if (typeof id === "object" && id._id) {
+        return this.findOne({ _id: id._id });
+    }
+    return this.findOne({ _id: id });
 };
 
 module.exports = mongoose.model("User", UserSchema);
