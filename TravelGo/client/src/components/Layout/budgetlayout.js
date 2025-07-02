@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Modal from "react-modal";
 
 import { styleAmount } from "../../utils/helper";
 import AllExpenses from "../Cards/allexpenses";
+import axiosInstance from "../../utils/axiosInstance";
 import BudgetModal from "../Modals/budgetmodal";
 import CurrencyModal from "../Modals/currencymodal";
 import ExpensesOverview from "../Cards/expensesoverview";
@@ -11,15 +12,31 @@ import LatestEvents from "../Cards/lastestevents";
 import WeeklyOverview from "../Cards/weeklyoverview";
 
 export default function BudgetLayout() {
-    const location = useLocation();
-
-    const [budget, setBudget] = useState(location.state?.budget || 1);
+    const [budget, setBudget] = useState(0);
     const [color, setColor] = useState({ container: null, title: null, amount: null });
     const [currency, setCurrency] = useState("SGD");
+    const [latestExpenses, setLatestExpenses] = useState([]);
     const [openModal, setOpenModal] = useState({ shown: false, type: "budget", data: null });
+    const [recentExpenses, setRecentExpenses] = useState([]);
     const [remainingAmount, setRemainingAmount] = useState(0);
-    const [totalExpenses, setTotalExpenses] = useState(504.12);
+    const [totalExpenses, setTotalExpenses] = useState(0);
+    const [weeklyOverview, setWeeklyOverview] = useState([]);
 
+    const { id } = useParams();
+
+    const totalSum = (allExpenses) => allExpenses.reduce((total, curr) => total + curr.amount, 0);
+
+    useEffect(() => {
+        axiosInstance
+            .get(`/budget/${id}`)
+            .then((res) => setBudget(res.data.budget?.[0].budget))
+            .catch((err) => (console.error(err.error)));
+
+        axiosInstance
+            .get(`/expenses/${id}/all-expenses`)
+            .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
+            .catch(err => console.error(err.error));
+    });
 
     useEffect(() => {
         setRemainingAmount(budget - totalExpenses);
@@ -30,6 +47,37 @@ export default function BudgetLayout() {
         else if (remainingAmount > 0) setColor({ container: "bg-yellow-100", title: "text-yellow-700", amount: "text-yellow-800" })
         else setColor({ container: "bg-red-50", title: "text-red-700", amount: "text-red-800" });
     }, [remainingAmount]);
+
+    useEffect(() => {
+        axiosInstance
+            .get(`/expenses/${id}/recent-expenses`)
+            .then(res => setRecentExpenses(res.data?.recentExpenses))
+            .catch(err => console.error(err.error));
+
+        axiosInstance
+            .get(`/expenses/${id}/weekly-overview`)
+            .then(res => setWeeklyOverview(res.data?.weeklyOverview))
+            .catch(err => console.error(err.error));
+
+        axiosInstance
+            .get(`/expenses/${id}/latest-expenses`)
+            .then(res => setLatestExpenses(res.data?.latestExpenses))
+            .catch(err => console.error(err.error));
+    }, [totalExpenses, id]);
+
+    const onDelete = (expensesId) => {
+        console.log('hi');
+        let deletedAmt = 0;
+        axiosInstance
+            .get(`/expenses/${id}/${expensesId}`)
+            .then(res => deletedAmt = res.data.expenses.amount)
+            .catch(err => console.error(err.error));
+
+        axiosInstance
+            .delete(`/expenses/${id}/${expensesId}`)
+            .then(res => setTotalExpenses(totalExpenses - deletedAmt))
+            .catch(err => console.error(err.error));
+    }
 
     const seeMore = () => { }
 
@@ -128,11 +176,10 @@ export default function BudgetLayout() {
                     budget={budget}
                     totalExpenses={totalExpenses}
                     remainingAmount={remainingAmount}
-                    seeMore={seeMore}
                 />
-                <LatestEvents />
-                <WeeklyOverview />
-                <AllExpenses seeMore={seeMore} />
+                <LatestEvents recentExpenses={recentExpenses} onDelete={onDelete} />
+                <WeeklyOverview weeklyOverview={weeklyOverview} />
+                <AllExpenses latestExpenses={latestExpenses} onDelete={onDelete} seeMore={seeMore} />
             </div>
         </div>
     )

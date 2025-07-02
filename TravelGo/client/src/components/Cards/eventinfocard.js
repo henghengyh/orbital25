@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import Modal from 'react-modal';
 import moment from 'moment/moment';
 
 import { styleAmount } from '../../utils/helper';
@@ -9,7 +11,9 @@ import others from '../../assets/othersIcon.svg';
 import shopping from '../../assets/shoppingIcon.svg';
 import transport from '../../assets/transportIcon.svg';
 
-export default function EventInfoCard({ title, date, amount, type, hideDelete }) {
+export default function EventInfoCard({ id, title, date, amount, type, onDelete }) {
+    const [openModal, setOpenModal] = useState(false);
+
     const iconImg = (type) => {
         if (type === "accommodation") return accoms;
         else if (type === "activities") return activities;
@@ -20,8 +24,6 @@ export default function EventInfoCard({ title, date, amount, type, hideDelete })
         else if (type === "transport") return transport;
         else return null;
     }
-
-    const onDelete = () => { };
 
     return (
         <div className="group relative flex items-center gap-4 mt-2 p-3 rounded-lg hover:bg-gray-100/50">
@@ -36,16 +38,53 @@ export default function EventInfoCard({ title, date, amount, type, hideDelete })
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {!hideDelete && (
-                        <button onClick={onDelete} className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
-                        </button>
-                    )}
+                    <button onClick={() => setOpenModal(true)} className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
+                    </button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 text-blue-500">
                         <h6 className="text-md font-semibold">${styleAmount(amount)}</h6>
                     </div>
                 </div>
             </div>
+
+            <Modal
+                isOpen={openModal}
+                onRequestClose={() => setOpenModal(false)}
+                style={{
+                    overlay: {
+                        background: "rgba(0,0,0,0.4)",
+                        zIndex: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    },
+                    content: {
+                        position: "static",
+                        inset: "unset",
+                        display: "flex",
+                        width: "312px",
+                        height: "155px",
+                        margin: "auto",
+                        background: "#f8fafc",
+                        padding: "10px",
+                    },
+                }}
+                appElement={document.getElementById("root")}
+            >
+                <div className="flex flex-col justify-center items-center h-full w-full">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Delete Expenses?</h2>
+                    <div className="flex gap-5 text-xl">
+                        <button onClick={() => {onDelete(id); setOpenModal(false);}}
+                            className="bg-red-500 text-white px-4 py-2 rounded-xl w-24 hover:bg-red-600 hover:shadow-md transition">
+                            Yes
+                        </button>
+                        <button onClick={() => setOpenModal(false)}
+                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl w-24 hover:bg-gray-400 hover:shadow-md transition">
+                            No
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }

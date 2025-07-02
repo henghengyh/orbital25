@@ -9,7 +9,8 @@
  * 4. GET /:itineraryId/weekly-overview - get weekly transaction overview (show latest 7)
  * 5. GET /:itineraryId/latest-expenses - get latest expenditure (show latest 8)
  * 6. GET /:itineraryId/all-expenses - get all expenditure
- * 7. DELETE /:itineraryId/:expensesId - delete expenses
+ * 7. GET /:itineraryId/:expensesId - get an expenses
+ * 8. DELETE /:itineraryId/:expensesId - delete expenses
  */
 
 const authenticateToken = require("../middleware/authenticateToken");
@@ -19,6 +20,7 @@ const mongoose = require("mongoose");
 const Expenses = require("../models/Expenses");
 
 const { findExpensesOr404 } = require("../utilities/finder-helper");
+const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
 
 /** Add an expenses */
 router.post('/:itineraryId/', authenticateToken, async (req, res) => {
@@ -64,11 +66,12 @@ router.get('/:itineraryId/recent-expenses', authenticateToken, async (req, res) 
     try {
         const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
 
-        const recentTransaction = await Expenses
+        const recentExpenses = await Expenses
             .find({ itineraryId })
             .sort({ createdAt: -1 })
+            .select({ title: 1, date: 1, amount: 1, type: 1 })
             .limit(4);
-        return res.status(200).json({ recentTransaction });
+        return res.status(200).json({ recentExpenses });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -89,20 +92,50 @@ router.get('/:itineraryId/weekly-overview', authenticateToken, async (req, res) 
                     },
                     transactions: {
                         $push: {
-                            _id: "$_id",
-                            title: "$title",
                             date: "$date",
                             amount: "$amount",
                             type: "$type",
-                            whoPaid: "$whoPaid",
-                            notes: "$notes"
                         }
                     }
                 }
             },
-            { $sort: { "_id.year": -1, "_id.week": -1 } }
+            { $sort: { "_id.year": -1, "_id.week": -1 } },
+            { $limit: 1 },
         ]);
-        return res.status(200).json({ weeklyOverview });
+
+        // get ISO week which starts on a Monday
+        const getISOWeekStartDate = (isoYear, isoWeek) => {
+            const simple = new Date(isoYear, 0, 1 + (isoWeek - 1) * 7);
+            const dayOfWeek = simple.getDay();
+            const isoMondayOffset = (dayOfWeek <= 4 ? dayOfWeek - 1 : dayOfWeek - 8);
+            simple.setDate(simple.getDate() - isoMondayOffset);
+            return simple;
+        }
+        
+        const { year, week } = weeklyOverview[0]._id;
+        const startOfWeek = getISOWeekStartDate(year, week);
+
+        //initialise all expenses of the week to 0
+        const days = Array.from({ length: 7 }).map((_, i) => {
+            const date = new Date(startOfWeek);
+            date.setDate(startOfWeek.getDate() + i);
+            const isoDate = date.toISOString().split("T")[0];
+
+            const dayData = { date: isoDate };
+            typesOfExpenses.forEach(type => (dayData[type] = 0));
+            return dayData;
+        });
+
+        // tabulate all expenses for each day in the week
+        weeklyOverview[0].transactions.forEach(tx => {
+            const txDate = new Date(tx.date).toISOString().split("T")[0];
+            const matchingDay = days.find(d => d.date === txDate);
+            if (!matchingDay) return;
+
+            const type = typesOfExpenses.includes(tx.type) ? tx.type : "others";
+            matchingDay[type] += tx.amount;
+        });
+        return res.status(200).json({ weeklyOverview: days });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -113,11 +146,11 @@ router.get('/:itineraryId/latest-expenses', authenticateToken, async (req, res) 
     try {
         const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
 
-        const latestExpneses = await Expenses
+        const latestExpenses = await Expenses
             .find({ itineraryId })
             .sort({ date: -1, createdAt: -1 })
             .limit(8);
-        return res.status(200).json({ latestExpneses });
+        return res.status(200).json({ latestExpenses });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -132,6 +165,17 @@ router.get('/:itineraryId/all-expenses', authenticateToken, async (req, res) => 
             .find({ itineraryId })
             .sort({ date: -1, createdAt: -1 });
         return res.status(200).json({ allExpenses });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+/** Get an expenses */
+router.get('/:itineraryId/:expensesId', authenticateToken, async (req, res) => {
+    try {
+        const expenses = await findExpensesOr404(req.params.expensesId, res);
+        if (!expenses) return;
+        return res.status(200).json({ expenses });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }

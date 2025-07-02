@@ -9,6 +9,8 @@ import Loading from '../../components/Loading/loading';
 export default function Budget() {
     const [allItineraries, setAllItineraries] = useState([]);
     const [budget, setBudget] = useState(1);
+    const [budgetPresent, setBudgetPresent] = useState(false);
+    const [display, setDisplay] = useState(false);
     const [error, setError] = useState("");
     const [itinerary, setItinerary] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -42,19 +44,28 @@ export default function Budget() {
             .get(`/itineraries/${selectedTrip}`)
             .then((res) => setItinerary(res.data.itinerary))
             .catch((err) => console.error(err.error));
+
+        axiosInstance
+            .get(`/budget/${selectedTrip}`)
+            .then((res) => {
+                if (res.data?.budget?.[0]?.budget) setBudgetPresent(true);
+                setDisplay(true);
+            })
+            .catch((err) => console.error(err.message));
     }
 
     useEffect(() => {
-        if (selectedTrip !== "") getItinerary(selectedTrip);
+        if (selectedTrip !== "") { setDisplay(false); setBudgetPresent(false); getItinerary(selectedTrip); }
     }, [selectedTrip]);
 
     const startBudget = () => {
-        if (selectedTrip === "") {
-            setError("Please Select a Trip");
-        } else if (budget <= 0) {
+        if (budget <= 0) {
             setError("Invalid budget");
         } else {
-            navigate(`/budget/${itinerary._id}`, { state: { budget: budget } })
+            axiosInstance
+                .post('/budget', { itineraryIdString: itinerary._id, budget })
+                .then((res) => navigate(`/budget/${itinerary._id}`))
+                .catch((err) => console.error(err.error));
         }
     };
 
@@ -99,24 +110,33 @@ export default function Budget() {
                     </select>
                 </div>
 
-                <div className="flex justify-center items-center gap-4 mt-4">
-                    <label className="text-gray-700 text-center w-32 font-semibold">
-                        Total Budget:
-                    </label>
-                    <input
-                        type="number"
-                        placeholder="2000"
-                        min={1}
-                        value={budget}
-                        onChange={(e) => setBudget(Number(e.target.value))}
-                        className="max-w-xs px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                </div>
+                {display && (
+                    !budgetPresent ? (
+                        <><div className="flex justify-center items-center gap-4 mt-4">
+                            <label className="text-gray-700 text-center w-32 font-semibold">
+                                Total Budget:
+                            </label>
+                            <input
+                                type="number"
+                                placeholder="2000"
+                                min={1}
+                                value={budget}
+                                onChange={(e) => setBudget(Number(e.target.value))}
+                                className="max-w-xs px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
 
-                <div onClick={startBudget} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
-                    <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
-                    <span>Start Budgeting</span>
-                </div>
+                            <div onClick={startBudget} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
+                                <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
+                                <span>Start Budgeting</span>
+                            </div>
+                        </>
+                    )
+                        : (<div onClick={() => navigate(`/budget/${itinerary._id}`)} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
+                            <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
+                            <span>Continue Budgeting</span>
+                        </div>)
+                )}
             </div>
 
             <img src={calculatorImage} alt="calculator" className="w-64 h-64 absolute top-52 right-32 z-0 object-contain" />
