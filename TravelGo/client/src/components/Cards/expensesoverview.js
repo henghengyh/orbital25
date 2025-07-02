@@ -1,6 +1,6 @@
 import PieChartOverview from "../Charts/piechartoverview";
 
-export default function ExpensesOverview({ budget, totalExpenses, remainingAmount, seeMore }) {
+export default function ExpensesOverview({ budget, totalExpenses, remainingAmount }) {
     const colors = ['#875CF5', '#FA2C37', '#FF6900'];
     const data = [
         { name: "Budget", amount: budget },

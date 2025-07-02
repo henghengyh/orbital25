@@ -23,13 +23,12 @@ router.post("/", authenticateToken, async (req, res) => {
 
         const itineraryId = new mongoose.Types.ObjectId(itineraryIdString);
         const existingBudget = await Budget.findOne({ itineraryId });
-        if (existingBudget) return res.status(409).json({ message: "Budget already exists for this itinerary" });
+        if (existingBudget) return res.status(409).json({ error: "Budget already exists for this itinerary" });
 
         const newBudget = new Budget({ itineraryId, budget });
         await (await newBudget.save()).populate('itineraryId');
         return res.status(200).json({ message: "Budget added" });
     } catch (err) {
-        if (err.code === 11000) return res.status(409).json({ error: "Budget already exists for this itinerary" });
         console.error("Error adding budget:", err);
         return res.status(500).json({ error: "Failed to add budget" });
     }

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const typesOfExpenses = ["accommodation", "activities", "food", "gift", "shopping", "transport"];
+const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
 
 /** ExpensesSchema
  * @param {ObjectId} itineraryId - itinerary ID
