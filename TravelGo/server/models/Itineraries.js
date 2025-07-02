@@ -13,6 +13,7 @@ const { ActivitySchema } = require("./Activity");
  */
 const ItinerarySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     tripName: { type: String, required: true },
     destination: { type: String, required: true },
     imageNumber: { type: Number },
@@ -78,18 +79,6 @@ ItinerarySchema.methods.updateActivity = function (oldActivity, updatedFields) {
     }
 };
 
-ItinerarySchema.methods.moveActivity = function (activityId, newIndex) {
-    const idx = this.activities.findIndex(a => a._id.toString() === activityId.toString());
-    if (idx === -1) throw new Error("Activity not found");
-
-    // what happens here is we remove the activity from its current pos
-    const [activity] = this.activities.splice(idx, 1);
-
-    // thenw e insert it in
-    this.activities.splice(newIndex, 0, activity);
-    return this.save();
-};
-
 ItinerarySchema.methods.occursOnTrip = function (activity) {
     const itineraryStart = new Date(this.startDate);
     const itineraryEnd = new Date(this.endDate);
@@ -97,6 +86,59 @@ ItinerarySchema.methods.occursOnTrip = function (activity) {
 
     return activityDate >= itineraryStart && activityDate <= itineraryEnd;
 }
+
+ItinerarySchema.methods.getListOfCollaborators = async function () {
+    await this.populate('collaborators');
+    return this.collaborators.map(c => ({
+        name: c.name,
+        email: c.email
+    }));
+}
+
+ItinerarySchema.methods.getOwner = async function () {
+    await this.populate('user');
+    return {
+        userId: this.user._id,
+        name: this.user.name,
+        email: this.user.email
+    };
+}
+
+ItinerarySchema.methods.removeCollaborator = async function (userID) {
+    this.collaborators = this.collaborators.filter(c => c.toString() !== userID.toString());
+    await this.save();
+    return this;
+}
+
+ItinerarySchema.query.withinDateRange = function(startDate, endDate) {
+    if (startDate && endDate) {
+        return this.where({
+            startDate: { $gte: new Date(startDate) },
+            endDate: { $lte: new Date(endDate) }
+        });
+    }
+    return this;
+};
+
+ItinerarySchema.query.searchByText = function(searchQuery) {
+    if (searchQuery && searchQuery.trim()) {
+        const trimmedQuery = searchQuery.trim();
+
+        const result = this.find({
+            $and: [
+                this.getQuery(),
+                {
+                    $or: [
+                        { tripName: { $regex: new RegExp(trimmedQuery, "i") } },
+                        { destination: { $regex: new RegExp(trimmedQuery, "i") } }
+                    ]
+                }
+            ]
+        });
+        return result;
+    }
+    return this;
+};
 
 /** STATIC METHODS
  * To be invoked on the ItinerarySchema model (resembles a class in Java)
@@ -109,6 +151,16 @@ ItinerarySchema.statics.findByUser = function (userId) {
 
 ItinerarySchema.statics.findByDestination = function (destination) {
     return this.find({ destination });
+};
+
+// Returns query objects NOTT document instances
+ItinerarySchema.statics.findAccessibleByUser = function(userId) {
+    return this.find({
+        $or: [
+            { user: userId },
+            { collaborators: userId }
+        ]
+    });
 };
 
 module.exports = mongoose.model('Itinerary', ItinerarySchema);
