@@ -9,6 +9,4 @@ const BudgetSchema = new mongoose.Schema({
     budget: { type: Number, default: 1, required: true },
 }, { timestamps: true });
 
-BudgetSchema.index({ itineraryId: 1 });
-
 module.exports = mongoose.model("Budget", BudgetSchema);
