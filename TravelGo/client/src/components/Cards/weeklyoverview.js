@@ -1,6 +1,6 @@
 import BarChartOverview from "../Charts/barchartoverview";
 
-export default function DailyOverview() {
+export default function WeeklyOverview() {
     const data = [
         { date: "2025-06-25", food: 20, transport: 15, shopping: 50, accommodation: 70, activities: 30, gift: 40, others: 27 },
         { date: "2025-06-26", food: 40, transport: 12, shopping: 10, accommodation: 64, activities: 26, gift: 23, others: 30 },
