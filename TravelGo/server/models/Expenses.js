@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const typesOfExpenses = ["accommodation", "activities", "food", "gift", "shopping", "transport"];
 
 /** ExpensesSchema
- * @param {ObjectId} user - user ID object
- * @param {String} itineraryId - itinerary ID
+ * @param {ObjectId} itineraryId - itinerary ID
+ * @param {String} title - title of expenses made
  * @param {Date} date - date of expenses made
  * @param {Number} amount - amount of expenses
  * @param {String} type - type of expenses
@@ -10,13 +11,15 @@ const mongoose = require("mongoose");
  * @param {String} notes - additional notes, optional
  */
 const ExpensesSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    itineraryId: { type: String, required: true },
+    itineraryId: { type: mongoose.Schema.Types.ObjectId, ref: "Itinerary", required: true },
+    title: { type: String, required: true },
     date: { type: Date, default: Date.now(), required: true },
     amount: { type: Number, required: true },
-    type: { type: String, required: true },
+    type: { type: String, enum: typesOfExpenses, required: true },
     whoPaid: { type: String, required: true },
     notes: { type: String, default: "" }
 }, { timestamps: true });
+
+ExpensesSchema.index({ itineraryId: 1 });
 
 module.exports = mongoose.model("Expenses", ExpensesSchema);

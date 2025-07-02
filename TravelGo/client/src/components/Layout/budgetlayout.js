@@ -6,9 +6,9 @@ import { styleAmount } from "../../utils/helper";
 import AllExpenses from "../Cards/allexpenses";
 import BudgetModal from "../Modals/budgetmodal";
 import CurrencyModal from "../Modals/currencymodal";
-import DailyOverview from "../Cards/dailyoverview";
 import ExpensesOverview from "../Cards/expensesoverview";
 import LatestEvents from "../Cards/lastestevents";
+import WeeklyOverview from "../Cards/weeklyoverview";
 
 export default function BudgetLayout() {
     const location = useLocation();
@@ -131,7 +131,7 @@ export default function BudgetLayout() {
                     seeMore={seeMore}
                 />
                 <LatestEvents />
-                <DailyOverview />
+                <WeeklyOverview />
                 <AllExpenses seeMore={seeMore} />
             </div>
         </div>
