@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 
-export default function BudgetModal({ type, data, onClose, setBudget }) {
+export default function BudgetModal({ data, onClose, setBudget }) {
     const [error, setError] = useState("");
     const [newBudget, setNewBudget] = useState(data || 1);
     const [popup, setPopup] = useState(false);
 
     const handleSearch = () => {
         if (newBudget <= 0) { setError("Invalid Budget"); return; }
-        setBudget(newBudget);
-        onClose();
+        setBudget({ budget: newBudget });
     }
 
     const handleKeyDown = (event) => { if (event.key === 'Enter') handleSearch(); };
@@ -28,7 +27,7 @@ export default function BudgetModal({ type, data, onClose, setBudget }) {
         <div className="flex flex-col w-full h-full">
             {popup && <div className="error">{error}</div>}
             <div className="flex items-center justify-between pl-5 pr-3 py-2">
-                <h5 className="text-xl font-semibold">{type === "budget" ? "Edit Budget" : "Change Currency"}</h5>
+                <h5 className="text-xl font-semibold">Edit Budget</h5>
                 <div onClick={onClose} className="cursor-pointer rounded-full hover:bg-slate-200">
                     <ion-icon
                         name="close"
