@@ -7,16 +7,20 @@ import AllExpenses from "../Cards/allexpenses";
 import axiosInstance from "../../utils/axiosInstance";
 import BudgetModal from "../Modals/budgetmodal";
 import CurrencyModal from "../Modals/currencymodal";
+import ExpensesModal from "../Modals/expensesmodal";
 import ExpensesOverview from "../Cards/expensesoverview";
-import LatestEvents from "../Cards/lastestevents";
+import RecentExpenses from "../Cards/recentexpenses";
 import WeeklyOverview from "../Cards/weeklyoverview";
 
 export default function BudgetLayout() {
     const [budget, setBudget] = useState(0);
     const [color, setColor] = useState({ container: null, title: null, amount: null });
     const [currency, setCurrency] = useState("SGD");
+    const [error, setError] = useState("");
     const [latestExpenses, setLatestExpenses] = useState([]);
-    const [openModal, setOpenModal] = useState({ shown: false, type: "budget", data: null });
+    const [message, setMessage] = useState("");
+    const [openModal, setOpenModal] = useState({ shown: false, mode: "budget", data: null });
+    const [popup, setPopup] = useState(false);
     const [recentExpenses, setRecentExpenses] = useState([]);
     const [remainingAmount, setRemainingAmount] = useState(0);
     const [totalExpenses, setTotalExpenses] = useState(0);
@@ -38,6 +42,14 @@ export default function BudgetLayout() {
             .catch(err => console.error(err.error));
     });
 
+    const editBudget = (amt) => {
+        axiosInstance
+            .put(`/budget/${id}`, amt)
+            .then(res => { setBudget(res.data.budget); setMessage(res.data.message); })
+            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
+    };
+
     useEffect(() => {
         setRemainingAmount(budget - totalExpenses);
     }, [budget, totalExpenses]);
@@ -48,7 +60,7 @@ export default function BudgetLayout() {
         else setColor({ container: "bg-red-50", title: "text-red-700", amount: "text-red-800" });
     }, [remainingAmount]);
 
-    useEffect(() => {
+    const fetchExpensesInfo = () => {
         axiosInstance
             .get(`/expenses/${id}/recent-expenses`)
             .then(res => setRecentExpenses(res.data?.recentExpenses))
@@ -63,32 +75,70 @@ export default function BudgetLayout() {
             .get(`/expenses/${id}/latest-expenses`)
             .then(res => setLatestExpenses(res.data?.latestExpenses))
             .catch(err => console.error(err.error));
-    }, [totalExpenses, id]);
+    };
+
+    useEffect(() => {
+        fetchExpensesInfo();
+    }, [id]);
+
+    const onAdd = (data) => {
+        axiosInstance
+            .post(`/expenses/${id}`, data)
+            .then(res => { setTotalExpenses(totalExpenses + res.data.newExpenses.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
+    };
+
+    const editExpenses = (data) => setOpenModal({ shown: true, mode: "edit", data: data });
+
+    const onEdit = (expensesId, data) => {
+        axiosInstance
+            .put(`/expenses/${id}/${expensesId}`, { ...data })
+            .then(res => { setTotalExpenses(totalExpenses + res.data.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
+    };
 
     const onDelete = (expensesId) => {
-        console.log('hi');
-        let deletedAmt = 0;
-        axiosInstance
-            .get(`/expenses/${id}/${expensesId}`)
-            .then(res => deletedAmt = res.data.expenses.amount)
-            .catch(err => console.error(err.error));
-
         axiosInstance
             .delete(`/expenses/${id}/${expensesId}`)
-            .then(res => setTotalExpenses(totalExpenses - deletedAmt))
-            .catch(err => console.error(err.error));
-    }
+            .then(res => { setTotalExpenses(totalExpenses - res.data.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
+    };
 
     const seeMore = () => { }
 
+    useEffect(() => {
+        if (error) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setError("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+
+        if (message) {
+            setPopup(true);
+            setTimeout(() => {
+                setPopup(false);
+                setMessage("");
+            }, 3000);
+            window.history.replaceState({}, document.title);
+        }
+    }, [error, message]);
+
     return (
         <div className="flex flex-col mb-10">
+            {popup &&
+                (error ? (<div className="error">{error}</div>)
+                    : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="flex justify-between items-center min-h-[20vh] p-6">
-                <div onSubmit={() => setOpenModal({ shown: true, type: "currency", data: currency })}
-                    className="ml-8 flex flex-col items-center group text-gray-700">
+                <div className="ml-8 flex flex-col items-center group text-gray-700">
                     <p className="text-center font-semibold mb-1">Current Currency:</p>
                     <div className="text-2xl font-semibold gap-3 flex">{currency.toUpperCase()}
-                        <span onClick={() => setOpenModal({ shown: true, type: "currency", data: currency })}
+                        <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
                             className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                             <ion-icon name="pencil" style={{ height: "20px", width: "20px" }}></ion-icon>
                         </span>
@@ -103,7 +153,7 @@ export default function BudgetLayout() {
                             </h3>
                             <div className="flex gap-4 items-center">
                                 <p className="text-xl font-bold text-blue-800">${styleAmount(budget)}</p>
-                                <span onClick={() => setOpenModal({ shown: true, type: "budget", data: budget })}
+                                <span onClick={() => setOpenModal({ shown: true, mode: "budget", data: budget })}
                                     className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <ion-icon name="pencil"></ion-icon>
                                 </span>
@@ -125,7 +175,7 @@ export default function BudgetLayout() {
                 </div>
 
                 <div className="mr-10 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
-                    <div className="items-center flex gap-1">
+                    <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })} className="items-center flex gap-1">
                         <ion-icon name="logo-usd" style={{ height: "20px", width: "20px" }}></ion-icon>
                         <span className="text-md font-semibold">Add Expenses</span>
                     </div>
@@ -134,7 +184,7 @@ export default function BudgetLayout() {
 
             <Modal
                 isOpen={openModal.shown}
-                onRequestClose={() => setOpenModal({ shown: false, type: "budget", data: null })}
+                onRequestClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
                 style={{
                     overlay: {
                         background: "rgba(0,0,0,0.4)",
@@ -148,7 +198,7 @@ export default function BudgetLayout() {
                         inset: "unset",
                         display: "flex",
                         width: "512px",
-                        height: "255px",
+                        height: openModal.mode === "add" || openModal.mode === "edit" ? "505px" : "255px",
                         margin: "auto",
                         background: "#f8fafc",
                         padding: "10px",
@@ -156,19 +206,26 @@ export default function BudgetLayout() {
                 }}
                 appElement={document.getElementById("root")}
             >
-                {openModal.type === "budget"
+                {openModal.mode === "budget"
                     ? <BudgetModal
-                        type={openModal.type}
                         data={openModal.data}
-                        onClose={() => setOpenModal({ shown: false, type: "budget", data: null })}
-                        setBudget={setBudget}
+                        onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
+                        setBudget={editBudget}
                     />
-                    : <CurrencyModal
-                        type={openModal.type}
-                        data={openModal.data}
-                        onClose={() => setOpenModal({ shown: false, type: "budget", data: null })}
-                        setCurrency={setCurrency}
-                    />}
+                    : openModal.mode === "currency"
+                        ? <CurrencyModal
+                            data={openModal.data}
+                            onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
+                            setCurrency={setCurrency}
+                        />
+                        : <ExpensesModal
+                            mode={openModal.mode}
+                            data={openModal.data}
+                            onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
+                            onAdd={onAdd}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                        />}
             </Modal>
 
             <div className="grid grid-cols-2 gap-6 mx-20 mb-10">
@@ -177,9 +234,9 @@ export default function BudgetLayout() {
                     totalExpenses={totalExpenses}
                     remainingAmount={remainingAmount}
                 />
-                <LatestEvents recentExpenses={recentExpenses} onDelete={onDelete} />
+                <RecentExpenses recentExpenses={recentExpenses} editExpenses={editExpenses} onDelete={onDelete} />
                 <WeeklyOverview weeklyOverview={weeklyOverview} />
-                <AllExpenses latestExpenses={latestExpenses} onDelete={onDelete} seeMore={seeMore} />
+                <AllExpenses latestExpenses={latestExpenses} editExpenses={editExpenses} onDelete={onDelete} seeMore={seeMore} />
             </div>
         </div>
     )

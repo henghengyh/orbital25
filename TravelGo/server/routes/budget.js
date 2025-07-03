@@ -55,7 +55,7 @@ router.put("/:itineraryId", authenticateToken, async (req, res) => {
         } else {
             budget["budget"] = req.body["budget"];
             await budget.save();
-            return res.status(200).json({ message: "Budget updated" });
+            return res.status(200).json({ message: "Budget updated", budget: budget.budget });
         }
     } catch (err) {
         console.error("Error updating budget:", err);

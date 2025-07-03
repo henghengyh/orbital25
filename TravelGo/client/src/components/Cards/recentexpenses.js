@@ -1,6 +1,6 @@
-import EventInfoCard from "./eventinfocard";
+import ExpensesInfoCard from "./expensesinfocard";
 
-export default function LatestEvents({ recentExpenses, onDelete }) {
+export default function RecentExpenses({ recentExpenses, editExpenses, onDelete }) {
     return (
         <div className="card">
             <div className="flex items-center justify-between">
@@ -9,13 +9,10 @@ export default function LatestEvents({ recentExpenses, onDelete }) {
 
             <div className="mt-6">
                 {recentExpenses.map((entry, idx) => (
-                    <EventInfoCard
+                    <ExpensesInfoCard
                         key={idx}
-                        id={entry._id}
-                        title={entry.title}
-                        date={entry.date}
-                        amount={entry.amount}
-                        type={entry.type}
+                        data={entry}
+                        editExpenses={editExpenses}
                         onDelete={onDelete}
                     />
                 ))}

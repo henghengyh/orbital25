@@ -50,11 +50,14 @@ router.put('/:itineraryId/:expensesId', authenticateToken, async (req, res) => {
         if (!expenses) {
             return;
         } else {
+            let oldAmt = expenses.amount;
+            let newAmt = 0;
             for (const key in req.body) {
+                if (key === "amount") newAmt = req.body[key];
                 expenses[key] = req.body[key];
             }
             await expenses.save();
-            return res.status(200).json({ message: "Expenses updated" });
+            return res.status(200).json({ message: "Expenses updated", amount: newAmt - oldAmt });
         }
     } catch (error) {
         return ers.status(500).json({ error: error.message });
@@ -69,7 +72,6 @@ router.get('/:itineraryId/recent-expenses', authenticateToken, async (req, res) 
         const recentExpenses = await Expenses
             .find({ itineraryId })
             .sort({ createdAt: -1 })
-            .select({ title: 1, date: 1, amount: 1, type: 1 })
             .limit(4);
         return res.status(200).json({ recentExpenses });
     } catch (error) {
@@ -111,7 +113,7 @@ router.get('/:itineraryId/weekly-overview', authenticateToken, async (req, res) 
             simple.setDate(simple.getDate() - isoMondayOffset);
             return simple;
         }
-        
+
         const { year, week } = weeklyOverview[0]._id;
         const startOfWeek = getISOWeekStartDate(year, week);
 
@@ -184,8 +186,8 @@ router.get('/:itineraryId/:expensesId', authenticateToken, async (req, res) => {
 /** Delete an expenses */
 router.delete('/:itineraryId/:expensesId', authenticateToken, async (req, res) => {
     try {
-        await Expenses.findByIdAndDelete(req.params.expensesId);
-        return res.status(200).json({ message: "Expenses deleted" });
+        const expenses = await Expenses.findByIdAndDelete(req.params.expensesId);
+        return res.status(200).json({ message: "Expenses deleted", amount: expenses.amount });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
