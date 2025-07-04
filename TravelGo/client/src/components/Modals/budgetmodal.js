@@ -50,6 +50,7 @@ export default function BudgetModal({ data, onClose, setBudget }) {
                     placeholder="2000"
                     min={1}
                     value={newBudget}
+                    autoFocus
                     onChange={(e) => setNewBudget(Number(e.target.value))}
                     onKeyDown={handleKeyDown}
                     className="max-w-xs px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

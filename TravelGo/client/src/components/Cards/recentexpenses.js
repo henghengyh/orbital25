@@ -1,3 +1,4 @@
+import EmptyExpenses from "./emptyexpenses";
 import ExpensesInfoCard from "./expensesinfocard";
 
 export default function RecentExpenses({ recentExpenses, editExpenses, onDelete }) {
@@ -8,14 +9,16 @@ export default function RecentExpenses({ recentExpenses, editExpenses, onDelete 
             </div>
 
             <div className="mt-6">
-                {recentExpenses.map((entry, idx) => (
-                    <ExpensesInfoCard
-                        key={idx}
-                        data={entry}
-                        editExpenses={editExpenses}
-                        onDelete={onDelete}
-                    />
-                ))}
+                {recentExpenses.length > 0
+                    ? recentExpenses.map((entry, idx) => (
+                        <ExpensesInfoCard
+                            key={idx}
+                            data={entry}
+                            editExpenses={editExpenses}
+                            onDelete={onDelete}
+                        />
+                    ))
+                    : <EmptyExpenses />}
             </div>
         </div>
     )

@@ -1,4 +1,5 @@
 import BarChartOverview from "../Charts/barchartoverview";
+import EmptyExpenses from "./emptyexpenses";
 
 export default function WeeklyOverview({ weeklyOverview }) {
     return (
@@ -7,7 +8,9 @@ export default function WeeklyOverview({ weeklyOverview }) {
                 <h5 className="text-lg">Weekly Overview</h5>
             </div>
 
-            <BarChartOverview data={weeklyOverview} />
+            {weeklyOverview.length > 0
+                ? <BarChartOverview data={weeklyOverview} />
+                : <EmptyExpenses />}
         </div>
     )
 }
