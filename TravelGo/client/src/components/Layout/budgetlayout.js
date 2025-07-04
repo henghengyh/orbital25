@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
 import { styleAmount } from "../../utils/helper";
@@ -7,9 +7,11 @@ import AllExpenses from "../Cards/allexpenses";
 import axiosInstance from "../../utils/axiosInstance";
 import BudgetModal from "../Modals/budgetmodal";
 import CurrencyModal from "../Modals/currencymodal";
+import ExpensesBreakdown from "../Cards/expensesbreakdown";
 import ExpensesModal from "../Modals/expensesmodal";
 import ExpensesOverview from "../Cards/expensesoverview";
 import RecentExpenses from "../Cards/recentexpenses";
+import SplitExpenses from "../Cards/splitexpenses";
 import WeeklyOverview from "../Cards/weeklyoverview";
 
 export default function BudgetLayout() {
@@ -27,6 +29,7 @@ export default function BudgetLayout() {
     const [weeklyOverview, setWeeklyOverview] = useState([]);
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const totalSum = (allExpenses) => allExpenses.reduce((total, curr) => total + curr.amount, 0);
 
@@ -35,12 +38,12 @@ export default function BudgetLayout() {
             .get(`/budget/${id}`)
             .then((res) => setBudget(res.data.budget?.[0].budget))
             .catch((err) => (console.error(err.error)));
-
+        console.log("hi");
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
             .catch(err => console.error(err.error));
-    });
+    }, [id]);
 
     const editBudget = (amt) => {
         axiosInstance
@@ -60,7 +63,7 @@ export default function BudgetLayout() {
         else setColor({ container: "bg-red-50", title: "text-red-700", amount: "text-red-800" });
     }, [remainingAmount]);
 
-    const fetchExpensesInfo = () => {
+    const fetchExpensesInfo = useCallback(() => {
         axiosInstance
             .get(`/expenses/${id}/recent-expenses`)
             .then(res => setRecentExpenses(res.data?.recentExpenses))
@@ -75,16 +78,20 @@ export default function BudgetLayout() {
             .get(`/expenses/${id}/latest-expenses`)
             .then(res => setLatestExpenses(res.data?.latestExpenses))
             .catch(err => console.error(err.error));
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchExpensesInfo();
-    }, [id]);
+    }, [fetchExpensesInfo]);
 
     const onAdd = (data) => {
         axiosInstance
             .post(`/expenses/${id}`, data)
-            .then(res => { setTotalExpenses(totalExpenses + res.data.newExpenses.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .then(res => {
+                setTotalExpenses(totalExpenses + res.data.newExpenses.amount);
+                setMessage(res.data.message);
+                fetchExpensesInfo();
+            })
             .catch(err => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
@@ -94,7 +101,11 @@ export default function BudgetLayout() {
     const onEdit = (expensesId, data) => {
         axiosInstance
             .put(`/expenses/${id}/${expensesId}`, { ...data })
-            .then(res => { setTotalExpenses(totalExpenses + res.data.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .then(res => {
+                setTotalExpenses(totalExpenses + res.data.amount);
+                setMessage(res.data.message);
+                fetchExpensesInfo();
+            })
             .catch(err => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
@@ -102,12 +113,14 @@ export default function BudgetLayout() {
     const onDelete = (expensesId) => {
         axiosInstance
             .delete(`/expenses/${id}/${expensesId}`)
-            .then(res => { setTotalExpenses(totalExpenses - res.data.amount); setMessage(res.data.message); fetchExpensesInfo(); })
+            .then(res => {
+                setTotalExpenses(totalExpenses - res.data.amount);
+                setMessage(res.data.message);
+                fetchExpensesInfo();
+            })
             .catch(err => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
-
-    const seeMore = () => { }
 
     useEffect(() => {
         if (error) {
@@ -230,13 +243,23 @@ export default function BudgetLayout() {
 
             <div className="grid grid-cols-2 gap-6 mx-20 mb-10">
                 <ExpensesOverview
-                    budget={budget}
                     totalExpenses={totalExpenses}
                     remainingAmount={remainingAmount}
                 />
-                <RecentExpenses recentExpenses={recentExpenses} editExpenses={editExpenses} onDelete={onDelete} />
+                <RecentExpenses
+                    recentExpenses={recentExpenses}
+                    editExpenses={editExpenses}
+                    onDelete={onDelete}
+                />
                 <WeeklyOverview weeklyOverview={weeklyOverview} />
-                <AllExpenses latestExpenses={latestExpenses} editExpenses={editExpenses} onDelete={onDelete} seeMore={seeMore} />
+                <AllExpenses
+                    latestExpenses={latestExpenses}
+                    editExpenses={editExpenses}
+                    onDelete={onDelete}
+                    showMore={() => navigate(`/budget/${id}/all-expenditure`)}
+                />
+                <ExpensesBreakdown />
+                <SplitExpenses />
             </div>
         </div>
     )
