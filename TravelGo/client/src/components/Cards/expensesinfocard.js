@@ -65,8 +65,8 @@ export default function ExpensesInfoCard({ data, editExpenses, onDelete }) {
                         position: "static",
                         inset: "unset",
                         display: "flex",
-                        width: "312px",
-                        height: "155px",
+                        width: "335px",
+                        height: "170px",
                         margin: "auto",
                         background: "#f8fafc",
                         padding: "10px",
@@ -74,16 +74,17 @@ export default function ExpensesInfoCard({ data, editExpenses, onDelete }) {
                 }}
                 appElement={document.getElementById("root")}
             >
-                <div className="flex flex-col justify-center items-center h-full w-full">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Delete Expenses?</h2>
-                    <div className="flex gap-5 text-xl">
-                        <button onClick={() => { onDelete(data._id); setOpenModal(false); }}
-                            className="bg-red-500 text-white px-4 py-2 rounded-xl w-24 hover:bg-red-600 hover:shadow-md transition">
-                            Yes
-                        </button>
+                <div className="flex flex-col justify-center h-full w-full p-2">
+                    <h2 className="text-xl font-bold mb-2">Confirm Delete</h2>
+                    <p className="mb-4 text-lg">Are you sure you want to delete?</p>
+                    <div className="flex justify-between items-center text-lg">
                         <button onClick={() => setOpenModal(false)}
-                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-xl w-24 hover:bg-gray-400 hover:shadow-md transition">
-                            No
+                            className="px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400 hover:shadow-md transition">
+                            Cancel
+                        </button>
+                        <button onClick={() => { onDelete(data._id); setOpenModal(false); }}
+                            className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 hover:shadow-md transition">
+                            Delete
                         </button>
                     </div>
                 </div>

@@ -38,7 +38,7 @@ export default function BudgetLayout() {
             .get(`/budget/${id}`)
             .then((res) => setBudget(res.data.budget?.[0].budget))
             .catch((err) => (console.error(err.error)));
-        console.log("hi");
+
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
@@ -187,8 +187,9 @@ export default function BudgetLayout() {
                     </div>
                 </div>
 
-                <div className="mr-10 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
-                    <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })} className="items-center flex gap-1">
+                <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })}
+                    className="mr-10 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
+                    <div className="items-center flex gap-1">
                         <ion-icon name="logo-usd" style={{ height: "20px", width: "20px" }}></ion-icon>
                         <span className="text-md font-semibold">Add Expenses</span>
                     </div>

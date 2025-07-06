@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 
+const formatDate = (date) => {
+    if (!date) return "";
+    return date.slice(0, 10);
+};
+
 export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDelete }) {
     const [amount, setAmount] = useState(data?.amount || 0);
-    const [date, setDate] = useState(data?.date || null);
+    const [date, setDate] = useState(data?.date || formatDate(new Date().toISOString()));
     const [error, setError] = useState("");
     const [notes, setNotes] = useState(data?.notes || "");
     const [popup, setPopup] = useState(false);
@@ -12,11 +17,6 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
 
     const edit = mode === "edit";
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
-
-    const formatDate = (date) => {
-        if (!date) return "";
-        return date.slice(0, 10);
-    }
 
     const validInputCheck = (fn) => {
         if (!title) { setError("Invalid Title"); return; }
