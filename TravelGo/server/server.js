@@ -9,9 +9,8 @@ const PORT = process.env.PORT || 5001;
 require("dotenv").config();
 
 // MIDDLEWARE
-// Parses incoming JSON requests
 app.use(express.json());
-// Enables CORS (Cross-Origin Resource Sharing) for all routes
+// WHat is CORS? = (Cross-Origin Resource Sharing) for all routes
 app.use(cors());
 // Function invocation of the defined constant in line 5
 connectDB();
@@ -28,6 +27,7 @@ app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/weather-forecast", require("./routes/weather-openmeteo-forecast"));
 app.use("/users", require("./routes/auth"));
 app.use("/collaboration", require("./routes/collaboration"));
+app.use("/maps", require("./routes/maps"));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../client/build')));
