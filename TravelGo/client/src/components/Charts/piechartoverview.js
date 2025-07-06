@@ -3,14 +3,14 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recha
 import CustomLegend from './customlegend';
 import CustomTooltip from './customtooltip';
 
-export default function PieChartOverview({ data, label, totalAmount, colors, showTextAnchor }) {
+export default function PieChartOverview({ mode, data, label, totalAmount, colors, showTextAnchor }) {
     return (
         <ResponsiveContainer width="100%" height={350}>
             <PieChart>
                 <Pie
                     data={data}
-                    dataKey="amount"
-                    nameKey="name"
+                    dataKey={mode === "overview" ? "amount" : "totalAmount"}
+                    nameKey={mode === "overview" ? "name" : "type"}
                     cx="50%"
                     cy="50%"
                     outerRadius={130}

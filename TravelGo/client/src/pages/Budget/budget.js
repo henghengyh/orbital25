@@ -57,7 +57,11 @@ export default function Budget() {
             setError("Invalid budget");
         } else {
             axiosInstance
-                .post('/budget', { itineraryIdString: selectedTrip, budget })
+                .post('/budget', {
+                    itineraryIdString: selectedTrip,
+                    budget,
+                    itineraryTitle: allItineraries.find(t => t._id === selectedTrip).tripName
+                })
                 .then(res => navigate(`/budget/${selectedTrip}`))
                 .catch(err => console.error(err.error));
         }
@@ -72,13 +76,12 @@ export default function Budget() {
             }, 3000);
             window.history.replaceState({}, document.title);
         }
-    }, [error])
+    }, [error]);
 
     if (loading) return <Loading />
 
     return (
         <div className="relative mx-auto">
-
             {popup && <div className="error">{error}</div>}
             <img src={analyticsImage} alt="Analytics" className="w-64 h-64 absolute top-5 left-32 z-0 object-contain" />
 

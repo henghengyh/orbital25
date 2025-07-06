@@ -10,21 +10,25 @@ import CurrencyModal from "../Modals/currencymodal";
 import ExpensesBreakdown from "../Cards/expensesbreakdown";
 import ExpensesModal from "../Modals/expensesmodal";
 import ExpensesOverview from "../Cards/expensesoverview";
+import ItineraryModal from "../Modals/itinerarymodal";
 import RecentExpenses from "../Cards/recentexpenses";
 import SplitExpenses from "../Cards/splitexpenses";
 import WeeklyOverview from "../Cards/weeklyoverview";
 
 export default function BudgetLayout() {
+    const [breakdown, setBreakdown] = useState([]);
     const [budget, setBudget] = useState(0);
     const [color, setColor] = useState({ container: null, title: null, amount: null });
     const [currency, setCurrency] = useState("SGD");
     const [error, setError] = useState("");
+    const [itineraryTitle, setItineraryTitle] = useState("");
     const [latestExpenses, setLatestExpenses] = useState([]);
     const [message, setMessage] = useState("");
     const [openModal, setOpenModal] = useState({ shown: false, mode: "budget", data: null });
     const [popup, setPopup] = useState(false);
     const [recentExpenses, setRecentExpenses] = useState([]);
     const [remainingAmount, setRemainingAmount] = useState(0);
+    const [splitExpenses, setSplitExpenses] = useState([]);
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [weeklyOverview, setWeeklyOverview] = useState([]);
 
@@ -36,7 +40,7 @@ export default function BudgetLayout() {
     useEffect(() => {
         axiosInstance
             .get(`/budget/${id}`)
-            .then((res) => setBudget(res.data.budget?.[0].budget))
+            .then((res) => { setItineraryTitle(res.data.budget?.[0].itineraryTitle); setBudget(res.data.budget?.[0].budget) })
             .catch((err) => (console.error(err.error)));
 
         axiosInstance
@@ -44,6 +48,17 @@ export default function BudgetLayout() {
             .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
             .catch(err => console.error(err.error));
     }, [id]);
+
+    const changeItinerary = (id) => {
+        axiosInstance
+            .get(`/budget/${id}`)
+            .then((res) => {
+                if (res.data?.budget?.[0]?.budget) navigate(`/budget/${id}`)
+                else navigate('/budget');
+            })
+            .catch((err) => console.error(err.message))
+            .finally(() => setOpenModal({ shown: false, mode: "add", data: null }));
+    };
 
     const editBudget = (amt) => {
         axiosInstance
@@ -78,6 +93,16 @@ export default function BudgetLayout() {
             .get(`/expenses/${id}/latest-expenses`)
             .then(res => setLatestExpenses(res.data?.latestExpenses))
             .catch(err => console.error(err.error));
+
+        axiosInstance
+            .get(`/expenses/${id}/expenses-breakdown`)
+            .then(res => setBreakdown(res.data?.expensesBreakdown))
+            .catch(err => console.error(err.error));
+
+        axiosInstance
+            .get(`/expenses/${id}/split-expenses`)
+            .then(res => setSplitExpenses(res.data?.splitExpenses))
+            .catch(err => console.error(err.error));
     }, [id]);
 
     useEffect(() => {
@@ -92,7 +117,7 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => { console.error(err.error); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -106,7 +131,7 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => { console.error(err.error); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -118,7 +143,7 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => { console.error(err.error); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -148,18 +173,31 @@ export default function BudgetLayout() {
                 (error ? (<div className="error">{error}</div>)
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="flex justify-between items-center min-h-[20vh] p-6">
-                <div className="ml-8 flex flex-col items-center group text-gray-700">
-                    <p className="text-center font-semibold mb-1">Current Currency:</p>
-                    <div className="text-2xl font-semibold gap-3 flex">{currency.toUpperCase()}
-                        <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <ion-icon name="pencil" style={{ height: "20px", width: "20px" }}></ion-icon>
-                        </span>
+                <div className="ml-3 flex flex-col text-left text-gray-700 max-w-[245px]">
+                    <div className="flex gap-2 mb-2 max-w-full group">
+                        <p className="text-lg">Itinerary:</p>
+                        <div className="text-lg font-semibold gap-1 flex">
+                            <span className="truncate line-clamp-1 whitespace-nowrap max-w-[130px]">{itineraryTitle}</span>
+                            <span onClick={() => setOpenModal({ shown: true, mode: "itinerary", data: null })}
+                                className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2 items-center justify-left group">
+                        <p className="text-lg">Current Currency:</p>
+                        <div className="text-2xl font-semibold gap-1 flex">{currency.toUpperCase()}
+                            <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <ion-icon name="pencil" style={{ height: "20px", width: "20px" }}></ion-icon>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <div className="flex justify-center items-center">
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-3 gap-4">
                         <div className="bg-blue-50 p-6 rounded-xl shadow-md group">
                             <h3 className="text-lg font-semibold text-blue-700 mb-2">
                                 Total Budget:
@@ -188,7 +226,7 @@ export default function BudgetLayout() {
                 </div>
 
                 <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })}
-                    className="mr-10 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
+                    className="mr-6 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
                     <div className="items-center flex gap-1">
                         <ion-icon name="logo-usd" style={{ height: "20px", width: "20px" }}></ion-icon>
                         <span className="text-md font-semibold">Add Expenses</span>
@@ -211,7 +249,7 @@ export default function BudgetLayout() {
                         position: "static",
                         inset: "unset",
                         display: "flex",
-                        width: "512px",
+                        width: openModal.mode === "itinerary" ? "450px" : "512px",
                         height: openModal.mode === "add" || openModal.mode === "edit" ? "505px" : "255px",
                         margin: "auto",
                         background: "#f8fafc",
@@ -232,14 +270,20 @@ export default function BudgetLayout() {
                             onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
                             setCurrency={setCurrency}
                         />
-                        : <ExpensesModal
-                            mode={openModal.mode}
-                            data={openModal.data}
-                            onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
-                            onAdd={onAdd}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                        />}
+                        : openModal.mode === "itinerary"
+                            ? <ItineraryModal
+                                chosen={id}
+                                onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
+                                changeItinerary={changeItinerary}
+                            />
+                            : <ExpensesModal
+                                mode={openModal.mode}
+                                data={openModal.data}
+                                onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
+                                onAdd={onAdd}
+                                onEdit={onEdit}
+                                onDelete={onDelete}
+                            />}
             </Modal>
 
             <div className="grid grid-cols-2 gap-6 mx-20 mb-10">
@@ -259,8 +303,8 @@ export default function BudgetLayout() {
                     onDelete={onDelete}
                     showMore={() => navigate(`/budget/${id}/all-expenditure`)}
                 />
-                <ExpensesBreakdown />
-                <SplitExpenses />
+                <ExpensesBreakdown totalExpenses={totalExpenses} breakdown={breakdown} />
+                <SplitExpenses totalExpenses={totalExpenses} splitExpenses={splitExpenses} />
             </div>
         </div>
     )
