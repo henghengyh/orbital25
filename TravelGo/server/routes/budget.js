@@ -19,13 +19,13 @@ const { findBudgetOr404 } = require("../utilities/finder-helper");
 /** Create a new budget for the itinerary */
 router.post("/", authenticateToken, async (req, res) => {
     try {
-        const { itineraryIdString, budget } = req.body;
+        const { itineraryIdString, budget, itineraryTitle } = req.body;
 
         const itineraryId = new mongoose.Types.ObjectId(itineraryIdString);
         const existingBudget = await Budget.findOne({ itineraryId });
         if (existingBudget) return res.status(409).json({ error: "Budget already exists for this itinerary" });
 
-        const newBudget = new Budget({ itineraryId, budget });
+        const newBudget = new Budget({ itineraryId, budget, itineraryTitle });
         await (await newBudget.save()).populate('itineraryId');
         return res.status(200).json({ message: "Budget added" });
     } catch (err) {
@@ -39,7 +39,7 @@ router.get("/:itineraryId", authenticateToken, async (req, res) => {
     try {
         const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
 
-        const budget = await Budget.find({ itineraryId }).select({ budget: 1 });
+        const budget = await Budget.find({ itineraryId }).select({ budget: 1, itineraryTitle: 1 });
         return res.status(200).json({ budget });
     } catch (err) {
         return res.status(500).json({ error: true, message: err.message });

@@ -31,13 +31,13 @@ export default function ExpensesInfoCard({ data, editExpenses, onDelete }) {
                 <img src={iconImg(data.type)} alt={data.type} className="w-6 h-6" />
             </div>
 
-            <div className="flex flex-1 items-center justify-between">
-                <div>
-                    <p className="text-sm text-gray-700 font-medium">{data.title}</p>
+            <div className="flex flex-1 items-center justify-between max-w-[86%]">
+                <div className='max-w-[50%]'>
+                    <p className="text-sm text-gray-700 font-medium truncate line-clamp-1 whitespace-nowrap max-w-full">{data.title}</p>
                     <p className="text-xs text-gray-400 mt-1">{moment(data.date).format("Do MMM YYYY")}</p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                     <button onClick={() => editExpenses(data)} className="text-gray-400 grid place-items-center hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                         <ion-icon name="pencil" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>

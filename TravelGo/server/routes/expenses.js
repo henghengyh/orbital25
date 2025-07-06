@@ -9,8 +9,10 @@
  * 4. GET /:itineraryId/weekly-overview - get weekly transaction overview (show latest 7)
  * 5. GET /:itineraryId/latest-expenses - get latest expenditure (show latest 8)
  * 6. GET /:itineraryId/all-expenses - get all expenditure
- * 7. GET /:itineraryId/:expensesId - get an expenses
- * 8. DELETE /:itineraryId/:expensesId - delete expenses
+ * 7. GET /:itineraryId/expenses-breakdown - get breakdown of expenses
+ * 8. GET /:itineraryId/split-expenses - get expenses split by who paid
+ * 9. GET /:itineraryId/:expensesId - get an expenses
+ * 10. DELETE /:itineraryId/:expensesId - delete expenses
  */
 
 const authenticateToken = require("../middleware/authenticateToken");
@@ -104,7 +106,9 @@ router.get('/:itineraryId/weekly-overview', authenticateToken, async (req, res) 
             { $sort: { "_id.year": -1, "_id.week": -1 } },
             { $limit: 1 },
         ]);
-        
+
+        if (weeklyOverview.length <= 0) return res.status(200).json({ weeklyOverview });
+
         // get ISO week which starts on a Monday
         const getISOWeekStartDate = (isoYear, isoWeek) => {
             const jan4 = new Date(Date.UTC(isoYear, 0, 4)); // Jan 4 is always in ISO week 1
@@ -170,6 +174,97 @@ router.get('/:itineraryId/all-expenses', authenticateToken, async (req, res) => 
             .find({ itineraryId })
             .sort({ date: -1, createdAt: -1 });
         return res.status(200).json({ allExpenses });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+/** Get breakdown of expenses */
+router.get('/:itineraryId/expenses-breakdown', authenticateToken, async (req, res) => {
+    try {
+        const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
+
+        const expensesBreakdown = await Expenses.aggregate([
+            { $match: { itineraryId } },
+            {
+                $group: {
+                    _id: {
+                        type: "$type",
+                    },
+                    totalAmount: { $sum: "$amount" },
+                }
+            },
+            {
+                $project: {
+                    type: "$_id.type",
+                    totalAmount: 1,
+                    _id: 0
+                }
+            },
+            { $sort: { "type": -1 } }
+        ]);
+        return res.status(200).json({ expensesBreakdown });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+/** Get expenses split by who paid */
+router.get('/:itineraryId/split-expenses', authenticateToken, async (req, res) => {
+    try {
+        const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
+
+        const splitExpenses = await Expenses.aggregate([
+            { $match: { itineraryId } },
+            {
+                $group: {
+                    _id: { $trim: { input: { $toLower: "$whoPaid" } } },
+                    totalAmount: { $sum: "$amount" },
+                }
+            },
+            {
+                $project: {
+                    whoPaid: "$_id",
+                    totalAmount: 1,
+                    _id: 0
+                }
+            },
+            { $sort: { "whoPaid": 1 } },
+        ]);
+
+        const reorderSplit = (splitExpenses) => {
+            if (!splitExpenses || splitExpenses.length <= 0) return [];
+
+            const totalExpenses = splitExpenses.reduce((total, curr) => curr.totalAmount + total, 0);
+            const costPerPerson = totalExpenses / splitExpenses.length;
+            const balance = splitExpenses.map(e => ({ name: e.whoPaid, netBalance: e.totalAmount - costPerPerson }));
+
+            let creditors = balance.filter(e => e.netBalance > 0).sort((a, b) => b.netBalance - a.netBalance);
+            let debtors = balance.filter(e => e.netBalance < 0).sort((a, b) => b.netBalance - a.netBalance);
+
+            const settlement = [];
+            let credIdx = 0;
+            let debtIdx = 0;
+            while (credIdx < creditors.length && debtIdx < debtors.length) {
+                const creditor = creditors[credIdx];
+                const debtor = debtors[debtIdx];
+                const amt = Math.min(creditor.netBalance, Math.abs(debtor.netBalance));
+
+                settlement.push({
+                    from: debtor.name,
+                    to: creditor.name,
+                    amount: amt,
+                })
+
+                creditor.netBalance = creditor.netBalance - amt;
+                debtor.netBalance = debtor.netBalance + amt;
+
+                if (creditor.netBalance < 0.01) credIdx++;
+                if (Math.abs(debtor.netBalance) < 0.01) debtIdx++;
+            }
+            return settlement.sort((a, b) => b.amount - a.amount);
+        };
+        return res.status(200).json({ splitExpenses: { splitExpenses: splitExpenses, settlement: reorderSplit(splitExpenses) } });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }

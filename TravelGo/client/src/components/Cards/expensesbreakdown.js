@@ -1,16 +1,8 @@
 import PieChartOverview from "../Charts/piechartoverview";
+import EmptyExpenses from "./emptyexpenses";
 
-export default function ExpensesBreakdown({ totalExpenses, remainingAmount }) {
-    let remainAmtColor = "";
-    if (remainingAmount > 500) remainAmtColor = "#4ade80";
-    else if (remainingAmount > 0) remainAmtColor = "#fb923c";
-    else remainAmtColor = "#f87171";
-
-    const colors = ['#a78bfa', remainAmtColor];
-    const data = [
-        { name: "Total Expenses", amount: totalExpenses },
-        { name: "Remaining Amount", amount: remainingAmount },
-    ];
+export default function ExpensesBreakdown({ totalExpenses, breakdown }) {
+    const colors = ["#e85c66", "#ffae40", "#3db9a4", "#42aaff", "#5a7dff", "#875de6", "#c14db4"];
 
     return (
         <div className="card">
@@ -18,13 +10,16 @@ export default function ExpensesBreakdown({ totalExpenses, remainingAmount }) {
                 <h5 className="text-lg">Expenses Breakdown</h5>
             </div>
 
-            <PieChartOverview
-                data={data}
-                label="Remaining Amount:"
-                totalAmount={`$${remainingAmount}`}
-                colors={colors}
-                showTextAnchor
-            />
+            {breakdown.length > 0
+                ? <PieChartOverview
+                    mode="breakdown"
+                    data={breakdown}
+                    label="Total Expenses:"
+                    totalAmount={`$${totalExpenses}`}
+                    colors={colors}
+                    showTextAnchor
+                />
+                : <EmptyExpenses />}
         </div>
     )
 }

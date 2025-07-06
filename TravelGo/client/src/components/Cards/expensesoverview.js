@@ -19,6 +19,7 @@ export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
             </div>
 
             <PieChartOverview
+                mode="overview"
                 data={data}
                 label="Remaining Amount:"
                 totalAmount={`$${remainingAmount}`}
