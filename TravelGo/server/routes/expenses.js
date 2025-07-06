@@ -104,14 +104,17 @@ router.get('/:itineraryId/weekly-overview', authenticateToken, async (req, res) 
             { $sort: { "_id.year": -1, "_id.week": -1 } },
             { $limit: 1 },
         ]);
-
+        
         // get ISO week which starts on a Monday
         const getISOWeekStartDate = (isoYear, isoWeek) => {
-            const simple = new Date(isoYear, 0, 1 + (isoWeek - 1) * 7);
-            const dayOfWeek = simple.getDay();
-            const isoMondayOffset = (dayOfWeek <= 4 ? dayOfWeek - 1 : dayOfWeek - 8);
-            simple.setDate(simple.getDate() - isoMondayOffset);
-            return simple;
+            const jan4 = new Date(Date.UTC(isoYear, 0, 4)); // Jan 4 is always in ISO week 1
+            const jan4Day = jan4.getUTCDay() || 7; // Make Sunday = 7
+            const mondayOfWeek1 = new Date(jan4);
+            mondayOfWeek1.setUTCDate(jan4.getUTCDate() - jan4Day + 1);
+
+            const resultDate = new Date(mondayOfWeek1);
+            resultDate.setUTCDate(mondayOfWeek1.getUTCDate() + (isoWeek - 1) * 7);
+            return resultDate;
         }
 
         const { year, week } = weeklyOverview[0]._id;
