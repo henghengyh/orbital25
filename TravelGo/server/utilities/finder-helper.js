@@ -25,7 +25,6 @@ async function findActivityOr404(itinerary, activityId, res) {
     return activity;
 }
 
-
 async function findInvitationOr404(token, status, res) {
     const invitation = await Invitation.findOne({ token, status: 'Pending' });
     if (!invitation) {
@@ -33,6 +32,7 @@ async function findInvitationOr404(token, status, res) {
         return null;
     }
     return invitation;
+}
 
 async function findBudgetOr404(itineraryId, res) {
     const budget = await Budget.findOne({ itineraryId });
