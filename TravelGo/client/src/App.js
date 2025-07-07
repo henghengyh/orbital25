@@ -18,6 +18,7 @@ import ProtectedRoutes from './components/ProtectedRoutes/protectedroutes';
 import RegisterPage from './pages/Login&Register/register';
 import UserProvider from './context/UserContext/usercontext';
 import WeatherPage from './pages/Weather/weather';
+import AcceptSuccess from './pages/Collaboration/acceptsuccess';
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/collab-accepted" element={<AcceptSuccess />} />
                     <Route element={<ProtectedRoutes />}>
                         <Route element={
                             <UserProvider>
