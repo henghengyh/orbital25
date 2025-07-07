@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require('fs');
 const app = express();
 const path = require('path');
 const connectDB = require("./config/db");
@@ -28,6 +27,7 @@ app.use("/protected", require("./routes/protected"));
 app.use("/weather-history", require("./routes/weather-openmeteo-history"));
 app.use("/weather-forecast", require("./routes/weather-openmeteo-forecast"));
 app.use("/users", require("./routes/auth"));
+app.use("/collaboration", require("./routes/collaboration"));
 app.use("/budget", require("./routes/budget"));
 app.use("/expenses", require("./routes/expenses"));
 

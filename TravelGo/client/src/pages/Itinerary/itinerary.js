@@ -38,6 +38,13 @@ export default function Itinerary() {
             .catch((err) => { console.error(err); setError(err.response.data.error); })
     };
 
+    const leaveItinerary = async () => {
+        axiosInstance
+            .post(`/itineraries/${id}/quit`)
+            .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
+            .catch((err) => { console.error(err); setError(err.response.data.error); })
+    };
+
     useEffect(() => {
         if (error) {
             setPopup(true);
@@ -62,7 +69,8 @@ export default function Itinerary() {
                 mode="edit"
                 itinerary={itinerary}
                 editItinerary={editItinerary}
-                deleteItinerary={deleteItinerary} />
+                deleteItinerary={deleteItinerary}
+                leaveItinerary={leaveItinerary} />
         </div>
     )
 }
