@@ -1,11 +1,16 @@
+import { styleAmount } from "../../utils/helper";
 import PieChartOverview from "../Charts/piechartoverview";
 
-export default function ExpensesOverview({ budget, totalExpenses, remainingAmount, seeMore }) {
-    const colors = ['#875CF5', '#FA2C37', '#FF6900'];
+export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
+    let remainAmtColor = "";
+    if (remainingAmount > 500) remainAmtColor = "#4ade80";
+    else if (remainingAmount > 0) remainAmtColor = "#fb923c";
+    else remainAmtColor = "#f87171";
+
+    const colors = ['#a78bfa', remainAmtColor];
     const data = [
-        { name: "Budget", amount: budget },
-        { name: "Total Expenses", amount: totalExpenses },
-        { name: "Remaining Amount", amount: remainingAmount },
+        { name: "Total Expenses", amount: Number(styleAmount(totalExpenses)) },
+        { name: "Remaining Amount", amount: Number(styleAmount(remainingAmount)) },
     ];
 
     return (
@@ -15,9 +20,10 @@ export default function ExpensesOverview({ budget, totalExpenses, remainingAmoun
             </div>
 
             <PieChartOverview
+                mode="overview"
                 data={data}
-                label="Total Expenses"
-                totalAmount={`$${totalExpenses}`}
+                label="Remaining Amount:"
+                totalAmount={`$${styleAmount(remainingAmount)}`}
                 colors={colors}
                 showTextAnchor
             />
