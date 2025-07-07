@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
-import { styleAmount } from "../../utils/helper";
+import { convertToSGD, styleAmount } from "../../utils/helper";
 import AllExpenses from "../Cards/allexpenses";
 import axiosInstance from "../../utils/axiosInstance";
 import BudgetModal from "../Modals/budgetmodal";
@@ -31,6 +31,7 @@ export default function BudgetLayout() {
     const [splitExpenses, setSplitExpenses] = useState([]);
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [weeklyOverview, setWeeklyOverview] = useState([]);
+    const [xRate, setXRate] = useState(1.0);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -109,9 +110,9 @@ export default function BudgetLayout() {
         fetchExpensesInfo();
     }, [fetchExpensesInfo]);
 
-    const onAdd = (data) => {
+    const onAdd = async (data) => {
         axiosInstance
-            .post(`/expenses/${id}`, data)
+            .post(`/expenses/${id}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => {
                 setTotalExpenses(totalExpenses + res.data.newExpenses.amount);
                 setMessage(res.data.message);
@@ -123,9 +124,9 @@ export default function BudgetLayout() {
 
     const editExpenses = (data) => setOpenModal({ shown: true, mode: "edit", data: data });
 
-    const onEdit = (expensesId, data) => {
+    const onEdit = async (expensesId, data) => {
         axiosInstance
-            .put(`/expenses/${id}/${expensesId}`, { ...data })
+            .put(`/expenses/${id}/${expensesId}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => {
                 setTotalExpenses(totalExpenses + res.data.amount);
                 setMessage(res.data.message);
@@ -190,7 +191,7 @@ export default function BudgetLayout() {
                         <div className="text-2xl font-semibold gap-1 flex">{currency.toUpperCase()}
                             <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <ion-icon name="pencil" style={{ height: "20px", width: "20px" }}></ion-icon>
+                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
                             </span>
                         </div>
                     </div>
@@ -203,7 +204,7 @@ export default function BudgetLayout() {
                                 Total Budget:
                             </h3>
                             <div className="flex gap-4 items-center">
-                                <p className="text-xl font-bold text-blue-800">${styleAmount(budget)}</p>
+                                <p className="text-xl font-bold text-blue-800">${styleAmount(budget * xRate)}</p>
                                 <span onClick={() => setOpenModal({ shown: true, mode: "budget", data: budget })}
                                     className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <ion-icon name="pencil"></ion-icon>
@@ -214,13 +215,13 @@ export default function BudgetLayout() {
                             <h3 className="text-lg font-semibold text-red-700 mb-2">
                                 Total Expenses:
                             </h3>
-                            <p className="text-xl font-bold text-red-800">${styleAmount(totalExpenses)}</p>
+                            <p className="text-xl font-bold text-red-800">${styleAmount(totalExpenses * xRate)}</p>
                         </div>
                         <div className={`${color.container} p-6 rounded-xl shadow-md`}>
                             <h3 className={`${color.title} text-lg font-semibold mb-2`}>
                                 Remaining Amount:
                             </h3>
-                            <p className={`${color.amount} text-xl font-bold`}>${styleAmount(remainingAmount)}</p>
+                            <p className={`${color.amount} text-xl font-bold`}>${styleAmount(remainingAmount * xRate)}</p>
                         </div>
                     </div>
                 </div>
@@ -250,7 +251,7 @@ export default function BudgetLayout() {
                         inset: "unset",
                         display: "flex",
                         width: openModal.mode === "itinerary" ? "450px" : "512px",
-                        height: openModal.mode === "add" || openModal.mode === "edit" ? "505px" : "255px",
+                        height: openModal.mode === "add" || openModal.mode === "edit" ? "525px" : "255px",
                         margin: "auto",
                         background: "#f8fafc",
                         padding: "10px",
@@ -269,6 +270,7 @@ export default function BudgetLayout() {
                             data={openModal.data}
                             onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
                             setCurrency={setCurrency}
+                            setXRate={setXRate}
                         />
                         : openModal.mode === "itinerary"
                             ? <ItineraryModal
@@ -279,6 +281,7 @@ export default function BudgetLayout() {
                             : <ExpensesModal
                                 mode={openModal.mode}
                                 data={openModal.data}
+                                xRate={xRate}
                                 onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
                                 onAdd={onAdd}
                                 onEdit={onEdit}
@@ -288,23 +291,25 @@ export default function BudgetLayout() {
 
             <div className="grid grid-cols-2 gap-6 mx-20 mb-10">
                 <ExpensesOverview
-                    totalExpenses={totalExpenses}
-                    remainingAmount={remainingAmount}
+                    totalExpenses={totalExpenses * xRate}
+                    remainingAmount={remainingAmount * xRate}
                 />
                 <RecentExpenses
                     recentExpenses={recentExpenses}
+                    xRate={xRate}
                     editExpenses={editExpenses}
                     onDelete={onDelete}
                 />
-                <WeeklyOverview weeklyOverview={weeklyOverview} />
+                <WeeklyOverview weeklyOverview={weeklyOverview} xRate={xRate} />
                 <AllExpenses
                     latestExpenses={latestExpenses}
+                    xRate={xRate}
                     editExpenses={editExpenses}
                     onDelete={onDelete}
-                    showMore={() => navigate(`/budget/${id}/all-expenditure`)}
+                    showMore={() => navigate(`/budget/${id}/${xRate}/all-expenditure`)}
                 />
-                <ExpensesBreakdown totalExpenses={totalExpenses} breakdown={breakdown} />
-                <SplitExpenses totalExpenses={totalExpenses} splitExpenses={splitExpenses} />
+                <ExpensesBreakdown totalExpenses={totalExpenses * xRate} breakdown={breakdown} xRate={xRate} />
+                <SplitExpenses totalExpenses={totalExpenses * xRate} splitExpenses={splitExpenses} xRate={xRate} />
             </div>
         </div>
     )

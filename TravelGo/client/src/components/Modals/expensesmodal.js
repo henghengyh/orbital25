@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
-const formatDate = (date) => {
-    if (!date) return "";
-    return date.slice(0, 10);
-};
+import { formatDate, styleAmount } from "../../utils/helper";
+import currencyCodes from "../../utils/currencylist";
 
-export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDelete }) {
-    const [amount, setAmount] = useState(data?.amount || 0);
+export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdit, onDelete }) {
+    const [amount, setAmount] = useState(data?.amount * xRate || 0);
+    const [currency, setCurrency] = useState(data?.currency || "SGD");
     const [date, setDate] = useState(data?.date || formatDate(new Date().toISOString()));
     const [error, setError] = useState("");
     const [notes, setNotes] = useState(data?.notes || "");
@@ -22,6 +21,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
         if (!title) { setError("Invalid Title"); return; }
         if (!date) { setError("Invalid Date"); return; }
         if (!amount || amount <= 0) { setError("Invalid Amount"); return; }
+        if (!currency) { setError("Invalid Currency"); return; }
         if (!whoPaid) { setError("Invalid Person Paid"); return; }
         if (!type || type === "") { setError("Invalid Expenses Type"); return; }
         fn();
@@ -90,7 +90,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                             type="number"
                             placeholder="0"
                             name="amount"
-                            value={amount}
+                            value={styleAmount(amount)}
                             min={0}
                             required
                             className="text-input w-[122px]"
@@ -98,6 +98,24 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                         />
                     </div>
 
+                    <div className="flex flex-col gap-3">
+                        <h6 className="text-label">Currency:</h6>
+                        <input
+                            type="text"
+                            placeholder="Type or select a code"
+                            list="currency-codes"
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value.toUpperCase())}
+                            className="w-[160px] h-9 px-4 py-1 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none"
+                        />
+                        <datalist id="currency-codes">
+                            {currencyCodes.map((c) => (
+                                <option key={c} value={c} />
+                            ))}
+                        </datalist>
+                    </div>
+                </div>
+                <div className="flex gap-5 pt-4">
                     <div className="flex flex-col gap-3">
                         <h6 className="text-label">Who Paid:</h6>
                         <input
@@ -111,22 +129,23 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                             onChange={(e) => setWhoPaid(e.target.value)}
                         />
                     </div>
-                </div>
-                <div className="flex gap-5 pt-4">
-                    <h6 className="text-label">Type:</h6>
-                    <select
-                        value={type}
-                        required
-                        onChange={(e) => setType(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none cursor-pointer"
-                    >
-                        <option disabled value="">Select type</option>
-                        {typesOfExpenses.map((expenses) => (
-                            <option key={expenses} value={expenses}>
-                                {expenses}
-                            </option>
-                        ))}
-                    </select>
+
+                    <div className="flex flex-col gap-3">
+                        <h6 className="text-label">Type:</h6>
+                        <select
+                            value={type}
+                            required
+                            onChange={(e) => setType(e.target.value)}
+                            className="w-[285px] h-9 px-3 py-1 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none cursor-pointer"
+                        >
+                            <option disabled value="">Select type</option>
+                            {typesOfExpenses.map((expenses) => (
+                                <option key={expenses} value={expenses}>
+                                    {expenses}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 <div className="flex flex-col gap-3 pt-2">
                     <h6 className="text-label">Notes:</h6>
@@ -146,7 +165,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                     ? <div className="flex gap-2 mt-7 w-full h-10">
                         <div onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => onEdit(data._id, { title, date, amount, type, whoPaid, notes }));
+                            validInputCheck(() => onEdit(data._id, { title, date, amount, currency, type, whoPaid, notes }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -161,7 +180,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                     : <div
                         onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => onAdd({ title, date, amount, type, whoPaid, notes }));
+                            validInputCheck(() => onAdd({ title, date, amount, currency, type, whoPaid, notes }));
                         }}
                         className="flex gap-2 mt-7 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>

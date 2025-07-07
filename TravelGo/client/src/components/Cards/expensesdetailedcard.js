@@ -4,7 +4,7 @@ import moment from "moment/moment";
 
 import { styleAmount } from "../../utils/helper"
 
-export default function ExpensesDetailedCard({ data, editExpenses, onDelete }) {
+export default function ExpensesDetailedCard({ data, editExpenses, xRate, onDelete }) {
     const [openModal, setOpenModal] = useState(false);
 
     return (
@@ -14,12 +14,12 @@ export default function ExpensesDetailedCard({ data, editExpenses, onDelete }) {
                 <span className="text-xl font-semibold text-gray-800 capitalize truncate max-w-[60%] text-right">{data.title}</span>
             </div>
 
-            <div className="text-2xl font-bold text-blue-500 mb-2">${styleAmount(data.amount)}</div>
+            <div className="text-2xl font-bold text-blue-500 mb-2">${styleAmount(data.amount * xRate)}</div>
 
             <div className="flex justify-between">
                 <div className="flex flex-col gap-1 text-sm text-gray-600 capitalize max-w-[80%]">
                     <p><span className="font-medium text-gray-700">Type:</span> {data.type}</p>
-                    <p className="truncate line-clamp-1 whitespace-nowrap max-w-full"><span className="font-medium text-gray-700">Paid by:</span> {data.whoPaid}</p>
+                    <p className="truncate line-clamp-1 whitespace-nowrap max-w-full"><span className="font-medium text-gray-700">Paid by:</span> {data.whoPaid.toLowerCase()}</p>
                     <p className="text-gray-500 line-clamp-2 max-w-full">Notes: <span className="italic lowercase">{data.notes ? `${data.notes}` : "-"}</span></p>
                 </div>
 

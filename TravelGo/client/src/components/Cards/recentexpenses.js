@@ -1,7 +1,7 @@
 import EmptyExpenses from "./emptyexpenses";
 import ExpensesInfoCard from "./expensesinfocard";
 
-export default function RecentExpenses({ recentExpenses, editExpenses, onDelete }) {
+export default function RecentExpenses({ recentExpenses, xRate, editExpenses, onDelete }) {
     return (
         <div className="card">
             <div className="flex items-center justify-between">
@@ -14,6 +14,7 @@ export default function RecentExpenses({ recentExpenses, editExpenses, onDelete 
                         <ExpensesInfoCard
                             key={idx}
                             data={entry}
+                            xRate={xRate}
                             editExpenses={editExpenses}
                             onDelete={onDelete}
                         />

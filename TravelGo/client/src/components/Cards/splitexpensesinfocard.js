@@ -9,8 +9,8 @@ export default function SplitExpensesInfoCard({ from, to, amount }) {
 
             <div className="flex flex-1 items-center justify-between max-w-[86%]">
                 <div className='text-sm text-gray-700 font-medium capitalize max-w-[70%]'>
-                    <p className="truncate whitespace-nowrap line-clamp-1">To: {to}</p>
-                    <p className="mt-1 truncate line-clamp-1 whitespace-nowrap">From: {from}</p>
+                    <p className="truncate whitespace-nowrap line-clamp-1">To: {to.toLowerCase()}</p>
+                    <p className="mt-1 truncate line-clamp-1 whitespace-nowrap">From: {from.toLowerCase()}</p>
                 </div>
 
                 <div className="flex items-center flex-shrink-0">

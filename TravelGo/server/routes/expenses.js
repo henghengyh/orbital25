@@ -27,16 +27,17 @@ const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others"
 /** Add an expenses */
 router.post('/:itineraryId/', authenticateToken, async (req, res) => {
     try {
-        const { title, date, amount, type, whoPaid, notes } = req.body;
+        const { title, date, amount, currency, type, whoPaid, notes } = req.body;
 
         const newExpenses = new Expenses({
             itineraryId: req.params.itineraryId,
             title,
             date,
             amount,
+            currency,
             type,
             whoPaid,
-            notes
+            notes,
         });
         await (await newExpenses.save()).populate('itineraryId');
         return res.status(200).json({ newExpenses, message: "Expenses added" });
@@ -62,7 +63,7 @@ router.put('/:itineraryId/:expensesId', authenticateToken, async (req, res) => {
             return res.status(200).json({ message: "Expenses updated", amount: newAmt - oldAmt });
         }
     } catch (error) {
-        return ers.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 });
 
