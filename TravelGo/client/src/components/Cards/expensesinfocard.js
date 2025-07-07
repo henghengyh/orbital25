@@ -11,7 +11,7 @@ import others from '../../assets/othersIcon.svg';
 import shopping from '../../assets/shoppingIcon.svg';
 import transport from '../../assets/transportIcon.svg';
 
-export default function ExpensesInfoCard({ data, editExpenses, onDelete }) {
+export default function ExpensesInfoCard({ data, xRate, editExpenses, onDelete }) {
     const [openModal, setOpenModal] = useState(false);
 
     const iconImg = (type) => {
@@ -45,7 +45,7 @@ export default function ExpensesInfoCard({ data, editExpenses, onDelete }) {
                         <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 text-blue-500">
-                        <h6 className="text-md font-semibold">${styleAmount(data.amount)}</h6>
+                        <h6 className="text-md font-semibold">${styleAmount(data.amount * xRate)}</h6>
                     </div>
                 </div>
             </div>

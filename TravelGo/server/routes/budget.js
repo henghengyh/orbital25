@@ -6,6 +6,7 @@
  * 1. POST / - create a new budget
  * 2. GET /:itineraryId - get budget
  * 3. PUT /:itineraryId - update budget
+ * 4. POST /currency - get latest currency exchange rate
  */
 
 const authenticateToken = require("../middleware/authenticateToken");
@@ -13,6 +14,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Budget = require("../models/Budget");
+const axios = require('axios');
 
 const { findBudgetOr404 } = require("../utilities/finder-helper");
 
@@ -60,6 +62,22 @@ router.put("/:itineraryId", authenticateToken, async (req, res) => {
     } catch (err) {
         console.error("Error updating budget:", err);
         return res.status(500).json({ error: "Failed to update budget" });
+    }
+});
+
+/** Get latest currency exchange rate */
+router.post("/currency", authenticateToken, async (req, res) => {
+    try {
+        const response = await axios.get('https://api.currencyapi.com/v3/latest', {
+            params: {
+                apikey: process.env.CURRENCY_API,
+                base_currency: "SGD",
+            }
+        });
+        return res.status(200).json(response.data.data);
+    } catch (err) {
+        console.error("Error retrieving currency:", err);
+        return res.status(500).json({ error: "Failed to get currency" });
     }
 });
 

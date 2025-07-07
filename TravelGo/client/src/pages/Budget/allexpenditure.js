@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
-import { formatDate } from "../../utils/helper";
+import { convertToSGD, formatDate } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
+import currencyCodes from "../../utils/currencylist";
 import EmptyExpenses from "../../components/Cards/emptyexpenses";
 import ExpensesDetailedCard from "../../components/Cards/expensesdetailedcard";
 import ExpensesModal from "../../components/Modals/expensesmodal";
@@ -11,6 +12,7 @@ import FilterTag from "../../components/Cards/filtertag";
 
 export default function AllExpenditure() {
     const [allExpenses, setAllExpenses] = useState([]);
+    const [currency, setCurrency] = useState("SGD");
     const [endDate, setEndDate] = useState(null);
     const [error, setError] = useState("");
     const [filter, setFilter] = useState(false);
@@ -25,7 +27,7 @@ export default function AllExpenditure() {
     const [type, setType] = useState("");
     const [whoPaid, setWhoPaid] = useState("");
 
-    const { id } = useParams();
+    const { id, xRate } = useParams();
     const navigate = useNavigate();
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
 
@@ -40,9 +42,9 @@ export default function AllExpenditure() {
         fetchAllExpenses();
     }, [fetchAllExpenses]);
 
-    const onAdd = (data) => {
+    const onAdd = async (data) => {
         axiosInstance
-            .post(`/expenses/${id}`, data)
+            .post(`/expenses/${id}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => { setMessage(res.data.message); fetchAllExpenses(); })
             .catch(err => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
@@ -50,9 +52,9 @@ export default function AllExpenditure() {
 
     const editExpenses = (data) => setOpenModal({ shown: true, mode: "edit", data: data });
 
-    const onEdit = (expensesId, data) => {
+    const onEdit = async (expensesId, data) => {
         axiosInstance
-            .put(`/expenses/${id}/${expensesId}`, { ...data })
+            .put(`/expenses/${id}/${expensesId}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => { setMessage(res.data.message); fetchAllExpenses(); })
             .catch(err => { console.error(err); setError(err.response.data.error); })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
@@ -67,8 +69,9 @@ export default function AllExpenditure() {
     };
 
     const reset = () => {
-        setFilterExpenses(allExpenses);
+        setCurrency("SGD");
         setEndDate(null);
+        setFilterExpenses(allExpenses);
         setKeyword("");
         setMaxAmount(0);
         setMinAmount(0);
@@ -77,7 +80,12 @@ export default function AllExpenditure() {
         setWhoPaid("");
     };
 
-    const handleSearch = (data) => {
+    const validInputCheck = (fn) => {
+        if (currency && minAmount <= 0 && maxAmount <= 0) { setMessage("Please input valid search"); return; }
+        fn();
+    }
+
+    const handleSearch = async (data) => {
         let filtered = [...allExpenses];
         if (data.keyword) {
             filtered = filtered.filter(e => e.title.toLowerCase().includes(data.keyword.toLowerCase().trim()) || e.notes.toLowerCase().includes(data.keyword.toLowerCase().trim()));
@@ -95,10 +103,12 @@ export default function AllExpenditure() {
             filtered = filtered.filter(e => formatDate(e.date) <= data.endDate);
         }
         if (data.minAmount > 0) {
-            filtered = filtered.filter(e => e.amount >= data.minAmount);
+            const sgdAmt = await convertToSGD(data.minAmount, data.currency);
+            filtered = filtered.filter(e => e.amount >= sgdAmt);
         }
         if (data.maxAmount !== 0 && data.maxAmount > data.minAmount) {
-            filtered = filtered.filter(e => e.amount <= data.maxAmount);
+            const sgdAmt = await convertToSGD(data.maxAmount, data.currency)
+            filtered = filtered.filter(e => e.amount <= sgdAmt);
         }
         setFilterExpenses(filtered);
         setFilter(false);
@@ -107,13 +117,15 @@ export default function AllExpenditure() {
     const showFiltered = () => {
         const tags = [];
 
-        if (keyword) tags.push(<FilterTag key="keyword" label="Keyword" value={keyword} onClose={() => { setKeyword(""); handleSearch({ type, whoPaid, startDate, endDate, minAmount, maxAmount }) }} />);
-        if (type) tags.push(<FilterTag key="type" label="Type" value={type} onClose={() => { setType(""); handleSearch({ keyword, whoPaid, startDate, endDate, minAmount, maxAmount }) }} />);
-        if (whoPaid) tags.push(<FilterTag key="whoPaid" label="Who Paid" value={whoPaid} onClose={() => { setWhoPaid(""); handleSearch({ keyword, type, startDate, endDate, minAmount, maxAmount }) }} />);
-        if (startDate) tags.push(<FilterTag key="startDate" label="From" value={startDate} onClose={() => { setStartDate(""); handleSearch({ keyword, type, whoPaid, endDate, minAmount, maxAmount }) }} />);
-        if (endDate) tags.push(<FilterTag key="endDate" label="To" value={endDate} onClose={() => { setEndDate(""); handleSearch({ keyword, type, whoPaid, startDate, minAmount, maxAmount }) }} />);
-        if (minAmount > 0) tags.push(<FilterTag key="minAmount" label="Min" value={`$${minAmount}`} onClose={() => { setMinAmount(0); handleSearch({ keyword, type, whoPaid, startDate, endDate, maxAmount }) }} />);
-        if (maxAmount > 0) tags.push(<FilterTag key="maxAmount" label="Max" value={`$${maxAmount}`} onClose={() => { setMaxAmount(0); handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount }) }} />);
+        if (keyword) tags.push(<FilterTag key="keyword" label="Keyword" value={keyword} onClose={() => { setKeyword(""); handleSearch({ type, whoPaid, startDate, endDate, minAmount, maxAmount, currency }) }} />);
+        if (type) tags.push(<FilterTag key="type" label="Type" value={type} onClose={() => { setType(""); handleSearch({ keyword, whoPaid, startDate, endDate, minAmount, maxAmount, currency }) }} />);
+        if (whoPaid) tags.push(<FilterTag key="whoPaid" label="Who Paid" value={whoPaid} onClose={() => { setWhoPaid(""); handleSearch({ keyword, type, startDate, endDate, minAmount, maxAmount, currency }) }} />);
+        if (startDate) tags.push(<FilterTag key="startDate" label="From" value={startDate} onClose={() => { setStartDate(""); handleSearch({ keyword, type, whoPaid, endDate, minAmount, maxAmount, currency }) }} />);
+        if (endDate) tags.push(<FilterTag key="endDate" label="To" value={endDate} onClose={() => { setEndDate(""); handleSearch({ keyword, type, whoPaid, startDate, minAmount, maxAmount, currency }) }} />);
+        if (minAmount > 0) tags.push(<FilterTag key="minAmount" label="Min" value={`$${minAmount}`} onClose={() => { setMinAmount(0); handleSearch({ keyword, type, whoPaid, startDate, endDate, maxAmount, currency }) }} />);
+        if (maxAmount > 0) tags.push(<FilterTag key="maxAmount" label="Max" value={`$${maxAmount}`} onClose={() => { setMaxAmount(0); handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount, currency }) }} />);
+        if (currency && currency !== "SGD" && (minAmount > 0 || maxAmount > 0)) tags.push(<FilterTag key="currency" label="Currency" value={`$${currency}`} onClose={() => { setCurrency("SGD"); handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount, maxAmount }) }} />);
+        if (currency !== "SGD" && !keyword && !type && !whoPaid && !startDate && !endDate && minAmount <= 0 && maxAmount <= 0) { setCurrency("SGD"); handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount, maxAmount }) };
 
         return tags.length > 0 ? <div className="flex flex-wrap gap-2 max-w-[400px]">{tags.slice(0, 2)}</div> : null;
     };
@@ -277,14 +289,33 @@ export default function AllExpenditure() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end gap-3">
-                                    <button onClick={() => reset()} className="px-3 py-2 w-[105px] bg-neutral-100 rounded-xl flex items-center justify-center gap-2 font-semibold cursor-pointer hover:shadow-md hover:bg-neutral-300">
-                                        <ion-icon name="close-circle-outline"></ion-icon>Clear
-                                    </button>
-                                    <button onClick={() => handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount, maxAmount })}
-                                        className="px-3 py-2 bg-neutral-100 rounded-xl flex items-center justify-center gap-2 font-semibold cursor-pointer hover:shadow-md hover:bg-neutral-300">
-                                        <ion-icon name="search"></ion-icon>Search
-                                    </button>
+                                <div className="flex justify-between">
+                                    <div className="flex justify-center items-center">
+                                        <h6 className="text-label">Currency:</h6>
+                                        <input
+                                            type="text"
+                                            placeholder="Type or select a code"
+                                            list="currency-codes"
+                                            value={currency}
+                                            onChange={(e) => setCurrency(e.target.value.toUpperCase())}
+                                            className="w-[160px] h-9 px-4 py-1 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none"
+                                        />
+                                        <datalist id="currency-codes">
+                                            {currencyCodes.map((c) => (
+                                                <option key={c} value={c} />
+                                            ))}
+                                        </datalist>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <button onClick={() => reset()} className="px-3 py-2 w-[105px] bg-neutral-100 rounded-xl flex items-center justify-center gap-2 font-semibold cursor-pointer hover:shadow-md hover:bg-neutral-300">
+                                            <ion-icon name="close-circle-outline"></ion-icon>Clear
+                                        </button>
+                                        <button onClick={() => validInputCheck(() => handleSearch({ keyword, type, whoPaid, startDate, endDate, minAmount, maxAmount, currency }))}
+                                            className="px-3 py-2 bg-neutral-100 rounded-xl flex items-center justify-center gap-2 font-semibold cursor-pointer hover:shadow-md hover:bg-neutral-300">
+                                            <ion-icon name="search"></ion-icon>Search
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -299,6 +330,7 @@ export default function AllExpenditure() {
                             <ExpensesDetailedCard
                                 key={idx}
                                 data={entry}
+                                xRate={xRate}
                                 editExpenses={editExpenses}
                                 onDelete={onDelete}
                             />
@@ -323,7 +355,7 @@ export default function AllExpenditure() {
                         inset: "unset",
                         display: "flex",
                         width: "512px",
-                        height: "505px",
+                        height: "525px",
                         margin: "auto",
                         background: "#f8fafc",
                         padding: "10px",
@@ -334,6 +366,7 @@ export default function AllExpenditure() {
                 <ExpensesModal
                     mode={openModal.mode}
                     data={openModal.data}
+                    xRate={xRate}
                     onClose={() => setOpenModal({ shown: false, mode: "add", data: null })}
                     onAdd={onAdd}
                     onEdit={onEdit}

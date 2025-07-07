@@ -4,7 +4,7 @@ export default function CustomTooltip({ active, payload }) {
             <div className="bg-white shadow-md p-2 rounded-lg border border-gray-300">
                 <p className="text-xs font-semibold text-purple-800 mb-1">{payload[0].name}</p>
                 <p className="text-sm text-gray-600">
-                    Amount: <span className="text-sm font-medium text-gray-900">${payload[0].value}</span></p>
+                    Amount: <span className="text-sm font-medium text-gray-900">${payload[0].value.toFixed(2)}</span></p>
             </div>
         )
     }

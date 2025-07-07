@@ -1,7 +1,7 @@
 import EmptyExpenses from "./emptyexpenses"
 import ExpensesInfoCard from "./expensesinfocard"
 
-export default function AllExpenses({ latestExpenses, editExpenses, onDelete, showMore }) {
+export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDelete, showMore }) {
     return (
         <div className="card col-span-2">
             <div className="flex items-center justify-between">
@@ -17,6 +17,7 @@ export default function AllExpenses({ latestExpenses, editExpenses, onDelete, sh
                         <ExpensesInfoCard
                             key={idx}
                             data={entry}
+                            xRate={xRate}
                             editExpenses={editExpenses}
                             onDelete={onDelete}
                         />

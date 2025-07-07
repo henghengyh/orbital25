@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 
-export default function CurrencyModal({ data, onClose, setCurrency }) {
+import { getRate } from "../../utils/helper";
+import currencyCodes from "../../utils/currencylist";
+
+export default function CurrencyModal({ data, onClose, setCurrency, setXRate }) {
     const [error, setError] = useState("");
-    const [newCurrency, setNewCurrency] = useState(data || 1);
+    const [newCurrency, setNewCurrency] = useState(data || "SGD");
     const [popup, setPopup] = useState(false);
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (newCurrency === "") { setError("Invalid Currency"); return; }
         setCurrency(newCurrency);
+        setXRate(await getRate(newCurrency))
         onClose();
     }
 
@@ -46,15 +50,23 @@ export default function CurrencyModal({ data, onClose, setCurrency }) {
                 <label className="text-center w-fit font-semibold text-xl text-blue-600">
                     Input new Currency:
                 </label>
-                <input
-                    type="text"
-                    placeholder="SGD"
-                    value={newCurrency}
-                    autoFocus
-                    onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
-                    onKeyDown={handleKeyDown}
-                    className="max-w-xs px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="flex justify-center">
+                    <input
+                        type="text"
+                        placeholder="Type or select a code"
+                        list="currency-codes"
+                        value={newCurrency}
+                        autoFocus
+                        onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
+                        onKeyDown={handleKeyDown}
+                        className="max-w-xs h-12 px-4 py-2 border border-blue-300 rounded-lg shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 ease-in-out cursor-pointer hover:border-blue-400"
+                    />
+                    <datalist id="currency-codes">
+                        {currencyCodes.map((c) => (
+                            <option key={c} value={c} />
+                        ))}
+                    </datalist>
+                </div>
             </div>
 
             <div className="flex items-center justify-center mt-7 w-full h-10">

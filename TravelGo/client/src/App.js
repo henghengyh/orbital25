@@ -37,7 +37,7 @@ function App() {
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/budget" element={<BudgetPage />} />
                             <Route path="/budget/:id" element={<BudgetLayoutPage />} />
-                            <Route path="/budget/:id/all-expenditure" element={<AllExpenditurePage />} />
+                            <Route path="/budget/:id/:xRate/all-expenditure" element={<AllExpenditurePage />} />
                             <Route path="/create-itinerary" element={<CreateItineraryPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/itinerary/:id" element={<ItineraryPage />} />

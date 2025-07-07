@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { styleAmount } from "../../utils/helper";
 
-export default function SplitExpensesModal({ data, totalExpenses, onClose }) {
+export default function SplitExpensesModal({ data, totalExpenses, xRate, onClose }) {
     const [cost, setCost] = useState(0);
 
     useEffect(() => {
@@ -56,10 +56,10 @@ export default function SplitExpensesModal({ data, totalExpenses, onClose }) {
                                         <div className="line-clamp-1 truncate whitespace-nowrap">{entry.whoPaid}</div>
                                     </td>
                                     <td className="border border-gray-300 px-2 py-2">
-                                        <div className="line-clamp-1 truncate whitespace-nowrap">${styleAmount(entry.totalAmount)}</div>
+                                        <div className="line-clamp-1 truncate whitespace-nowrap">${styleAmount(entry.totalAmount * xRate)}</div>
                                     </td>
                                     <td className="border border-gray-300 px-2 py-2">
-                                        <div className={`line-clamp-1 truncate whitespace-nowrap ${colorCode(entry.totalAmount - cost)}`}>{(entry.totalAmount - cost) < 0 ? `-$${styleAmount(Math.abs(entry.totalAmount - cost))}` : `+$${styleAmount(entry.totalAmount - cost)}`}</div>
+                                        <div className={`line-clamp-1 truncate whitespace-nowrap ${colorCode((entry.totalAmount - cost) * xRate)}`}>{(entry.totalAmount - cost) * xRate < 0 ? `-$${styleAmount(Math.abs((entry.totalAmount - cost) * xRate))}` : `+$${styleAmount((entry.totalAmount - cost) * xRate)}`}</div>
                                     </td>
                                 </tr>
                             ))}
@@ -78,7 +78,7 @@ export default function SplitExpensesModal({ data, totalExpenses, onClose }) {
                         <div className="flex items-center">
                             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${entry.to === "me" ? "bg-green-100 text-green-500" : (entry.from === "me" ? "bg-red-50 text-red-500" : "bg-blue-50 text-blue-500")}`}>
                                 <h6 className="text-md font-semibold">
-                                    ${styleAmount(Math.abs(entry.amount))}
+                                    ${styleAmount(Math.abs(entry.amount * xRate))}
                                 </h6>
                             </div>
                         </div>

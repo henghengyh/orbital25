@@ -5,7 +5,7 @@ import EmptyExpenses from "./emptyexpenses";
 import SplitExpensesInfoCard from "./splitexpensesinfocard";
 import SplitExpensesModal from "../Modals/splitexpensesmodal";
 
-export default function SplitExpenses({ totalExpenses, splitExpenses }) {
+export default function SplitExpenses({ totalExpenses, splitExpenses, xRate }) {
     const [openModal, setOpenModal] = useState({ shown: false, data: null });
 
     return (
@@ -25,7 +25,7 @@ export default function SplitExpenses({ totalExpenses, splitExpenses }) {
                             key={idx}
                             from={entry.from}
                             to={entry.to}
-                            amount={entry.amount}
+                            amount={entry.amount * xRate}
                         />
                     ))
                     : <EmptyExpenses />}
@@ -58,6 +58,7 @@ export default function SplitExpenses({ totalExpenses, splitExpenses }) {
                 <SplitExpensesModal
                     data={openModal.data}
                     totalExpenses={totalExpenses}
+                    xRate={xRate}
                     onClose={() => setOpenModal({ shown: false, data: null })}
                 />
             </Modal>

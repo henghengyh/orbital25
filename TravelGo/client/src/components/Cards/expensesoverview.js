@@ -1,3 +1,4 @@
+import { styleAmount } from "../../utils/helper";
 import PieChartOverview from "../Charts/piechartoverview";
 
 export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
@@ -8,8 +9,8 @@ export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
 
     const colors = ['#a78bfa', remainAmtColor];
     const data = [
-        { name: "Total Expenses", amount: totalExpenses },
-        { name: "Remaining Amount", amount: remainingAmount },
+        { name: "Total Expenses", amount: Number(styleAmount(totalExpenses)) },
+        { name: "Remaining Amount", amount: Number(styleAmount(remainingAmount)) },
     ];
 
     return (
@@ -22,7 +23,7 @@ export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
                 mode="overview"
                 data={data}
                 label="Remaining Amount:"
-                totalAmount={`$${remainingAmount}`}
+                totalAmount={`$${styleAmount(remainingAmount)}`}
                 colors={colors}
                 showTextAnchor
             />
