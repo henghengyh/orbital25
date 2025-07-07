@@ -28,3 +28,8 @@ export const validateEmail = (email) => {
 export const styleAmount = (amount) => {
     return !amount ? 0 : amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
+export const formatDate = (date) => {
+    if (!date) return "";
+    return date.slice(0, 10);
+};
