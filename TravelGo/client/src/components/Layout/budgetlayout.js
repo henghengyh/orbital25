@@ -173,7 +173,7 @@ export default function BudgetLayout() {
                 (error ? (<div className="error">{error}</div>)
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="flex justify-between items-center min-h-[20vh] p-6">
-                <div className="ml-3 flex flex-col text-left text-gray-700 max-w-[245px]">
+                <div className="ml-6 flex flex-col text-left text-gray-700 max-w-[245px]">
                     <div className="flex gap-2 mb-2 max-w-full group">
                         <p className="text-lg">Itinerary:</p>
                         <div className="text-lg font-semibold gap-1 flex">
