@@ -1,5 +1,4 @@
 export default function SearchBar({ value, onChange, handleSearch, onClearSearch }) {
-
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             handleSearch();
