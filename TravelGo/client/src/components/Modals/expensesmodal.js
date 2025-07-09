@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { formatDate, styleAmount } from "../../utils/helper";
+import { formatDate } from "../../utils/helper";
 import currencyCodes from "../../utils/currencylist";
 
 export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdit, onDelete }) {
@@ -90,7 +90,7 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                             type="number"
                             placeholder="0"
                             name="amount"
-                            value={styleAmount(amount)}
+                            value={Number(amount).toFixed(2)}
                             min={0}
                             required
                             className="text-input w-[122px]"

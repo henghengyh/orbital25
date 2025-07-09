@@ -63,14 +63,14 @@ export default function ItineraryModal({ chosen, onClose, changeItinerary }) {
                     <select
                         value={selectedTrip}
                         onChange={(e) => setSelectedTrip(e.target.value)}
-                        className="w-fit h-12 px-4 py-2 border border-blue-300 rounded-lg shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 ease-in-out cursor-pointer hover:border-blue-400"
+                        className="w-fit h-12 px-3 py-2 border border-blue-300 rounded-lg shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 ease-in-out cursor-pointer hover:border-blue-400"
                     >
                         <option disabled value="">Select one:</option>
                         {allItinerary
                             .filter(t => t._id !== chosen)
                             .map(t => (
                                 <option key={t._id} value={t._id}>
-                                    {t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
+                                    {t.tripName.length > 13 ? `${t.tripName.slice(0, 13)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
                                 </option>
                             ))}
                     </select>
