@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
@@ -9,6 +9,7 @@ import EmptyExpenses from "../../components/Cards/emptyexpenses";
 import ExpensesDetailedCard from "../../components/Cards/expensesdetailedcard";
 import ExpensesModal from "../../components/Modals/expensesmodal";
 import FilterTag from "../../components/Cards/filtertag";
+import SearchLoading from "../../components/Loading/searchloading";
 
 export default function AllExpenditure() {
     const [allExpenses, setAllExpenses] = useState([]);
@@ -18,6 +19,7 @@ export default function AllExpenditure() {
     const [filter, setFilter] = useState(false);
     const [filterExpenses, setFilterExpenses] = useState(allExpenses);
     const [keyword, setKeyword] = useState("");
+    const [loading, setLoading] = useState(false);
     const [maxAmount, setMaxAmount] = useState(0);
     const [message, setMessage] = useState("");
     const [minAmount, setMinAmount] = useState(0);
@@ -32,10 +34,12 @@ export default function AllExpenditure() {
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
 
     const fetchAllExpenses = useCallback(() => {
+        setLoading(true);
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => { setAllExpenses(res.data.allExpenses); setFilterExpenses(res.data.allExpenses); })
-            .catch(err => console.error(err.error));
+            .catch(err => console.error(err.error))
+            .finally(() => setLoading(false));
     }, [id]);
 
     useEffect(() => {
@@ -324,19 +328,21 @@ export default function AllExpenditure() {
             )}
 
             <div className="p-6 mx-10 mb-8">
-                {filterExpenses.length > 0
-                    ? <div className="grid grid-cols-3 gap-6">
-                        {filterExpenses.map((entry, idx) => (
-                            <ExpensesDetailedCard
-                                key={idx}
-                                data={entry}
-                                xRate={xRate}
-                                editExpenses={editExpenses}
-                                onDelete={onDelete}
-                            />
-                        ))}
-                    </div>
-                    : <EmptyExpenses />}
+                {loading
+                    ? <SearchLoading />
+                    : filterExpenses.length > 0
+                        ? <div className="grid grid-cols-3 gap-6">
+                            {filterExpenses.map((entry, idx) => (
+                                <ExpensesDetailedCard
+                                    key={idx}
+                                    data={entry}
+                                    xRate={xRate}
+                                    editExpenses={editExpenses}
+                                    onDelete={onDelete}
+                                />
+                            ))}
+                        </div>
+                        : <EmptyExpenses />}
             </div>
 
             <Modal

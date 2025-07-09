@@ -1,7 +1,11 @@
+import { useEffect, useState } from "react";
 import { styleAmount } from "../../utils/helper";
 import PieChartOverview from "../Charts/piechartoverview";
+import SearchLoading from "../Loading/searchloading";
 
 export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
+    const [loading, setLoading] = useState(true);
+
     let remainAmtColor = "";
     if (remainingAmount > 500) remainAmtColor = "#4ade80";
     else if (remainingAmount > 0) remainAmtColor = "#fb923c";
@@ -13,20 +17,31 @@ export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
         { name: "Remaining Amount", amount: Number(styleAmount(remainingAmount)) },
     ];
 
+    useEffect(() => {
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [totalExpenses]);
+
     return (
         <div className="card">
             <div className="flex items-center justify-between">
                 <h5 className="text-lg">Expenses Overview</h5>
             </div>
 
-            <PieChartOverview
-                mode="overview"
-                data={data}
-                label="Remaining Amount:"
-                totalAmount={`$${styleAmount(remainingAmount)}`}
-                colors={colors}
-                showTextAnchor
-            />
+            {loading
+                ? <SearchLoading />
+                : <PieChartOverview
+                    mode="overview"
+                    data={data}
+                    label="Remaining Amount:"
+                    totalAmount={`$${styleAmount(remainingAmount)}`}
+                    colors={colors}
+                    showTextAnchor
+                />}
         </div>
     )
 }

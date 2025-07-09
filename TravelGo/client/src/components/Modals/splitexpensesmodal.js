@@ -53,13 +53,13 @@ export default function SplitExpensesModal({ data, totalExpenses, xRate, onClose
                             .map((entry, idx) => (
                                 <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                                     <td className="border border-gray-300 px-4 py-2 max-w-[200px]">
-                                        <div className="line-clamp-1 truncate whitespace-nowrap">{entry.whoPaid}</div>
+                                        <div className="line-clamp-1">{entry.whoPaid}</div>
                                     </td>
                                     <td className="border border-gray-300 px-2 py-2">
-                                        <div className="line-clamp-1 truncate whitespace-nowrap">${styleAmount(entry.totalAmount * xRate)}</div>
+                                        <div className="line-clamp-1">${styleAmount(entry.totalAmount * xRate)}</div>
                                     </td>
                                     <td className="border border-gray-300 px-2 py-2">
-                                        <div className={`line-clamp-1 truncate whitespace-nowrap ${colorCode((entry.totalAmount - cost) * xRate)}`}>{(entry.totalAmount - cost) * xRate < 0 ? `-$${styleAmount(Math.abs((entry.totalAmount - cost) * xRate))}` : `+$${styleAmount((entry.totalAmount - cost) * xRate)}`}</div>
+                                        <div className={`line-clamp-1 ${colorCode((entry.totalAmount - cost) * xRate)}`}>{(entry.totalAmount - cost) * xRate < 0 ? `-$${styleAmount(Math.abs((entry.totalAmount - cost) * xRate))}` : `+$${styleAmount((entry.totalAmount - cost) * xRate)}`}</div>
                                     </td>
                                 </tr>
                             ))}
@@ -72,8 +72,8 @@ export default function SplitExpensesModal({ data, totalExpenses, xRate, onClose
                 {data?.settlement.map((entry, idx) => (
                     <div key={idx} className="flex justify-between items-center border-b py-2">
                         <div className="text-gray-700 font-medium capitalize max-w-[75%]">
-                            <p className="truncate whitespace-nowrap line-clamp-1">To: {entry.to}</p>
-                            <p className="mt-1 truncate line-clamp-1 whitespace-nowrap">From: {entry.from}</p>
+                            <p className="line-clamp-1">To: {entry.to}</p>
+                            <p className="mt-1 line-clamp-1">From: {entry.from}</p>
                         </div>
                         <div className="flex items-center">
                             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${entry.to === "me" ? "bg-green-100 text-green-500" : (entry.from === "me" ? "bg-red-50 text-red-500" : "bg-blue-50 text-blue-500")}`}>

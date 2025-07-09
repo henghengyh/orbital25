@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../../utils/axiosInstance";
@@ -6,7 +6,7 @@ import axiosInstance from "../../utils/axiosInstance";
 const UserContext = createContext();
 
 export default function UserProvider({ children }) {
-    const [user, setUser] = useState(null); 
+    const [user, setUser] = useState(null);
 
     const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ export default function UserProvider({ children }) {
         axiosInstance.get("/users/getUserInfo")
             .then((res) => {
                 if (res.data && res.data.user) {
-                    setUser(res.data.user); 
+                    setUser(res.data.user);
                 }
             })
             .catch((err) => {

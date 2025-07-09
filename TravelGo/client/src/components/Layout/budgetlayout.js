@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Modal from "react-modal";
 
@@ -178,7 +178,7 @@ export default function BudgetLayout() {
                     <div className="flex gap-2 mb-2 max-w-full group">
                         <p className="text-lg">Itinerary:</p>
                         <div className="text-lg font-semibold gap-1 flex">
-                            <span className="truncate line-clamp-1 whitespace-nowrap max-w-[130px]">{itineraryTitle}</span>
+                            <span className="line-clamp-1 max-w-[130px]">{itineraryTitle}</span>
                             <span onClick={() => setOpenModal({ shown: true, mode: "itinerary", data: null })}
                                 className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                 <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
