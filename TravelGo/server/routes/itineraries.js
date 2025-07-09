@@ -31,8 +31,10 @@ const Itinerary = require("../models/Itineraries");
 const Activity = require("../models/Activity");
 const User = require("../models/User");
 const Invitation = require('../models/Invitation');
+const Budget = require('../models/Budget');
 
 // IMPORTING HELPER MODULES
+const mongoose = require("mongoose");
 const email = require("../utilities/email-helper");
 const { findItineraryOr404, findActivityOr404, findBudgetOr404 } = require("../utilities/finder-helper");
 const { isValidActivity } = require("../utilities/valid-activity-helper");
@@ -184,8 +186,9 @@ router.put("/:id", authenticateToken, async (req, res) => {
         } else {
             for (const key in req.body) {
                 if (key === "tripName") {
-                    const itineraryBudget = await findBudgetOr404(req.params.id, res);
-                    if (itineraryBudget) itineraryBudget["itineraryTitle"] = req.body[key]; await itineraryBudget.save();
+                    const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
+                    const itineraryBudget = await Budget.findOne(itineraryId);
+                    if (itineraryBudget) { itineraryBudget["itineraryTitle"] = req.body[key]; await itineraryBudget.save(); }
                 }
                 itinerary[key] = req.body[key];
             }
