@@ -7,7 +7,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
     const [message, setMessage] = useState("");
     const [feedback, setFeedback] = useState("");
     const [success, setSuccess] = useState(false);
-    
+
     const [showCurrent, setShowCurrent] = useState(false);
     const [showNew, setShowNew] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -15,6 +15,9 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
     useEffect(() => {
         if (isOpen) {
             setMessage("");
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
         }
     }, [isOpen]);
 
@@ -36,7 +39,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
                     onClick={() => setShow(s => !s)}
                     tabIndex={-1}
                 >
-                    {show ? "Hide" : "Show"}
+                    <ion-icon name={show ? "eye-off" : "eye"} style={{ height: "24px", width: "24px" }}></ion-icon>
                 </button>
             </div>
         );

@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
 
 import EmptyExpenses from "./emptyexpenses";
+import SearchLoading from "../Loading/searchloading";
 import SplitExpensesInfoCard from "./splitexpensesinfocard";
 import SplitExpensesModal from "../Modals/splitexpensesmodal";
 
 export default function SplitExpenses({ totalExpenses, splitExpenses, xRate }) {
+    const [loading, setLoading] = useState(true);
     const [openModal, setOpenModal] = useState({ shown: false, data: null });
+
+    useEffect(() => {
+        setLoading(true);
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [splitExpenses]);
 
     return (
         <div className="card">
@@ -19,16 +30,18 @@ export default function SplitExpenses({ totalExpenses, splitExpenses, xRate }) {
             </div>
 
             <div className="mt-6">
-                {splitExpenses?.settlement?.length > 0
-                    ? splitExpenses?.settlement?.slice(0, 4).map((entry, idx) => (
-                        <SplitExpensesInfoCard
-                            key={idx}
-                            from={entry.from}
-                            to={entry.to}
-                            amount={entry.amount * xRate}
-                        />
-                    ))
-                    : <EmptyExpenses />}
+                {loading
+                    ? <SearchLoading />
+                    : splitExpenses?.settlement?.length > 0
+                        ? splitExpenses?.settlement?.slice(0, 4).map((entry, idx) => (
+                            <SplitExpensesInfoCard
+                                key={idx}
+                                from={entry.from}
+                                to={entry.to}
+                                amount={entry.amount * xRate}
+                            />
+                        ))
+                        : <EmptyExpenses />}
             </div>
 
             <Modal

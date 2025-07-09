@@ -19,7 +19,7 @@ export default function ItineraryCard({
             <img src={imageList[imageNumber - 1]} alt={destination} className='w-full h-48 object-cover rounded-lg' />
             <div className="p-4 flex items-center gap-3">
                 <div className="flex-1">
-                    <h6 className="text-md font-semibold">{tripName}</h6>
+                    <h6 className="text-md font-semibold capitalize line-clamp-1">{tripName}</h6>
                     <span className="text-sm font-semibold">{destination}</span>
                     <span className="text-xs ml-5">
                         {parsedStartDate} - {parsedEndDate}

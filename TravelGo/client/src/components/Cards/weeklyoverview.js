@@ -3,17 +3,30 @@ import { useEffect, useState } from "react";
 import { styleAmount } from "../../utils/helper";
 import BarChartOverview from "../Charts/barchartoverview";
 import EmptyExpenses from "./emptyexpenses";
+import SearchLoading from "../Loading/searchloading";
 
 export default function WeeklyOverview({ weeklyOverview, xRate }) {
+    const [loading, setLoading] = useState(true);
     const [newOverview, setNewOverview] = useState([]);
 
     useEffect(() => {
-        const converted = weeklyOverview.map(({ date, ...rest }) => {
-            const updated = Object.fromEntries(Object.entries(rest).map(([key, value]) => [key, Number(styleAmount(value * xRate))]));
-            return { date, ...updated };
-        });
+        setLoading(true);
+        if (xRate !== 1) {
+            const converted = weeklyOverview.map(({ date, ...rest }) => {
+                const updated = Object.fromEntries(Object.entries(rest).map(([key, value]) => [key, Number(styleAmount(value * xRate))]));
+                return { date, ...updated };
+            });
 
-        setNewOverview(converted);
+            setNewOverview(converted);
+        } else {
+            setNewOverview(weeklyOverview);
+        }
+
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
     }, [weeklyOverview, xRate]);
 
     return (
@@ -22,9 +35,11 @@ export default function WeeklyOverview({ weeklyOverview, xRate }) {
                 <h5 className="text-lg">Weekly Overview</h5>
             </div>
 
-            {newOverview.length > 0
-                ? <BarChartOverview data={newOverview} />
-                : <EmptyExpenses />}
+            {loading
+                ? <SearchLoading />
+                : newOverview.length > 0
+                    ? <BarChartOverview data={newOverview} />
+                    : <EmptyExpenses />}
         </div>
     )
 }

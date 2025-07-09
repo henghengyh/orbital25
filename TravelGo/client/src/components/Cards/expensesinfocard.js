@@ -33,7 +33,7 @@ export default function ExpensesInfoCard({ data, xRate, editExpenses, onDelete }
 
             <div className="flex flex-1 items-center justify-between max-w-[86%]">
                 <div className='max-w-[50%]'>
-                    <p className="text-sm text-gray-700 font-medium truncate line-clamp-1 whitespace-nowrap max-w-full">{data.title}</p>
+                    <p className="text-sm text-gray-700 font-medium line-clamp-1 max-w-full">{data.title}</p>
                     <p className="text-xs text-gray-400 mt-1">{moment(data.date).format("Do MMM YYYY")}</p>
                 </div>
 
