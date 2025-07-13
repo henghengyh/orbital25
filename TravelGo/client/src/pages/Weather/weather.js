@@ -36,21 +36,20 @@ const Weather = () => {
     }
 
     async function getWithRetry(url, options, retries = 10) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            return await axiosInstance.get(url, options);
-        } catch (error) {
-            if (i === retries - 1) throw error;
+        for (let i = 0; i < retries; i++) {
+            try {
+                return await axiosInstance.get(url, options);
+            } catch (error) {
+                if (i === retries - 1) throw error;
+            }
         }
     }
-}
 
     //A1. Fetch all itineraries
     const fetchAllItineraries = async () => {
         try {
             const response_itinerary = await axiosInstance.get(`/itineraries/get-all-itineraries`);
             setAllItineraries(response_itinerary.data.itineraries);
-            console.log('All itineraries fetched:', response_itinerary.data.itineraries);
         } catch (error) {
             console.error('Error fetching itineraries:', error);
         }
@@ -123,7 +122,6 @@ const Weather = () => {
 
         const keyStyle = "font-medium text-gray-600";
         const valStyle = "text-gray-800";
-        console.log('Itinerary Weather Data:', itineraryWeather);
 
         return (
             <div>
@@ -192,7 +190,7 @@ const Weather = () => {
         const city = itinerary.destination;
         const response = await getWithRetry(`weather-history/${city}/${historyStart}_${historyEnd}`, { timeout: 7000 }); //INTRODUCED TIMEOUT HERE
         setWeatherWarnings(response.data);
-    },[]);
+    }, []);
 
     //A6. Display itinerary weather warnings
     const showWeatherWarnings = () => {
@@ -352,7 +350,7 @@ const Weather = () => {
             }
         } catch (error) {
             setWeather(null);
-            console.log('Error fetching weather data:', error);
+            console.error('Error fetching weather data:', error);
         } finally {
             setLoading(false);
         }
