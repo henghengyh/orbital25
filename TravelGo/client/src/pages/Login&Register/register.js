@@ -35,7 +35,6 @@ export default function Register() {
                 password: password,
             })
             .then((res) => {
-                console.log(res.data);
                 if (res.data.success) {
                     navigate("/", {
                         state: {

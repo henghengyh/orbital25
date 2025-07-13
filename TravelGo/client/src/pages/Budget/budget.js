@@ -22,13 +22,7 @@ export default function Budget() {
         axiosInstance
             .get("/itineraries/get-all-itineraries", { signal: controller.signal })
             .then((res) => { setAllItineraries(res.data.itineraries); setLoading(false); })
-            .catch((err) => {
-                if (err.name === "CanceledError") {
-                    console.log("Get-all-itinerary request canceled");
-                } else {
-                    console.error(err.message);
-                }
-            });
+            .catch((err) => { if (err.name !== "CanceledError") console.error(err.message); });
     }, [setAllItineraries, setLoading]);
 
     useEffect(() => {

@@ -36,7 +36,7 @@ const Budget = require('../models/Budget');
 // IMPORTING HELPER MODULES
 const mongoose = require("mongoose");
 const email = require("../utilities/email-helper");
-const { findItineraryOr404, findActivityOr404, findBudgetOr404 } = require("../utilities/finder-helper");
+const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
 const { isValidActivity } = require("../utilities/valid-activity-helper");
 const { hasAccessToItinerary } = require("../utilities/valid-access-helper");
 
@@ -435,9 +435,7 @@ router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
         if (!itinerary) {
             return;
         } else {
-            console.log("trying to remove collaborator");
             await itinerary.removeCollaborator(user._id);
-            console.log("collaborator removed");
             return res.status(200).json({ message: "You have left the itinerary" });
         }
     } catch (error) {
