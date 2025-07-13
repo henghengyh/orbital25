@@ -127,9 +127,9 @@ export default function Dashboard() {
                     </div>
 
                     <div className="mt-24 items-end justify-end flex">
-                        <div onClick={() => navigate('/create-itinerary')} className="bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
+                        <button aria-label="create itinerary" onClick={() => navigate('/create-itinerary')} className="bg-blue-200 grid place-items-center h-14 w-14 rounded-full cursor-pointer hover:shadow-md z-10">
                             <ion-icon name="add" style={{ height: "30px", width: "30px" }}></ion-icon>
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
