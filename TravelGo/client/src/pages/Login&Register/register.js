@@ -10,6 +10,7 @@ export default function Register() {
     const [error, setError] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState("");
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -45,7 +46,12 @@ export default function Register() {
                 }
             })
             .catch((err) => {
-                const message = ("Password too weak. " + err.response?.data?.feedback?.[0]) || err.response?.data?.message || "Something went wrong. Please try again.";
+                let message = "";
+                if (err.response?.data?.feedback) {
+                    message = "Password too weak. " + err.response?.data?.feedback;
+                } else {
+                    message = err.response?.data?.message || "Something went wrong. Please try again.";
+                }
                 console.error("Registration error:", message);
                 setError(message);
             });

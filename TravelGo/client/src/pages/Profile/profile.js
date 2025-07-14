@@ -21,7 +21,7 @@ function Profile() {
     const [editPWOpen, setEditPWOpen] = useState(false);
     const [editSignUpOpen, setEditSignUpOpen] = useState(false);
     const [logoutOpen, setLogoutOpen] = useState(false);
-    
+
     const { setAuth } = useAuth();
     const { user, setUser } = useUser();
     const navigate = useNavigate();
@@ -86,7 +86,7 @@ function Profile() {
             <hr className="my-4 border-gray-300" />
             <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} onEditPFPOpen={() => setEditPFPOpen(true)} />
             <hr className="my-4 border-gray-300" />
-            <div className="flex justify-center gap-1.5">
+            <div role="button" aria-label="logout button" className="flex justify-center gap-1.5">
                 <button onClick={() => setLogoutOpen(true)} className={buttonStyle}>
                     Logout
                 </button>

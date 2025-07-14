@@ -1,7 +1,8 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { axiosInstance, renderWithProvAuth } from './test-utils-integ';
+import { axiosInstance, renderWithProvAuth } from './test-helper';
+import { mockItinerary } from './mock-const';
 
 describe("Login flow", () => {
     test("successful (new user) login and redirects to dashboard", async () => {
@@ -11,12 +12,7 @@ describe("Login flow", () => {
                 user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
             }
         });
-        
-        axiosInstance.get.mockResolvedValueOnce({
-            data: {
-                itineraries: [],
-            }
-        });
+        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: [] } });
 
         renderWithProvAuth();
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
@@ -36,21 +32,7 @@ describe("Login flow", () => {
                 user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
             }
         });
-        axiosInstance.get.mockResolvedValueOnce({
-            data: {
-                itineraries: [
-                    {
-                        _id: "1",
-                        tripName: "Test Trip",
-                        destination: "Singapore",
-                        imageNumber: 3,
-                        startDate: "2025-07-13",
-                        endDate: "2025-07-13",
-                        numberOfPeople: 1,
-                    },
-                ],
-            }
-        });
+        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: [mockItinerary] } });
 
         renderWithProvAuth();
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
