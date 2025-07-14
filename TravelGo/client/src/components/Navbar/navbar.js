@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { logoutUser } from "../../utils/logoutUser";
+import { navbarItems } from './navbaritems';
 import { useAuth } from "../../context/AuthContext/authcontext";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
-import { navbarItems } from './navbaritems';
 import axiosInstance from "../../utils/axiosInstance";
+import LogoutModal from "../../components/Modals/LogoutModal";
 import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
 
-import LogoutModal from "../../components/Modals/LogoutModal";
 
 export default function Navbar({ user }) {
     const [logoutOpen, setLogoutOpen] = useState(false);
