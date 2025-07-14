@@ -21,7 +21,7 @@ beforeEach(() => {
   localStorage.setItem('token', 'fake-token');
   axiosInstance.get.mockResolvedValue({
     data: {
-      user: { name: 'testuser' },
+      user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
     }
   });
 });

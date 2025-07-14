@@ -10,6 +10,16 @@ import Layout from '../components/Layout/layout';
 import Login from '../pages/Login&Register/login';
 import UserProvider from '../context/UserContext/usercontext';
 
+let mockLocation = null;
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useLocation: () => ({ state: mockLocation }),
+}));
+
+beforeEach(() => {
+    mockLocation = null;
+});
+
 // unit test
 describe("Login component", () => {
     test("renders email, password inputs and login button", () => {
@@ -65,6 +75,23 @@ describe("Login component", () => {
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
 
         expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument();
+    });
+
+    test("show message after successful registration", async () => {
+        mockLocation = {
+            fromRegister: true,
+            message: "Registration successful! Please log in.",
+        };
+
+        renderWithAuth(<Login />);
+
+        expect(screen.getByText(/registration successful! please log in/i)).toBeInTheDocument();
+    });
+
+    test("no message if not from registering successfully", async () => {
+        renderWithAuth(<Login />);
+
+        expect(screen.queryByText(/registration successful! please log in/i)).not.toBeInTheDocument();
     });
 });
 
