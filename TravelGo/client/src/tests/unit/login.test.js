@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { renderWithAuth, mockLocation, mockSetAuth, axiosInstance } from './test-utils';
+import { axiosInstance, mockLocation, mockNavigate, mockSetAuth, renderWithAuth } from './test-utils';
 import Login from '../../pages/Login&Register/login';
 
 describe("Login component", () => {
@@ -12,6 +12,8 @@ describe("Login component", () => {
         expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+        expect(screen.getByText(/don't have an account?/i)).toBeInTheDocument();
+        expect(screen.getByText(/register/i)).toBeInTheDocument();
     });
 
     test("login successfully with correct auth state", async () => {
@@ -72,9 +74,14 @@ describe("Login component", () => {
         expect(screen.getByText(/registration successful! please log in/i)).toBeInTheDocument();
     });
 
-    test("no message if not from registering successfully", async () => {
+    test("show message when visiting protected routes without being authenticated", async () => {
+        mockLocation.state = {
+            fromProtectedRoute: true,
+            message: "Please log in to continue.",
+        };
+
         renderWithAuth(<Login />);
 
-        expect(screen.queryByText(/registration successful! please log in/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/please log in to continue/i)).toBeInTheDocument();
     });
 });

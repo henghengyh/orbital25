@@ -4,9 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
 
+const mockNavigate = jest.fn();
 const mockLocation = { state: null };
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
   useLocation: () => (mockLocation),
 }));
 jest.mock('../../utils/axiosInstance', () => ({
@@ -42,4 +44,4 @@ const renderWithAuth = (ui, options = {}) => {
   )
 };
 
-export { axiosInstance, mockLocation, mockSetAuth, renderWithAuth, useAuth };
+export { axiosInstance, mockLocation, mockNavigate, mockSetAuth, renderWithAuth, useAuth };
