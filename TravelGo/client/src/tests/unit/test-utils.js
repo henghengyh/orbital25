@@ -1,17 +1,22 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 
-import AuthProvider, { useAuth } from '../context/AuthContext/authcontext';
-import axiosInstance from '../utils/axiosInstance';
+import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
+import axiosInstance from '../../utils/axiosInstance';
 
-jest.mock('../utils/axiosInstance', () => ({
+const mockLocation = { state: null };
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => (mockLocation),
+}));
+jest.mock('../../utils/axiosInstance', () => ({
   post: jest.fn(),
   get: jest.fn(),
 }));
-jest.mock('../context/AuthContext/authcontext', () => ({
+jest.mock('../../context/AuthContext/authcontext', () => ({
   useAuth: jest.fn(),
   __esModule: true,
-  default: jest.requireActual('../context/AuthContext/authcontext').default,
+  default: ({ children }) => <>{children}</>,
 }));
 
 const mockSetAuth = jest.fn();
@@ -19,11 +24,7 @@ const mockSetAuth = jest.fn();
 beforeEach(() => {
   useAuth.mockReturnValue({ setAuth: mockSetAuth });
   localStorage.setItem('token', 'fake-token');
-  axiosInstance.get.mockResolvedValue({
-    data: {
-      user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
-    }
-  });
+  mockLocation.state = null;
 });
 afterEach(() => {
   localStorage.clear();
@@ -41,4 +42,4 @@ const renderWithAuth = (ui, options = {}) => {
   )
 };
 
-export { axiosInstance, mockSetAuth, renderWithAuth, useAuth };
+export { axiosInstance, mockLocation, mockSetAuth, renderWithAuth, useAuth };
