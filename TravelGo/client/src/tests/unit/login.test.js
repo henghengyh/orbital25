@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { axiosInstance, mockLocation, mockNavigate, mockSetAuth, renderWithAuth } from './test-utils';
+import { axiosInstance, mockLocation, mockSetAuth, renderWithAuth } from './test-utils';
 import Login from '../../pages/Login&Register/login';
 
 describe("Login component", () => {
