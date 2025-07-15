@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { axiosInstance, renderWithProvAuth } from './test-helper';
-import { mockItinerary } from './mock-const';
+import { mockItinerary } from '../mock-const';
 
 describe("Login flow", () => {
     test("successful (new user) login and redirects to dashboard", async () => {

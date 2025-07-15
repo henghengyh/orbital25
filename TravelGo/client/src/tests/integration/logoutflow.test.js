@@ -2,7 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { axiosInstance, renderWithProvAuth } from './test-helper';
-import { mockUser } from "./mock-const";
+import { mockUser } from "../mock-const";
 
 describe("Logout flow", () => {
     test("logout modal appears when click on logout link in navbar", async () => {

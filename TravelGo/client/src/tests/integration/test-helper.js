@@ -1,7 +1,7 @@
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
-import { mockUser } from './mock-const';
+import { mockUser } from '../mock-const';
 import AuthProvider from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
 import DashboardPage from '../../pages/Dashboard/dashboard';
