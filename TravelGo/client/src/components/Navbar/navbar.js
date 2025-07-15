@@ -11,7 +11,6 @@ import ProfileInfo from '../Cards/profileinfo';
 import SearchBar from '../SearchBar/searchbar';
 import travelgo from '../../assets/icon.png';
 
-
 export default function Navbar({ user }) {
     const [logoutOpen, setLogoutOpen] = useState(false);
     const [searchValue, setSearchValue] = useState('');

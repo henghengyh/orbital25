@@ -60,16 +60,16 @@ export default function Dashboard() {
     }, [location.state])
 
     const filterItineraryByDate = async (day) => {
-        if (!day || !day.from || !day.to) {
+        if (!day || !day.from || !day.to || day.from.getTime() === day.to.getTime()) {
             setSearchResults([]);
             setSearched(false);
             return;
-        }
+        };
 
         const toUTCDate = (day) => {
             const date = new Date(day);
             return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
-        }
+        };
 
         setLoading(true);
         const start = toUTCDate(day.from);
@@ -82,8 +82,17 @@ export default function Dashboard() {
     }
 
     const handleDayClick = (day) => {
-        setDateRange(day);
-        filterItineraryByDate(day);
+        if (!day) {
+            setDateRange({ from: null, to: null });
+            setSearchResults([]);
+            setSearched(false);
+            return;
+        };
+
+        const singleDay = day?.from && day?.to && day.from.getTime() === day.to.getTime();
+        let newDay = singleDay ? { from: day?.from, to: null } : day;
+        setDateRange(newDay);
+        filterItineraryByDate(newDay);
     }
 
     return (
@@ -113,7 +122,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="w-[335px]">
-                    <div className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
+                    <div role="listbox" aria-label="calender" className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
                         <div className="p-3">
                             <DayPicker
                                 navLayout="around"

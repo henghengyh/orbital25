@@ -1,8 +1,9 @@
+import { useEffect } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
 import { mockUser } from '../mock-const';
-import AuthProvider from '../../context/AuthContext/authcontext';
+import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
 import DashboardPage from '../../pages/Dashboard/dashboard';
 import ItineraryProvider from '../../context/ItineraryContext/itinerarycontext';
@@ -54,4 +55,52 @@ const renderWithProvAuth = (initialRoute = '/') => {
     )
 };
 
-export { axiosInstance, renderWithProvAuth };
+const AuthStateInjector = ({ override, children }) => {
+    const { setAuth } = useAuth();
+
+    useEffect(() => {
+        if (override) {
+            setAuth(prev => ({
+                ...prev,
+                ...override,
+                loading: false,
+            }));
+        }
+    }, [override, setAuth]);
+
+    return children;
+};
+
+const TestAuthProvider = ({ authOverride, children }) => {
+    return (
+        <AuthProvider>
+            <AuthStateInjector override={authOverride}>
+                {children}
+            </AuthStateInjector>
+        </AuthProvider>
+    );
+};
+
+const renderWithMockAuth = (authValue, initialRoute = '/dashboard') => {
+    return render(
+        <MemoryRouter initialEntries={[initialRoute]}>
+            <TestAuthProvider authOverride={authValue}>
+                <Routes>
+                    <Route path="/" element={<LoginPage />} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={
+                            <UserProvider>
+                                <ItineraryProvider>
+                                    <Layout />
+                                </ItineraryProvider>
+                            </UserProvider>}>
+                            <Route path='/dashboard' element={<DashboardPage />} />
+                        </Route>
+                    </Route>
+                </Routes>
+            </TestAuthProvider>
+        </MemoryRouter>
+    );
+};
+
+export { axiosInstance, renderWithMockAuth, renderWithProvAuth };

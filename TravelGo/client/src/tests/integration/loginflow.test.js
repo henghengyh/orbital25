@@ -1,8 +1,10 @@
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { axiosInstance, renderWithProvAuth } from './test-helper';
 import { mockItinerary } from '../mock-const';
+
+beforeEach(async () => await act(async () => renderWithProvAuth()));
 
 describe("Login flow", () => {
     test("successful (new user) login and redirects to dashboard", async () => {
@@ -14,7 +16,6 @@ describe("Login flow", () => {
         });
         axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: [] } });
 
-        renderWithProvAuth();
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
@@ -32,9 +33,8 @@ describe("Login flow", () => {
                 user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
             }
         });
-        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: [mockItinerary] } });
+        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: mockItinerary } });
 
-        renderWithProvAuth();
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
@@ -45,6 +45,6 @@ describe("Login flow", () => {
             expect(screen.getByText(/singapore/i)).toBeInTheDocument();
             expect(screen.getByText(/13th jul 2025/i)).toBeInTheDocument();
             expect(screen.getByText(/number of people: 1/i)).toBeInTheDocument();
-        })
+        });
     })
 });

@@ -1,11 +1,11 @@
-import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { render } from '@testing-library/react';
 
 import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
 
 const mockNavigate = jest.fn();
-const mockLocation = { state: null };
+const mockLocation = { pathname: '/', state: null };
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
@@ -27,6 +27,7 @@ beforeEach(() => {
   useAuth.mockReturnValue({ setAuth: mockSetAuth });
   localStorage.setItem('token', 'fake-token');
   mockLocation.state = null;
+  mockLocation.pathname = '/';
 });
 afterEach(() => {
   localStorage.clear();
@@ -34,14 +35,14 @@ afterEach(() => {
 });
 
 const renderWithAuth = (ui, options = {}) => {
-  render(
+  return render(
     <BrowserRouter>
       <AuthProvider>
         {ui}
       </AuthProvider>
     </BrowserRouter>,
     options
-  )
+  );
 };
 
 export { axiosInstance, mockLocation, mockNavigate, mockSetAuth, renderWithAuth, useAuth };
