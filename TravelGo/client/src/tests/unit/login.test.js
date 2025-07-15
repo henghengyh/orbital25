@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { axiosInstance, mockLocation, mockSetAuth, renderWithAuth } from './test-utils';
 import Login from '../../pages/Login&Register/login';
 
+beforeEach(() => renderWithAuth(<Login />));
+
 describe("Login component", () => {
     test("renders email, password inputs and login button", () => {
-        renderWithAuth(<Login />);
-
         expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
@@ -24,7 +24,6 @@ describe("Login component", () => {
             }
         });
 
-        renderWithAuth(<Login />);
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
@@ -40,7 +39,6 @@ describe("Login component", () => {
     });
 
     test("show error on invalid email", async () => {
-        renderWithAuth(<Login />);
         userEvent.type(screen.getByPlaceholderText(/email/i), 'invalidemail');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'password123');
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
@@ -55,7 +53,6 @@ describe("Login component", () => {
             },
         });
 
-        renderWithAuth(<Login />);
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.co');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!!');
         userEvent.click(screen.getByRole('button', { name: /log in/i }));
@@ -69,7 +66,7 @@ describe("Login component", () => {
             message: "Registration successful! Please log in.",
         };
 
-        renderWithAuth(<Login />);
+        renderWithAuth(<Login />)
 
         expect(screen.getByText(/registration successful! please log in/i)).toBeInTheDocument();
     });
@@ -80,7 +77,7 @@ describe("Login component", () => {
             message: "Please log in to continue.",
         };
 
-        renderWithAuth(<Login />);
+        renderWithAuth(<Login />)
 
         expect(screen.getByText(/please log in to continue/i)).toBeInTheDocument();
     });

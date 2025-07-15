@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { axiosInstance, mockNavigate, renderWithAuth } from './test-utils';
 import Register from '../../pages/Login&Register/register';
 
+beforeEach(() => renderWithAuth(<Register />));
+
 describe("Register component", () => {
     test("renders username, email, password inputs and register button", () => {
-        renderWithAuth(<Register />);
-
         expect(screen.getByRole('heading', { name: /register/i })).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/username/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
@@ -25,7 +25,6 @@ describe("Register component", () => {
             }
         });
 
-        renderWithAuth(<Register />);
         userEvent.type(screen.getByPlaceholderText(/username/i), 'testuser');
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
@@ -42,7 +41,6 @@ describe("Register component", () => {
     });
 
     test("show error on invalid email", async () => {
-        renderWithAuth(<Register />);
         userEvent.type(screen.getByPlaceholderText(/username/i), 'testuser');
         userEvent.type(screen.getByPlaceholderText(/email/i), 'invalidemail');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'password123');
@@ -58,7 +56,6 @@ describe("Register component", () => {
             },
         });
 
-        renderWithAuth(<Register />);
         userEvent.type(screen.getByPlaceholderText(/username/i), "anotheruser");
         userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'password');
@@ -78,7 +75,6 @@ describe("Register component", () => {
             },
         });
 
-        renderWithAuth(<Register />);
         userEvent.type(screen.getByPlaceholderText(/username/i), "anotheruser");
         userEvent.type(screen.getByPlaceholderText(/email/i), 'new@email.com');
         userEvent.type(screen.getByPlaceholderText(/password/i), 'password');

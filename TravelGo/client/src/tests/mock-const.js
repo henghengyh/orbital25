@@ -7,7 +7,7 @@ export const mockUser = {
     profilePhoto: null,
     profileInfo: {
         bio: 'Coffee lover. Laxing.',
-        favouriteDestination: 'Taiwan, China',
+        favouriteDestination: 'Taiwan, China, USA',
         gender: 'Male',
         dateOfBirth: '2003-01-01T00:00:00Z',
         location: 'Singapore',
@@ -16,12 +16,97 @@ export const mockUser = {
     emailSignUp: true,
 };
 
-export const mockItinerary = {
-    _id: "1",
-    tripName: "Test Trip",
-    destination: "Singapore",
-    imageNumber: 3,
-    startDate: "2025-07-13",
-    endDate: "2025-07-13",
-    numberOfPeople: 1,
-};
+export const mockItinerary = [
+    {
+        _id: "1",
+        user: "testuser",
+        tripName: "Test Trip",
+        destination: "Singapore",
+        imageNumber: 3,
+        startDate: "2025-07-13",
+        endDate: "2025-07-13",
+        numberOfPeople: 1,
+        activities: [],
+        notes: "mock itinerary",
+    },
+    {
+        _id: "2",
+        user: "testuser",
+        tripName: "Weekend Getaway",
+        destination: "Kuala Lumpur",
+        imageNumber: 5,
+        startDate: "2025-08-01",
+        endDate: "2025-08-03",
+        numberOfPeople: 2,
+        activities: [
+            {
+                _id: "2a",
+                activityName: "Bus Ride",
+                date: "2025-08-01",
+                startTime: "09:00",
+                endTime: "13:00",
+                type: "Transport",
+                notes: "Express coach from Singapore",
+            },
+            {
+                _id: "2b",
+                activityName: "Check-in Hotel",
+                date: "2025-08-01",
+                startTime: "14:00",
+                endTime: "14:30",
+                type: "Lodging",
+                notes: "Hilton KL",
+            },
+            {
+                _id: "2c",
+                activityName: "Dinner at Jalan Alor",
+                date: "2025-08-01",
+                startTime: "19:00",
+                endTime: "20:30",
+                type: "Food",
+                notes: "Try satay and char kway teow",
+            }
+        ],
+        notes: "Relaxing city trip"
+    },
+    {
+        _id: "3",
+        user: "testuser",
+        tripName: "Nature Retreat",
+        destination: "Bali",
+        imageNumber: 8,
+        startDate: "2025-09-10",
+        endDate: "2025-09-15",
+        numberOfPeople: 4,
+        activities: [
+            {
+                _id: "3a",
+                activityName: "Flight to Bali",
+                date: "2025-09-10",
+                startTime: "10:00",
+                endTime: "14:00",
+                type: "Transport",
+                notes: "Flight SQ938",
+            },
+            {
+                _id: "3b",
+                activityName: "Ubud Rice Terrace Tour",
+                date: "2025-09-11",
+                startTime: "09:00",
+                endTime: "12:00",
+                type: "Sightseeing",
+                notes: "Photography session",
+            },
+            {
+                _id: "3c",
+                activityName: "Beach Day",
+                date: "2025-09-13",
+                startTime: "11:00",
+                endTime: "17:00",
+                type: "Leisure",
+                notes: "Seminyak beach",
+            }
+        ],
+        notes: "Escape from city life",
+    },
+];
