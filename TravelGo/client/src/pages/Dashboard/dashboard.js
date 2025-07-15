@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DayPicker } from 'react-day-picker';
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { searchByDate } from "../../utils/helper";
 import { useItinerary } from "../../context/ItineraryContext/itinerarycontext";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyCard from "../../components/Cards/emptycard";
@@ -59,42 +60,6 @@ export default function Dashboard() {
         }
     }, [location.state])
 
-    const filterItineraryByDate = async (day) => {
-        if (!day || !day.from || !day.to || day.from.getTime() === day.to.getTime()) {
-            setSearchResults([]);
-            setSearched(false);
-            return;
-        };
-
-        const toUTCDate = (day) => {
-            const date = new Date(day);
-            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
-        };
-
-        setLoading(true);
-        const start = toUTCDate(day.from);
-        const end = toUTCDate(day.to);
-        axiosInstance
-            .get('/itineraries/filter', { params: { start, end } })
-            .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
-            .catch((err) => console.error(err.message))
-            .finally(() => setLoading(false));
-    }
-
-    const handleDayClick = (day) => {
-        if (!day) {
-            setDateRange({ from: null, to: null });
-            setSearchResults([]);
-            setSearched(false);
-            return;
-        };
-
-        const singleDay = day?.from && day?.to && day.from.getTime() === day.to.getTime();
-        let newDay = singleDay ? { from: day?.from, to: null } : day;
-        setDateRange(newDay);
-        filterItineraryByDate(newDay);
-    }
-
     return (
         <div className="start-block">
             <div className="flex gap-7">
@@ -129,7 +94,7 @@ export default function Dashboard() {
                                 captionLayout="dropdown-buttons"
                                 mode="range"
                                 selected={dateRange}
-                                onSelect={handleDayClick}
+                                onSelect={(day) => searchByDate(day, setDateRange, setLoading, setSearched, setSearchResults)}
                                 pagedNavigation
                             />
                         </div>
