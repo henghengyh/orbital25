@@ -1,3 +1,7 @@
+import { DayPicker } from "react-day-picker";
+import EmptyCard from "../components/Cards/emptycard";
+import ItineraryCard from "../components/Cards/itinerarycard";
+import SearchLoading from "../components/Loading/searchloading";
 import axiosInstance from "./axiosInstance";
 
 export const getInitials = (name) => {
@@ -61,4 +65,41 @@ export const convertToSGD = async (amount, currency) => {
     if (currency === "SGD") return Number(amount);
     const rate = await getRate(currency);
     return Number(amount) / rate;
+};
+
+export const searchByDate = (day, setDateRange, setLoading, setSearched, setSearchResults) => {
+    const filterItineraryByDate = async (day) => {
+        if (!day || !day.from || !day.to || day.from.getTime() === day.to.getTime()) {
+            setSearchResults([]);
+            setSearched(false);
+            return;
+        };
+
+        const toUTCDate = (day) => {
+            const date = new Date(day);
+            return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
+        };
+
+        setLoading(true);
+        const start = toUTCDate(day.from);
+        const end = toUTCDate(day.to);
+        axiosInstance
+            .get('/itineraries/filter', { params: { start, end } })
+            .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
+            .catch((err) => console.error(err.message))
+            .finally(() => setLoading(false));
+    }
+
+    if (!day) {
+        setDateRange({ from: null, to: null });
+        setSearchResults([]);
+        setSearched(false);
+        return;
+    };
+
+    const singleDay = day?.from && day?.to && day.from.getTime() === day.to.getTime();
+    let newDay = singleDay ? { from: day?.from, to: null } : day;
+    setDateRange(newDay);
+    filterItineraryByDate(newDay);
+    return;
 };
