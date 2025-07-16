@@ -6,14 +6,18 @@ import axiosInstance from '../../utils/axiosInstance';
 
 const mockNavigate = jest.fn();
 const mockLocation = { pathname: '/', state: null };
+const mockParams = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
   useLocation: () => (mockLocation),
+  useParams: () => mockParams(),
 }));
 jest.mock('../../utils/axiosInstance', () => ({
   post: jest.fn(),
   get: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
 }));
 jest.mock('../../context/AuthContext/authcontext', () => ({
   useAuth: jest.fn(),
@@ -45,4 +49,4 @@ const renderWithAuth = (ui, options = {}) => {
   );
 };
 
-export { axiosInstance, mockLocation, mockNavigate, mockSetAuth, renderWithAuth, useAuth };
+export { axiosInstance, mockLocation, mockNavigate, mockParams, mockSetAuth, renderWithAuth, useAuth };

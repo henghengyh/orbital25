@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
-import { mockUser } from '../mock-const';
+import { mockUser1 } from '../mock-const';
 import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
 import DashboardPage from '../../pages/Dashboard/dashboard';
@@ -23,7 +23,7 @@ beforeEach(() => {
     // mock AuthContext
     axiosInstance.get.mockResolvedValue({ data: { user: { _id: '123', name: 'testuser', email: 'unit@test.com' } } });
     // mock UserContext
-    axiosInstance.get.mockResolvedValueOnce({ data: { user: mockUser } });
+    axiosInstance.get.mockResolvedValueOnce({ data: { user: mockUser1 } });
     localStorage.setItem('token', 'fake-token');
 });
 afterEach(() => {

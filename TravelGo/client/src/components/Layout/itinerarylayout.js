@@ -13,18 +13,18 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [activities, setActivities] = useState(itinerary?.activities || []);
     const [dates, setDates] = useState([]);
     const [destination, setDestination] = useState(itinerary?.destination || "");
+    const [confirmAction, setConfirmAction] = useState("");
     const [endDate, setEndDate] = useState(itinerary?.endDate || null);
     const [error, setError] = useState("");
+    const [isOwner, setIsOwner] = useState(false);
     const [notes, setNotes] = useState(itinerary?.notes || "");
     const [numberOfPeople, setNumberOfPeople] = useState(itinerary?.numberOfPeople || 1);
     const [popup, setPopup] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [showWarningModal, setShowWarningModal] = useState(false);
     const [startDate, setStartDate] = useState(itinerary?.startDate || null);
     const [tripName, setTripName] = useState(itinerary?.tripName || "");
-    const [showInviteModal, setShowInviteModal] = useState(false);
-    const [isOwner, setIsOwner] = useState(false);
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [confirmAction, setConfirmAction] = useState("");
-    const [showWarningModal, setShowWarningModal] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -96,9 +96,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
         }
     };
 
-
-
-
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}
@@ -108,7 +105,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     onInvite={async (email, message) => {
                         const res = await axiosInstance.post(`/itineraries/${id}/invite-collaborator`, { invitedEmail: email, message });
                         return res;
-
                     }}
                     itinerary={itinerary}
                 />
@@ -132,24 +128,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
             <div className="flex items-center justify-between pl-6 pr-4 py-3">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Itinerary" : "Add Itinerary"}</h5>
                 <div className="flex items-center gap-8">
-                    {edit ? (
-                        <button
-                            className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
-                            onClick={() => setShowInviteModal(true)}
-                        >
-                            <ion-icon name="person-add-outline"></ion-icon>
-                            Invite Collaborators
-                        </button>
-                    ) : null}
-                    {!edit ? (
-                        <button
-                            className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
-                            onClick={() => setShowWarningModal(true)}
-                        >
-                            <ion-icon name="person-add-outline"></ion-icon>
-                            Invite Collaborators
-                        </button>
-                    ) : null}
+                    <button
+                        className="itinerary-button w-[200px] py-2 bg-blue-200 hover:bg-blue-300"
+                        onClick={() => edit ? setShowInviteModal(true) : setShowWarningModal(true)}
+                    >
+                        <ion-icon name="person-add-outline"></ion-icon>
+                        Invite Collaborators
+                    </button>
                     <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
                         <ion-icon
                             name="close"
@@ -190,9 +175,10 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         </div>
                         <div className="pt-2 flex gap-3">
                             <div className="flex flex-col gap-2">
-                                <h6 className="text-label">From:</h6>
+                                <label htmlFor="startDate" className="text-label">From:</label>
                                 <div className="flex">
                                     <input
+                                        id="startDate"
                                         type="date"
                                         name="startDate"
                                         max={endDate ? formatDate(endDate) : undefined}
@@ -204,9 +190,10 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <h6 className="text-label">To:</h6>
+                                <label htmlFor="endDate" className="text-label">To:</label>
                                 <div className="flex">
                                     <input
+                                        id="endDate"
                                         type="date"
                                         name="endDate"
                                         min={startDate ? formatDate(startDate) : undefined}
@@ -248,24 +235,24 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         <div>
                             {edit
                                 ? <div className="flex gap-2 absolute bottom-[54px] w-[304px] h-9">
-                                    <div onClick={(e) => {
+                                    <button onClick={(e) => {
                                         e.preventDefault();
                                         validInputCheck(() => editItinerary({ tripName, destination, startDate, endDate, numberOfPeople, notes }));
                                     }}
                                         className="itinerary-button bg-green-200 hover:bg-green-300">
                                         <ion-icon name="pencil"></ion-icon>
                                         Save
-                                    </div>
-                                    <div onClick={(e) => {
+                                    </button>
+                                    <button onClick={(e) => {
                                         e.preventDefault();
                                         handleDeleteLeaveClick();
                                     }}
                                         className="itinerary-button bg-red-200 hover:bg-red-300">
                                         <ion-icon name="trash"></ion-icon>
                                         {isOwner ? "Delete" : "Leave"}
-                                    </div>
+                                    </button>
                                 </div>
-                                : <div
+                                : <button
                                     onClick={(e) => {
                                         e.preventDefault();
                                         validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));
@@ -273,7 +260,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     className="flex gap-2 absolute bottom-[54px] w-[304px] h-9 itinerary-button bg-green-200 hover:bg-green-300">
                                     <ion-icon name="pencil"></ion-icon>
                                     Add
-                                </div>
+                                </button>
                             }
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { axiosInstance, mockLocation, mockNavigate, renderWithAuth } from './test-utils';
-import { mockItinerary, mockUser } from '../mock-const';
+import { mockItinerary, mockUser1 } from '../mock-const';
 import { useItinerary } from '../../context/ItineraryContext/itinerarycontext';
 import Navbar from '../../components/Navbar/navbar';
 
@@ -19,7 +19,7 @@ beforeEach(() => {
         setSearchResults: mockSearchResults,
     });
     mockLocation.pathname = '/dashboard';
-    renderWithAuth(<Navbar user={mockUser} />);
+    renderWithAuth(<Navbar user={mockUser1} />);
 });
 
 describe("Navbar component", () => {
