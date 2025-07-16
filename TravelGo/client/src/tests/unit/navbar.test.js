@@ -48,28 +48,15 @@ describe("Navbar component", () => {
         await waitFor(() => expect(mockSearchResults).toHaveBeenCalledWith(mockItinerary[0]));
     });
 
-    test("navigates to dashboard page when dashboard tab is clicked", () => {
-        userEvent.click(screen.getByText(/dashboard/i));
+    test.each([
+        ["dashboard", "dashboard", "/dashboard"],
+        ["budget", "budget", "/budget"],
+        ["weather", "weather", "/weather"],
+        ["map", "map", "/maps"],
+    ])("navigates to %s page when %s tab is clicked", (pageName, tabText, expectedPath) => {
+        userEvent.click(screen.getByText(new RegExp(tabText, "i")));
 
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-    });
-
-    test("navigates to budget page when budget tab is clicked", () => {
-        userEvent.click(screen.getByText(/budget/i));
-
-        expect(mockNavigate).toHaveBeenCalledWith('/budget');
-    });
-
-    test("navigates to weather page when weather tab is clicked", () => {
-        userEvent.click(screen.getByText(/weather/i));
-
-        expect(mockNavigate).toHaveBeenCalledWith('/weather');
-    });
-
-    test("navigates to map page when map tab is clicked", () => {
-        userEvent.click(screen.getByText(/map/i));
-
-        expect(mockNavigate).toHaveBeenCalledWith('/maps');
+        expect(mockNavigate).toHaveBeenCalledWith(expectedPath);
     });
 
     test("navigates to profile page when profile tab is clicked", () => {
