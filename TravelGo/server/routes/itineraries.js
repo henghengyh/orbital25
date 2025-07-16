@@ -220,7 +220,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
     }
 });
 
-/** Adding an activity to exisitng itinerary */
+/** Adding an activity to existing itinerary */
 router.post("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -244,7 +244,7 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
     }
 });
 
-/** Updating an activity to exisitng itinerary */
+/** Updating an activity to existing itinerary */
 router.put("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -297,7 +297,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
     }
 });
 
-/** Removing an activity to exisitng itinerary */
+/** Removing an activity to existing itinerary */
 router.delete("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -317,7 +317,7 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
     }
 });
 
-/** Getting all activities to exisitng itinerary */
+/** Getting all activities to existing itinerary */
 router.get("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -335,7 +335,7 @@ router.get("/:id/activities", authenticateToken, async (req, res) => {
     }
 });
 
-/** Getting ONE Specific activity to exisitng itinerary */
+/** Getting ONE Specific activity to existing itinerary */
 router.get("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;

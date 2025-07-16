@@ -1,7 +1,3 @@
-import { DayPicker } from "react-day-picker";
-import EmptyCard from "../components/Cards/emptycard";
-import ItineraryCard from "../components/Cards/itinerarycard";
-import SearchLoading from "../components/Loading/searchloading";
 import axiosInstance from "./axiosInstance";
 
 export const getInitials = (name) => {

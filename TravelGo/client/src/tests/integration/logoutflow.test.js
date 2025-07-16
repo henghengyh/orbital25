@@ -2,7 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { axiosInstance, renderWithProvAuth } from './test-helper';
-import { mockUser } from "../mock-const";
+import { mockUser1 } from "../mock-const";
 
 describe("Logout flow", () => {
     test("logout modal appears when click on logout link in navbar", async () => {
@@ -19,7 +19,7 @@ describe("Logout flow", () => {
     });
 
     test("logout modal appears when click on logout button in user profile info", async () => {
-        axiosInstance.get.mockResolvedValue({ data: { user: mockUser } });
+        axiosInstance.get.mockResolvedValue({ data: { user: mockUser1 } });
 
         renderWithProvAuth('/profile');
         await screen.findByText(/user profile/i);

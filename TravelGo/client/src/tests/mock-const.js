@@ -1,4 +1,4 @@
-export const mockUser = {
+export const mockUser1 = {
     _id: '123',
     name: 'testuser',
     email: 'unit@test.com',
@@ -12,14 +12,49 @@ export const mockUser = {
         dateOfBirth: '2003-01-01T00:00:00Z',
         location: 'Singapore',
     },
-    friendsWith: [],
+    friendsWith: ['456', '789'],
     emailSignUp: true,
+};
+export const mockUser2 = {
+    _id: '456',
+    name: 'janedoe',
+    email: 'jane.doe@example.com',
+    accountCreatedOn: '2025-06-10T00:00:00Z',
+    emailVerificationCode: 'XYZ789',
+    profilePhoto: null,
+    profileInfo: {
+        bio: 'World explorer and foodie.',
+        favouriteDestination: 'Japan, France, Italy',
+        gender: 'Female',
+        dateOfBirth: '2000-05-15T00:00:00Z',
+        location: 'New York, USA',
+    },
+    friendsWith: ['123'],
+    emailSignUp: true,
+};
+export const mockUser3 = {
+    _id: '789',
+    name: 'alexwander',
+    email: 'alex@wanderlust.dev',
+    accountCreatedOn: '2024-12-01T00:00:00Z',
+    emailVerificationCode: 'LMN456',
+    profilePhoto: null,
+    profileInfo: {
+        bio: 'Digital nomad and writer.',
+        favouriteDestination: 'Portugal, Peru, South Africa',
+        gender: 'Male',
+        dateOfBirth: '2005-09-30T00:00:00Z',
+        location: 'Lisbon, Portugal',
+    },
+    friendsWith: ['123', '456'],
+    emailSignUp: false,
 };
 
 export const mockItinerary = [
     {
         _id: "1",
         user: "testuser",
+        collaborators: [],
         tripName: "Test Trip",
         destination: "Singapore",
         imageNumber: 3,
@@ -32,6 +67,7 @@ export const mockItinerary = [
     {
         _id: "2",
         user: "testuser",
+        collaborators: [mockUser2, mockUser3],
         tripName: "Weekend Getaway",
         destination: "Kuala Lumpur",
         imageNumber: 5,
@@ -60,7 +96,7 @@ export const mockItinerary = [
             {
                 _id: "2c",
                 activityName: "Dinner at Jalan Alor",
-                date: "2025-08-01",
+                date: "2025-08-02",
                 startTime: "19:00",
                 endTime: "20:30",
                 type: "Food",
@@ -72,6 +108,7 @@ export const mockItinerary = [
     {
         _id: "3",
         user: "testuser",
+        collaborators: [],
         tripName: "Nature Retreat",
         destination: "Bali",
         imageNumber: 8,

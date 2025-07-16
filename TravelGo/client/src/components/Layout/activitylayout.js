@@ -31,8 +31,8 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
     const isValidActivity = (data) => {
         let counter = 0;
-        for (const exisitng of todayActivities) {
-            if (data._id.toString() === exisitng._id.toString()) continue;
+        for (const existing of todayActivities) {
+            if (data._id.toString() === existing._id.toString()) continue;
 
             const parseDateTime = (date, timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
@@ -41,14 +41,14 @@ export default function ActivityLayout({ date, activities, setActivities, update
                 return result;
             }
 
-            const existingStart = parseDateTime(date, exisitng.startTime);
-            const existingEnd = parseDateTime(date, exisitng.endTime);
+            const existingStart = parseDateTime(date, existing.startTime);
+            const existingEnd = parseDateTime(date, existing.endTime);
             const activityStart = parseDateTime(date, data.startTime);
             const activityEnd = parseDateTime(date, data.endTime);
 
             const overlap = activityStart < existingEnd && activityEnd > existingStart;
             if (overlap) {
-                if (data.type !== "Other" && exisitng.type !== "Other") return false;
+                if (data.type !== "Other" && existing.type !== "Other") return false;
                 counter++;
             }
         }
@@ -138,7 +138,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="p-2 bg-slate-200 rounded flex justify-between">
                 <span className="font-semibold justify-center items-center flex">{moment(date).format("Do MMM YYYY")}</span>
-                <div
+                <div data-testid="add-button"
                     onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })}
                     className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer"
                 >
