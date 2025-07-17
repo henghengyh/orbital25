@@ -104,38 +104,33 @@ describe("Itinerary layout component", () => {
             await waitFor(() => expect(screen.getByRole('heading', { name: /edit itinerary/i })).toBeInTheDocument());
         };
 
-        test("renders heading, input fields, buttons and activity layout with no activities for existing itinerary", async () => {
+        test("renders heading, input fields with info, buttons and activity layout with no activities for existing itinerary", async () => {
             await renderEditItinerary(mockItinerary[0], true);
 
             await waitFor(() => {
                 expect(screen.getByRole('heading', { name: /edit itinerary/i })).toBeInTheDocument();
                 expect(screen.getByRole('button', { name: /invite collaborators/i })).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/trip name/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/destination/i)).toBeInTheDocument();
-                expect(screen.getByLabelText(/from:/i)).toBeInTheDocument();
-                expect(screen.getByLabelText(/to:/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/1/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/notes/i)).toBeInTheDocument();
+                expect(screen.getByPlaceholderText(/trip name/i)).toHaveDisplayValue('Test Trip');
+                expect(screen.getByPlaceholderText(/destination/i)).toHaveDisplayValue('Singapore');
+                expect(screen.getByLabelText(/from:/i)).toHaveDisplayValue('2025-07-13');
+                expect(screen.getByLabelText(/to:/i)).toHaveDisplayValue('2025-07-13');
+                expect(screen.getByPlaceholderText(/1/i)).toHaveDisplayValue(1);
+                expect(screen.getByPlaceholderText(/notes/i)).toHaveDisplayValue('mock itinerary');
                 expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
                 expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
                 expect(screen.getByText(/click the '\+ add' button to start adding your activity./i)).toBeInTheDocument();
             });
         });
 
-        test("renders heading, input fields, buttons and activity layout with activities for existing itinerary", async () => {
+        test("renders activity layout with activities for existing itinerary", async () => {
             await renderEditItinerary(mockItinerary[2], true);
 
             await waitFor(() => {
                 expect(screen.getByRole('heading', { name: /edit itinerary/i })).toBeInTheDocument();
                 expect(screen.getByRole('button', { name: /invite collaborators/i })).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/trip name/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/destination/i)).toBeInTheDocument();
-                expect(screen.getByLabelText(/from:/i)).toBeInTheDocument();
-                expect(screen.getByLabelText(/to:/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/1/i)).toBeInTheDocument();
-                expect(screen.getByPlaceholderText(/notes/i)).toBeInTheDocument();
+                expect(screen.getByPlaceholderText(/trip name/i)).toHaveDisplayValue('Nature Retreat');
+                expect(screen.getByLabelText(/to:/i)).toHaveDisplayValue('2025-09-15');
                 expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
-                expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
                 expect(screen.getAllByTestId('add-button')).toHaveLength(6);
             });
         });
@@ -221,7 +216,7 @@ describe("Itinerary layout component", () => {
             });
         });
 
-        test("left the itinerary when leave button is clicked", async () => {
+        test("collaborator left the itinerary when leave button is clicked", async () => {
             axiosInstance.post.mockResolvedValueOnce({ data: { message: "You have left the itinerary" } });
 
             await renderEditItinerary(mockItinerary[0], false);
