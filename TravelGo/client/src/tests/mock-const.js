@@ -90,7 +90,7 @@ export const mockItinerary = [
                 date: "2025-08-01",
                 startTime: "14:00",
                 endTime: "14:30",
-                type: "Lodging",
+                type: "Transport",
                 notes: "Hilton KL",
             },
             {
@@ -99,7 +99,7 @@ export const mockItinerary = [
                 date: "2025-08-02",
                 startTime: "19:00",
                 endTime: "20:30",
-                type: "Food",
+                type: "Meal",
                 notes: "Try satay and char kway teow",
             }
         ],
