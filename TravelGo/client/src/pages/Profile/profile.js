@@ -32,68 +32,68 @@ function Profile() {
 
     return (
         <div className="min-h-screen py-10">
-        <div className="max-w-xl mx-auto p-6 pb-2 bg-white rounded-lg shadow">
-            <EditProfileModal
-                isOpen={editProfileOpen}
-                onClose={() => setEditProfileOpen(null)}
-                onSave={async (form) => {
-                    const res = await axiosInstance.post('/users/update-profile', form);
-                    setUser(res.data.updatedUser);
-                    return res;
-                }}
-                user={user}
-            />
-            <EditEmailModal
-                isOpen={editEmailOpen}
-                onClose={() => setEditEmailOpen(false)}
-                currentEmail={user.email}
-                onEmailUpdated={(newEmail) => setUser((prev) => ({ ...prev, email: newEmail }))}
-            />
-            <EditPasswordModal
-                isOpen={editPWOpen}
-                onClose={() => setEditPWOpen(false)}
-                onSave={async ({ currentPassword, newPassword, confirmPassword }) => {
-                    const res = await axiosInstance.post('/users/update-password', {
-                        currentPassword,
-                        newPassword,
-                        confirmPassword
-                    });
-                    return res;
-                }}
-            />
-            <EditSignUpModal
-                isOpen={editSignUpOpen}
-                onClose={() => setEditSignUpOpen(false)}
-                onSave={async (form) => {
-                    const newBool = form.emailSignUp === "Yes" ? true : false;
-                    const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: newBool });
-                    setUser(res.data.updatedUser);
-                    setEditSignUpOpen(false);
-                }}
-            />
-            <EditPFPModal
-                isOpen={editPFPOpen}
-                onClose={() => setEditPFPOpen(false)}
-                onPhotoUpdated={(newPhoto) => setUser((prev) => ({ ...prev, profilePhoto: newPhoto }))}
-            />
-            <LogoutModal
-                isOpen={logoutOpen}
-                onClose={() => setLogoutOpen(false)}
-                onLogout={() => logoutUser(setAuth, navigate)}
-            />
+            <div className="max-w-xl mx-auto p-6 pb-2 bg-white rounded-lg shadow">
+                <EditProfileModal
+                    isOpen={editProfileOpen}
+                    onClose={() => setEditProfileOpen(null)}
+                    onSave={async (form) => {
+                        const res = await axiosInstance.post('/users/update-profile', form);
+                        setUser(res.data.updatedUser);
+                        return res;
+                    }}
+                    user={user}
+                />
+                <EditEmailModal
+                    isOpen={editEmailOpen}
+                    onClose={() => setEditEmailOpen(false)}
+                    currentEmail={user.email}
+                    onEmailUpdated={(newEmail) => setUser((prev) => ({ ...prev, email: newEmail }))}
+                />
+                <EditPasswordModal
+                    isOpen={editPWOpen}
+                    onClose={() => setEditPWOpen(false)}
+                    onSave={async ({ currentPassword, newPassword, confirmPassword }) => {
+                        const res = await axiosInstance.post('/users/update-password', {
+                            currentPassword,
+                            newPassword,
+                            confirmPassword
+                        });
+                        return res;
+                    }}
+                />
+                <EditSignUpModal
+                    isOpen={editSignUpOpen}
+                    onClose={() => setEditSignUpOpen(false)}
+                    onSave={async (form) => {
+                        const newBool = form.emailSignUp === "Yes" ? true : false;
+                        const res = await axiosInstance.post('/users/update-email-signup', { emailSignUp: newBool });
+                        setUser(res.data.updatedUser);
+                        setEditSignUpOpen(false);
+                    }}
+                />
+                <EditPFPModal
+                    isOpen={editPFPOpen}
+                    onClose={() => setEditPFPOpen(false)}
+                    onPhotoUpdated={(newPhoto) => setUser((prev) => ({ ...prev, profilePhoto: newPhoto }))}
+                />
+                <LogoutModal
+                    isOpen={logoutOpen}
+                    onClose={() => setLogoutOpen(false)}
+                    onLogout={() => logoutUser(setAuth, navigate)}
+                />
 
 
-            <BasicInfo user={user} />
-            <hr className="my-4 border-gray-300" />
-            <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} onEditPFPOpen={() => setEditPFPOpen(true)} />
-            <hr className="my-4 border-gray-300" />
-            <div role="button" aria-label="logout button" className="flex justify-center gap-1.5">
-                <button onClick={() => setLogoutOpen(true)} className={buttonStyle}>
-                    Logout
-                </button>
+                <BasicInfo user={user} />
+                <hr className="my-4 border-gray-300" />
+                <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} onEditPFPOpen={() => setEditPFPOpen(true)} />
+                <hr className="my-4 border-gray-300" />
+                <div className="flex justify-center gap-1.5">
+                    <button aria-label="logout button" onClick={() => setLogoutOpen(true)} className={buttonStyle}>
+                        Logout
+                    </button>
+                </div>
+                {"message" && <div className="mt-4 text-green-600">{(null)}</div>}
             </div>
-            {"message" && <div className="mt-4 text-green-600">{(null)}</div>}
-        </div>
         </div>
     );
 }

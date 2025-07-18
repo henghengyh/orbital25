@@ -14,7 +14,6 @@ const Weather = () => {
 
     // General Weather
     const [city, setCity] = useState('');
-    const [cityName] = useState('');
     const [currentWeather, setCurrentWeather] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingCurrent, setLoadingCurrent] = useState(false);
@@ -272,7 +271,6 @@ const Weather = () => {
                 <h2 className="font-bold mb-2">Current Weather</h2>
                 <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-blue-100 max-w-xs w-full">
                     <h4 className="text-lg font-semibold text-blue-700 mb-2">Your Location</h4>
-                    <div className="mb-2 text-gray-600">{() => cityName}</div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                         <span className="font-medium text-gray-600">Temp:</span>
                         <span className="text-gray-800">{currentWeather.temperature2m}°C</span>
@@ -383,19 +381,19 @@ const Weather = () => {
                             <h4 className="text-lg font-semibold text-blue-700 mb-2">{day.time}</h4>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                                 <span className={keyStyle}>Max Temp:</span>
-                                <span className={valStyle}>{day.temperature2mMax}°C</span>
+                                <span className={valStyle}>{day.temperature2mMax ? `${day.temperature2mMax}°C` : '-'}</span>
 
                                 <span className={keyStyle}>Min Temp:</span>
-                                <span className={valStyle}>{day.temperature2mMin}°C</span>
+                                <span className={valStyle}>{day.temperature2mMin ? `${day.temperature2mMin}°C` : '-'}</span>
 
                                 <span className={keyStyle}>Rain:</span>
-                                <span className={valStyle}>{day.rainSum}mm</span>
+                                <span className={valStyle}>{day.rainSum ? `${day.rainSum}mm` : '-'}</span>
 
                                 <span className={keyStyle}>Max UV Index:</span>
-                                <span className={valStyle}>{day.uvIndexMax}</span>
+                                <span className={valStyle}>{day.uvIndexMax ? `${day.uvIndexMax}` : '-'}</span>
 
                                 <span className={keyStyle}>Max Wind Speed:</span>
-                                <span className={valStyle}>{day.windSpeed10mMax}m/s</span>
+                                <span className={valStyle}>{day.windSpeed10mMax ? `${day.windSpeed10mMax}m/s` : '-'}</span>
 
                                 <span className={keyStyle}>Sunrise:</span>
                                 <span className={valStyle}>{localTimeDisplay(day.sunrise)}</span>
@@ -414,21 +412,14 @@ const Weather = () => {
         <div className="start-block flex flex-col gap-8 px-8">
             <TabGroup>
                 <TabList className="flex justify-center gap-4 mb-6">
-                    <Tab
-                        className={({ selected }) =>
-                            `px-6 py-2 rounded-full font-semibold transition focus:outline-none
-                            ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
-                        }
-
-                    >
+                    <Tab className={({ selected }) =>
+                        `px-6 py-2 rounded-full font-semibold transition focus:outline-none ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
+                    }>
                         Itinerary Weather
                     </Tab>
-                    <Tab
-                        className={({ selected }) =>
-                            `px-6 py-2 rounded-full font-semibold transition focus:outline-none
-                            ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
-                        }
-                    >
+                    <Tab className={({ selected }) =>
+                        `px-6 py-2 rounded-full font-semibold transition focus:outline-none ${selected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-blue-700 hover:bg-blue-300 transform hover:scale-105'}`
+                    }>
                         General Weather
                     </Tab>
                 </TabList>

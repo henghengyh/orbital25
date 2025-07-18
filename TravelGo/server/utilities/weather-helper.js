@@ -50,7 +50,7 @@ class WeatherForecast {
     }
 
     static #decodeCurrentWeather(currentData) {
-        const { 
+        const {
             time,
             weatherCode,
             temperature2m,
@@ -73,7 +73,7 @@ class WeatherForecast {
     }
 
     static #decode16DayForecast(dailyData) {
-        const { 
+        const {
             time,
             temperature2mMax,
             temperature2mMin,
@@ -83,7 +83,7 @@ class WeatherForecast {
             rainSum,
             apparentTemperatureMax,
             apparentTemperatureMin,
-            windSpeed10mMax 
+            windSpeed10mMax
         } = dailyData;
 
         const res = {};
@@ -123,19 +123,19 @@ class WeatherForecast {
 
         for (const key in this.#apiDataDaily) {
             const day = this.#apiDataDaily[key];
-            const dateKey = new Date(day.time).toString().slice(0, 10);
+            const dateKey = new Date(day.time).toISOString().slice(0, 10);
             processedAPIData[dateKey] = day;
         }
 
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {   
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             tripForecast[d] = "Weather data not available";
             for (let d2 in processedAPIData) {
-                if (d.toString().slice(0,10) == d2) {
-                    tripForecast[d] = processedAPIData[d.toString().slice(0,10)];
+                if (d.toISOString().slice(0, 10) == d2) {
+                    tripForecast[d] = processedAPIData[d.toISOString().slice(0, 10)];
                     break;
                 }
             }
-        }  
+        }
         return tripForecast;
     }
 }
@@ -174,7 +174,7 @@ class WeatherHistory {
             .map(time => new Date(time).getTime())
             .reduce((acc, t) => acc + t, 0);
         const avgDate = new Date(total / sunData.length)
-        return avgDate.toISOString().substring(11, 16); 
+        return avgDate.toISOString().substring(11, 16);
     }
 
     #period() {
