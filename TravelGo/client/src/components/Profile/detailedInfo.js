@@ -3,10 +3,10 @@ import { PencilIcon } from '@heroicons/react/24/solid';
 function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile, onEditPFPOpen }) {
     const editButton = (f) => {
         return <button
-            className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow focus:outline-none"
+            className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow focus:outline-none"
             onClick={f}
             aria-label="Edit"
-        ><PencilIcon className="w-3 h-3" /></button>
+        ><PencilIcon className="w-4 h-4" /></button>
     }
 
     const entry = (fieldName, profileInfo = false, fieldKey) => {
@@ -28,13 +28,13 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
         const display = (!user[fieldKey] || user[fieldKey].length >= 7) ? user[fieldKey].toString().slice(0, 3) + "*".repeat(user[fieldKey].length - 6) + user[fieldKey].toString().slice(-3) : user[fieldKey].toString().slice(0, 1) + "*".repeat(user[fieldKey].length -  1);
         return (
             <>
-                <span className="col-span-2">{fieldName}</span>
+                <span className="col-start-1 col-span-2">{fieldName}</span>
                 <span className="col-start-3 col-span-6">
                     <div className="grid grid-cols-6 items-center">
                         <span className="col-start-1 col-span-5 text-gray-500">
                             {display}
                         </span>
-                        <span className="col-start-6 col-span-1">{editButton(onEditEmail)}</span>
+                        <span className="col-start-6 col-span-1 flex justify-center">{editButton(onEditEmail)}</span>
                     </div>
                 </span>
             </>
@@ -50,7 +50,7 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
                         <span className="col-start-1 col-span-5 text-gray-500">
                             *********
                         </span>
-                        <span className="col-start-6 col-span-1">{editButton(onEditPW)}</span>
+                        <span className="col-start-6 col-span-1 flex justify-center">{editButton(onEditPW)}</span>
                     </div>
                 </span>
             </>
@@ -81,7 +81,7 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
                         <span className="col-start-1 col-span-5 text-gray-500">
                             {user.emailSignUp ? "Yes" : "No"}
                         </span>
-                        <span className="col-start-6 col-span-1">{editButton(onEditSignUp)}</span>
+                        <span className="col-start-6 col-span-1 flex justify-center">{editButton(onEditSignUp)}</span>
                     </div>
                 </span>
             </>
@@ -103,7 +103,7 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
         )
     }
 
-    const buttonStyle = "bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
+    const buttonStyle = "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
 
     return (
         <div>
@@ -112,11 +112,11 @@ function detailedInfo({ user, onEditEmail, onEditPW, onEditSignUp, onEditProfile
                     <span className="col-span-2">About me</span>
                     <span className="flex items-center">
                         <button
-                            className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow focus:outline-none"
+                            className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow focus:outline-none"
                             onClick={onEditProfile}
                             aria-label="Edit Profile"
                         >
-                            <PencilIcon className="w-3 h-3" />
+                            <PencilIcon className="w-4 h-4" />
                         </button>
                     </span>
                 </div>

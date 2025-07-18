@@ -1,6 +1,6 @@
 import { getInitials } from "../../utils/helper";
 
-function basicInfo(user) {
+function basicInfo({ user }) {
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">User Profile</h2>
