@@ -35,6 +35,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
                 />
                 <button
                     type="button"
+                    aria-label="show hide"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 h-6 flex items-center no-underline hover:underline"
                     onClick={() => setShow(s => !s)}
                     tabIndex={-1}

@@ -23,7 +23,7 @@ describe("Logout flow", () => {
 
         renderWithProvAuth('/profile');
         await screen.findByText(/user profile/i);
-        userEvent.click(within(screen.getByRole('button', { name: /logout button/i })).getByRole('button', { name: /logout/i }));
+        userEvent.click(screen.getByRole('button', { name: 'logout button' }));
 
         expect(screen.getByRole('heading', { name: /confirm logout/i })).toBeInTheDocument();
         expect(screen.getByText(/are you sure you want to log out?/i)).toBeInTheDocument();
