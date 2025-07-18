@@ -5,7 +5,7 @@ import { logoutUser } from "../../utils/logoutUser";
 import { useAuth } from "../../context/AuthContext/authcontext";
 import { useUser } from "../../context/UserContext/usercontext";
 import axiosInstance from "../../utils/axiosInstance";
-import basicInfo from "../../components/Profile/basicinfo";
+import BasicInfo from "../../components/Profile/basicinfo";
 import DetailedInfo from "../../components/Profile/detailedInfo";
 import EditEmailModal from "../../components/Modals/EditEmailModal";
 import EditPasswordModal from "../../components/Modals/EditPasswordModal";
@@ -28,10 +28,11 @@ function Profile() {
 
     if (!user) return <div>Loading...</div>;
 
-    const buttonStyle = "bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
+    const buttonStyle = "bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-2 w-30 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400";
 
     return (
-        <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+        <div className="min-h-screen py-10">
+        <div className="max-w-xl mx-auto p-6 pb-2 bg-white rounded-lg shadow">
             <EditProfileModal
                 isOpen={editProfileOpen}
                 onClose={() => setEditProfileOpen(null)}
@@ -82,7 +83,7 @@ function Profile() {
             />
 
 
-            {basicInfo(user)}
+            <BasicInfo user={user} />
             <hr className="my-4 border-gray-300" />
             <DetailedInfo user={user} onEditEmail={() => setEditEmailOpen(true)} onEditPW={() => setEditPWOpen(true)} onEditSignUp={() => setEditSignUpOpen(true)} onEditProfile={() => setEditProfileOpen(true)} onEditPFPOpen={() => setEditPFPOpen(true)} />
             <hr className="my-4 border-gray-300" />
@@ -92,6 +93,7 @@ function Profile() {
                 </button>
             </div>
             {"message" && <div className="mt-4 text-green-600">{(null)}</div>}
+        </div>
         </div>
     );
 }
