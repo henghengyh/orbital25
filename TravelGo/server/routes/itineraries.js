@@ -255,7 +255,8 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
             const temp = await Activity.newActivity(req.body);
             if (!isSame) {
                 temp._id = activity._id;
-                if (!(await isValidActivity(itinerary, temp, activity))) {
+                const isValid = await isValidActivity(itinerary, temp, activity);
+                if (!isValid) {
                     return res.status(400).json({ error: "Invalid activity" });
                 }
             }
@@ -272,8 +273,9 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                 return diffHours;
             }
 
-            const updatedActivity = await findActivityOr404(itinerary, req.params.activityId, res);
-            if (!activity) return;
+            const updatedActivity = await findActivityOr404(updatedItinerary, req.params.activityId, res);
+
+            if (!updatedActivity) return;
             const duration = timeToStart(updatedActivity, new Date()).toFixed(2);
             await updatedItinerary.populate('user');
 

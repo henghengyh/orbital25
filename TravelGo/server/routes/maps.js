@@ -5,7 +5,7 @@
  * This file contains the following routes:
  * 1. GET /search-locations - Search for locations using Google Places API
  * 2. GET /location-details/:placeId - Get location details by place ID
- * 3. GET /transport-warning/:itineraryId/:activityId - Get Transport Warning for FrontEnd to Flag, warning Obhect \
+ * 3. GET /transport-warning - Get Transport Warning for FrontEnd to Flag, warning Obhect \
  */
 
 const authenticateToken = require("../middleware/authenticateToken");
@@ -59,35 +59,24 @@ router.get("/location-details/:placeId", authenticateToken, async (req, res) => 
 });
 
 /** Get Transport Warning based on activity's current status */
-router.get("/transport-warning/:itineraryId/:activityId", authenticateToken, async (req, res) => {
+router.get("/transport-warning", authenticateToken, async (req, res) => {
     try {
-        const user = req.user;
+        const activity = JSON.parse(req.query.activity);
 
-        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
-        if (!itinerary) {
-            return;
-        } else if (!hasAccessToItinerary(itinerary, user)) {
-            return res.status(403).json({ error: "You do not have permission to access this itinerary" });
-        } else {
-            const activity = await findActivityOr404(itinerary, req.params.activityId, res);
-            if (!activity) return;
-
-            const activitySchemaObject = new Activity(activity);
+        const activitySchemaObject = new Activity(activity);
 
             //TRANSPORT CHECK
-            if (activity.type !== 'Transport') {
-                return res.status(400).json({ 
-                    error: "Transport warning is only available for Transport activities" 
-                });
-            }
-            const warningInfo = activitySchemaObject.transportWarning();
-            return res.status(200).json({
-                activityId: activity._id,
-                activityName: activity.activityName,
-                transportWarning: warningInfo
+        if (activity.type !== 'Transport') {
+            return res.status(400).json({ 
+                error: "Transport warning is only available for Transport activities" 
             });
         }
-        
+        const warningInfo = activitySchemaObject.transportWarning();
+        return res.status(200).json({
+            activityId: activity._id,
+            activityName: activity.activityName,
+            transportWarning: warningInfo
+        });        
 
     } catch (error) {
         console.error("Error getting transport warning:", error);

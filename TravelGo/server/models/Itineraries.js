@@ -72,6 +72,8 @@ ItinerarySchema.methods.updateActivity = async function (oldActivity, updatedFie
     const fieldsToUpdate = updatedFields.toObject();
     if (oldActivity) {
 
+        delete fieldsToUpdate._id;
+        delete fieldsToUpdate.__v;
         Object.assign(oldActivity, fieldsToUpdate);
         
         // Programmer is actually unsure why this is needed
@@ -82,15 +84,11 @@ ItinerarySchema.methods.updateActivity = async function (oldActivity, updatedFie
             Object.assign(oldActivity._doc, fieldsToUpdate);
         }
 
-        console.log("After update:", oldActivity);
-
         //TO highlight the changes in the UI
         oldActivity.markModified && oldActivity.markModified();
         this.markModified('activities');
 
         await this.save();
-
-        console.log("Final saved activity:", this.activities);
         return this;
     } else {
         throw new Error("Activity not found");
