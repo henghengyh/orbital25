@@ -21,8 +21,12 @@ export default function Budget() {
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
             .get("/itineraries/get-all-itineraries", { signal: controller.signal })
-            .then((res) => { setAllItineraries(res.data.itineraries); setLoading(false); })
-            .catch((err) => { if (err.name !== "CanceledError") console.error(err.message); });
+            .then(res => { setAllItineraries(res.data.itineraries); setLoading(false); })
+            .catch(err => {
+                if (err.name !== "CanceledError") {
+                    console.error("Error getting all itineraries:", err.response?.data?.message || "Something went wrong");
+                }
+            });
     }, [setAllItineraries, setLoading]);
 
     useEffect(() => {
@@ -35,11 +39,11 @@ export default function Budget() {
     const checkBudget = (selectedTrip) => {
         axiosInstance
             .get(`/budget/${selectedTrip}`)
-            .then((res) => {
+            .then(res => {
                 if (res.data?.budget?.[0]?.budget) setBudgetPresent(true);
                 setDisplay(true);
             })
-            .catch((err) => console.error(err.message));
+            .catch(err => console.error("Error getting budget for this itinerary:", err.response?.data?.message || "Something went wrong"));
     }
 
     useEffect(() => {
@@ -57,7 +61,7 @@ export default function Budget() {
                     itineraryTitle: allItineraries.find(t => t._id === selectedTrip).tripName
                 })
                 .then(res => navigate(`/budget/${selectedTrip}`))
-                .catch(err => console.error(err.error));
+                .catch(err => console.error("Error adding budget:", err.response?.data?.message || "Something went wrong"));
         }
     };
 

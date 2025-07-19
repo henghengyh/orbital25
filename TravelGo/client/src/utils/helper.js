@@ -81,8 +81,8 @@ export const searchByDate = (day, setDateRange, setLoading, setSearched, setSear
         const end = toUTCDate(day.to);
         axiosInstance
             .get('/itineraries/filter', { params: { start, end } })
-            .then((res) => { setSearchResults(res.data.itineraries); setSearched(true) })
-            .catch((err) => console.error(err.message))
+            .then(res => { setSearchResults(res.data.itineraries); setSearched(true) })
+            .catch(err => console.error("Error filtering itinerary:", err.response?.data?.message || "Something went wrong"))
             .finally(() => setLoading(false));
     }
 

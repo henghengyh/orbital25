@@ -19,7 +19,6 @@ export default function Register() {
         }
     }, [error]);
 
-    // send a POST request to backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
@@ -35,7 +34,7 @@ export default function Register() {
                 email: email,
                 password: password,
             })
-            .then((res) => {
+            .then(res => {
                 if (res.data.success) {
                     navigate("/", {
                         state: {
@@ -45,7 +44,7 @@ export default function Register() {
                     });
                 }
             })
-            .catch((err) => {
+            .catch(err => {
                 let message = "";
                 if (err.response?.data?.feedback) {
                     message = "Password too weak. " + err.response?.data?.feedback;

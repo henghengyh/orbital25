@@ -38,7 +38,7 @@ export default function AllExpenditure() {
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => { setAllExpenses(res.data.allExpenses); setFilterExpenses(res.data.allExpenses); })
-            .catch(err => console.error(err.error))
+            .catch(err => console.error("Error getting all expenses:", err.response?.data?.error || "Something went wrong"))
             .finally(() => setLoading(false));
     }, [id]);
 
@@ -50,7 +50,10 @@ export default function AllExpenditure() {
         axiosInstance
             .post(`/expenses/${id}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => { setMessage(res.data.message); fetchAllExpenses(); })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error adding expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -60,7 +63,10 @@ export default function AllExpenditure() {
         axiosInstance
             .put(`/expenses/${id}/${expensesId}`, { ...data, amount: await convertToSGD(data.amount, data.currency) })
             .then(res => { setMessage(res.data.message); fetchAllExpenses(); })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error updating expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -68,7 +74,10 @@ export default function AllExpenditure() {
         axiosInstance
             .delete(`/expenses/${id}/${expensesId}`)
             .then(res => { setMessage(res.data.message); fetchAllExpenses(); })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error deleting expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 

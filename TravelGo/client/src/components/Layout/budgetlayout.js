@@ -41,23 +41,23 @@ export default function BudgetLayout() {
     useEffect(() => {
         axiosInstance
             .get(`/budget/${id}`)
-            .then((res) => { setItineraryTitle(res.data.budget?.[0].itineraryTitle); setBudget(res.data.budget?.[0].budget) })
-            .catch((err) => (console.error(err.error)));
+            .then(res => { setItineraryTitle(res.data.budget?.[0].itineraryTitle); setBudget(res.data.budget?.[0].budget) })
+            .catch(err => console.error("Error getting budget:", err.response?.data?.message || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting all expenses:", err.response?.data?.error || "Something went wrong"));
     }, [id]);
 
     const changeItinerary = (id) => {
         axiosInstance
             .get(`/budget/${id}`)
-            .then((res) => {
+            .then(res => {
                 if (res.data?.budget?.[0]?.budget) navigate(`/budget/${id}`)
                 else navigate('/budget');
             })
-            .catch((err) => console.error(err.message))
+            .catch(err => console.error("Error checking if budget is set for this itinerary:", err.response?.data?.message || "Something went wrong"))
             .finally(() => setOpenModal({ shown: false, mode: "add", data: null }));
     };
 
@@ -65,7 +65,10 @@ export default function BudgetLayout() {
         axiosInstance
             .put(`/budget/${id}`, amt)
             .then(res => { setBudget(res.data.budget); setMessage(res.data.message); })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error updating budget", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -83,27 +86,27 @@ export default function BudgetLayout() {
         axiosInstance
             .get(`/expenses/${id}/recent-expenses`)
             .then(res => setRecentExpenses(res.data?.recentExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting recent expenses", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/weekly-overview`)
             .then(res => setWeeklyOverview(res.data?.weeklyOverview))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting weekly overview:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/latest-expenses`)
             .then(res => setLatestExpenses(res.data?.latestExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting latest expenses:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/expenses-breakdown`)
             .then(res => setBreakdown(res.data?.expensesBreakdown))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting expenses breakdown:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/split-expenses`)
             .then(res => setSplitExpenses(res.data?.splitExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting split expenses:", err.response?.data?.error || "Something went wrong"));
     }, [id]);
 
     useEffect(() => {
@@ -118,7 +121,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error adding expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -132,7 +138,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error updating expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -144,7 +153,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error deleting expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 

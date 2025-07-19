@@ -25,8 +25,8 @@ export default function Navbar({ user }) {
     const onSearch = async (query) => {
         setLoading(true);
         axiosInstance.get("/itineraries/search-itineraries", { params: { query } })
-            .then((res) => { setSearchResults(res.data.itineraries); setSearched(true); })
-            .catch((err) => console.error(err.message))
+            .then(res => { setSearchResults(res.data.itineraries); setSearched(true); })
+            .catch(err => console.error("Error getting itineraries:", err.response?.data?.message || "Something went wrong"))
             .finally(() => setLoading(false));
     }
 

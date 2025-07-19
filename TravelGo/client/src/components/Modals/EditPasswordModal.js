@@ -60,8 +60,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
                 setMessage(res.data.message || "Error updating password");
             }
         } catch (err) {
-
-            setMessage(err.response?.data?.message || "Error updating password!!!!!");
+            setMessage(err.response?.data?.message || "Error updating password");
             setFeedback(err.response?.data?.feedback?.join(" ") || "");
             setSuccess(false);
         }
