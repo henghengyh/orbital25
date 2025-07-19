@@ -8,6 +8,7 @@ import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
 import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
 import WarningModal from "../Modals/WarningModal";
 
+
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
     const [dates, setDates] = useState([]);
