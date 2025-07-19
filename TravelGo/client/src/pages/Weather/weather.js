@@ -35,13 +35,15 @@ const Weather = () => {
     }
 
     async function getWithRetry(url, options, retries = 10) {
+        let lastError;
         for (let i = 0; i < retries; i++) {
             try {
                 return await axiosInstance.get(url, options);
             } catch (error) {
-                if (i === retries - 1) throw error;
+                lastError = error;
             }
         }
+        throw lastError;
     }
 
     //A1. Fetch all itineraries
@@ -50,7 +52,7 @@ const Weather = () => {
             const response_itinerary = await axiosInstance.get(`/itineraries/get-all-itineraries`);
             setAllItineraries(response_itinerary.data.itineraries);
         } catch (error) {
-            console.error('Error fetching itineraries:', error);
+            console.error('Error fetching itineraries:', error.response?.data?.message || "Something went wrong");
         }
     }
 
@@ -69,7 +71,7 @@ const Weather = () => {
                 setLoading(false);
             }
         } catch (error) {
-            console.error('Error fetching trip\'s weather data:', error);
+            console.error('Error fetching trip\'s weather data:', error.response?.data?.error || "Something went wrong");
         }
     }, []);
 
@@ -248,7 +250,7 @@ const Weather = () => {
                 //const name = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.state || '';
                 //setCityName(name);
             } catch (error) {
-                console.error('Error setting current weather:', error);
+                console.error('Error setting current weather:', error.response?.data?.error || "Something went wrong");
                 setCurrentWeather(null);
             }
             setLoadingCurrent(false);
@@ -348,7 +350,7 @@ const Weather = () => {
             }
         } catch (error) {
             setWeather(null);
-            console.error('Error fetching weather data:', error);
+            console.error('Error fetching weather data:', error.response?.data?.error || "Something went wrong");
         } finally {
             setLoading(false);
         }

@@ -92,7 +92,10 @@ export default function ActivityLayout({ date, activities, setActivities, update
         axiosInstance
             .put(`/itineraries/${id}/activities/${activityId}`, data)
             .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .catch((err) => {
+                console.error(err.response?.data.error || "Somethiing went wrong");
+                setError(err.response.data.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 

@@ -1,4 +1,4 @@
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { axiosInstance, renderWithAuth } from "./test-utils";
@@ -210,6 +210,47 @@ describe("Weather component", () => {
                 expect(screen.getByText('Sun Jul 20 2025')).toBeInTheDocument();
                 expect(screen.getByText('Mon Jul 21 2025')).toBeInTheDocument();
                 expectWeatherCard(3);
+            });
+        });
+
+        test("shows no weather forecast on invalid destination", async () => {
+            for (let i = 0; i < 10; i++) {
+                axiosInstance.get.mockRejectedValueOnce({
+                    response: { data: { error: "Failed to fetch weather data" } }
+                });
+            };
+
+            userEvent.type(screen.getByPlaceholderText(/enter city/i), "test");
+            userEvent.keyboard('{Enter}');
+
+            await waitFor(() => {
+                expect(screen.getByText('Key in a valid city above.')).toBeInTheDocument();
+                expect(screen.queryByText('Displaying search results for:')).not.toBeInTheDocument();
+                expectWeatherCard(0);
+            });
+        });
+
+        test("shows no current location weather report when current location not set", async () => {
+            navigator.geolocation.getCurrentPosition.mockImplementation((success) => {
+                success({ coords: { latitude: null, longitude: null } });
+            });
+            axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: mockItinerary } });
+            for (let i = 0; i < 10; i++) {
+                axiosInstance.get.mockRejectedValueOnce({
+                    response: { data: { error: "Latitude and longitude are required." } },
+                });
+            };
+
+            cleanup();
+            renderWithAuth(<Weather />);
+            const generalWeather = screen.getByRole('tab', { name: /general weather/i });
+            await waitFor(() => expect(generalWeather).toBeInTheDocument());
+            userEvent.click(generalWeather);
+
+            await waitFor(() => {
+                expect(screen.getByText('Loading...')).toBeInTheDocument();
+                expect(screen.queryByText('Humidity:')).not.toBeInTheDocument();
+                expect(screen.queryByText('Feels like:')).not.toBeInTheDocument();
             });
         });
     });
