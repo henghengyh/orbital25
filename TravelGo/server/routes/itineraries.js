@@ -86,7 +86,7 @@ router.post("/", authenticateToken, async (req, res) => {
         return res.status(201).json({ savedItinerary, message: "Itinerary added" });
     } catch (error) {
         console.error("Error creating itinerary:", error);
-        return res.status(500).json({ error: "Failed to create itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -197,7 +197,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating itinerary:", error);
-        return res.status(500).json({ error: "Failed to update itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -216,7 +216,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
             return res.status(200).json({ itinerary, message: "Itinerary deleted" });
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to delete itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -240,7 +240,7 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
         return res.status(201).json({ itinerary, message: "Activity added" });
     } catch (error) {
         console.error("Error adding activity:", error);
-        return res.status(500).json({ error: "Failed to add activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -293,7 +293,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         }
     } catch (error) {
         console.error("Error updating activity:", error);
-        return res.status(500).json({ error: "Failed to update activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -313,7 +313,7 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
         }
     } catch (error) {
         console.error("Error removing activity:", error);
-        return res.status(500).json({ error: "Failed to delete activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -331,7 +331,7 @@ router.get("/:id/activities", authenticateToken, async (req, res) => {
             return res.status(200).json(itinerary.activities);
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to fetch activities" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -351,7 +351,7 @@ router.get("/:id/activities/:activityId", authenticateToken, async (req, res) =>
             return res.status(200).json(activity);
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to fetch activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -386,7 +386,6 @@ router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) =>
 
 /** Sending a collaboration invite to ONE user */
 router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, res) => {
-
     const user = req.user;
     const { itineraryId } = req.params;
 
@@ -423,7 +422,7 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
         }
     } catch (error) {
         console.error("Error inviting collaborator:", error);
-        return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
+        return res.status(500).json({ success: false, error: message });
     }
 });
 
@@ -440,7 +439,7 @@ router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
         }
     } catch (error) {
         console.error("Error leaving itinerary:", error);
-        return res.status(500).json({ error: "Failed to leave itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 

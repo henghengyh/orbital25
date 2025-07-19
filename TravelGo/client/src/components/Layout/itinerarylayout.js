@@ -50,8 +50,8 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const updateActivities = () => {
         axiosInstance
             .get(`/itineraries/${id}/activities`)
-            .then((res) => setActivities(res.data))
-            .catch((err) => console.error(err));
+            .then(res => setActivities(res.data))
+            .catch(err => console.error("Error getting all activities:", err.response?.data?.error || "Something went wrong"));
     }
 
     const validInputCheck = (fn) => {

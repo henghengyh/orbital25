@@ -26,8 +26,12 @@ export default function Dashboard() {
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
             .get("/itineraries/get-all-itineraries", { signal: controller.signal })
-            .then((res) => { setAllItineraries(res.data.itineraries); setLoading(false); })
-            .catch((err) => { if (err.name !== "CanceledError") console.error(err.message); });
+            .then(res => { setAllItineraries(res.data.itineraries); setLoading(false); })
+            .catch(err => {
+                if (err.name !== "CanceledError") {
+                    console.error("Error getting all itineraries:", err.response?.data?.message || "Something went wrong");
+                }
+            });
     }, [setAllItineraries, setLoading]);
 
     useEffect(() => {

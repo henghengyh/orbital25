@@ -11,8 +11,12 @@ export default function ItineraryModal({ chosen, onClose, changeItinerary }) {
     const getAllItinerary = useCallback((controller) => {
         axiosInstance
             .get("/itineraries/get-all-itineraries", { signal: controller.signal })
-            .then((res) => setAllItinerary(res.data.itineraries))
-            .catch((err) => { if (err.name !== "CanceledError") console.error(err.message); });
+            .then(res => setAllItinerary(res.data.itineraries))
+            .catch(err => {
+                if (err.name !== "CanceledError") {
+                    console.error("Error getting all itineraries:", err.response?.data?.message || "Something went wrong");
+                }
+            });
     }, [setAllItinerary]);
 
     useEffect(() => {

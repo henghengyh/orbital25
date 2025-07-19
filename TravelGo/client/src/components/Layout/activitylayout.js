@@ -71,8 +71,11 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .post(`/itineraries/${id}/activities`, data)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error adding activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 
@@ -91,10 +94,10 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .put(`/itineraries/${id}/activities/${activityId}`, data)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => {
-                console.error(err.response?.data.error || "Somethiing went wrong");
-                setError(err.response.data.error);
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error updating activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
             })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
@@ -109,8 +112,11 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .delete(`/itineraries/${id}/activities/${activityId}`)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error deleting activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 

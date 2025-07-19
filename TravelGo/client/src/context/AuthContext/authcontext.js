@@ -28,7 +28,7 @@ export default function AuthProvider({ children }) {
                         loading: false,
                     }));
                 }
-            }).catch((err) => {
+            }).catch(err => {
                 console.error("Token validation failed:", err);
                 localStorage.removeItem("token");
                 setAuth({
