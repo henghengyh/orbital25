@@ -111,22 +111,3 @@ export default function TransportModal({
         </div>
     );
 }
-
-/**
- * <div className="flex gap-5 pt-4">
-            <h6 className="text-label">Mode of Transport:</h6>
-            <select
-                value={type}
-                required
-                onChange={(e) => setType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 focus:outline-none cursor-pointer"
-            >
-                <option disabled value="-">Select type</option>
-                {typeOfActivities.map((activityType) => (
-                    <option key={activityType} value={activityType}>
-                        {activityType}
-                    </option>
-                ))}
-            </select>
-        </div>
- */

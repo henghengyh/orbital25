@@ -101,9 +101,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
         }
     };
 
-
-
-
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">
             {popup && <div className="error">{error}</div>}

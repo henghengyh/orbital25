@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import TransportModal from "../Modals/TransportModal";
 import TransportWarning from "../Modals/Transport/TransportWarning";
+import LocationRow from './LocationRow';
+import axiosInstance from '../../utils/axiosInstance';
 
 export default function ActivityModal({
     mode, activity, date, onClose, addActivity, editActivitiy, deleteActivity }) {
@@ -14,7 +16,10 @@ export default function ActivityModal({
     const [modeOfTransport, setModeOfTransport] = useState(activity?.transport?.modeOfTransport || "");
     const [startLocation, setStartLocation] = useState(activity?.transport?.startLoc || "");
     const [endLocation, setEndLocation] = useState(activity?.transport?.endLoc || "");
-    const [showTravelTimeWarning, setShowTravelTimeWarning] = useState(true); //useState(!(activity?.transport?.travelDurationPass))
+    const [locationSearchQuery, setLocationSearchQuery] = useState('');
+    const [locationSearchResults, setLocationSearchResults] = useState([]);
+    const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+    const [location, setLocation] = useState(activity?.location || null);
 
     const edit = mode === "edit";
     const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
@@ -27,6 +32,28 @@ export default function ActivityModal({
         fn();
     }
 
+    const searchLocations = async function (query, setResults, setShowDropdown, name) {
+        if (query.length < 2) {
+            setResults([]);
+            return;
+        }
+        try {
+            const response = await axiosInstance.get(`/maps/search-locations?query=${query}`);
+            const resultsList = response.data.places || [];
+            setResults(resultsList);
+            setShowDropdown(true);
+        } catch (error) {
+            console.error(`Error searching ${name}:`, error);
+            setResults([]);
+        }
+    };
+    const handleLocationSelect = (location) => {
+        setLocation(location);
+        setLocationSearchQuery(location.description);
+        setShowLocationDropdown(false);
+        setLocationSearchResults([]);
+    };
+
     useEffect(() => {
         if (error) {
             setPopup(true);
@@ -37,6 +64,12 @@ export default function ActivityModal({
             window.history.replaceState({}, document.title);
         }
     }, [error]);
+
+    useEffect(() => {
+        if (location) {
+            setLocationSearchQuery(location.description || '');
+        }
+    }, [location]);
 
     return (
         <div className="flex flex-col w-full h-full">
@@ -136,7 +169,19 @@ export default function ActivityModal({
                         setStartLocation={setStartLocation}
                         endLocation={endLocation}
                         setEndLocation={setEndLocation}
-                    /> : null}
+                    /> : 
+                    <LocationRow
+                        label="Location"
+                        searchQuery={locationSearchQuery}
+                        setSearchQuery={setLocationSearchQuery}
+                        searchResults={locationSearchResults}
+                        showDropdown={showLocationDropdown}
+                        setShowDropdown={setShowLocationDropdown}
+                        onLocationSelect={handleLocationSelect}
+                        searchLocations={(query) => searchLocations(query, setLocationSearchResults, setShowLocationDropdown, "end location")}
+                        placeholder="Search for location..."
+                    />
+                }
                 <div className="flex flex-col gap-3 pt-2">
                     <h6 className="text-label">Notes:</h6>
                     <textarea
@@ -155,7 +200,7 @@ export default function ActivityModal({
                     ? <div className="flex gap-2 mt-7 mb-6  w-full h-10">
                         <div onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, notes, transport:{
+                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, location, notes, transport:{
                                 modeOfTransport,
                                 startLoc: startLocation,
                                 endLoc: endLocation

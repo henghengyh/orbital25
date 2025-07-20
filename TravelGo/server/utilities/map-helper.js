@@ -104,8 +104,75 @@ async function calculateTravelTime(startLoc, endLoc, mode, apiKey) {
     }
 }
 
+function transportActivityToMapData (activityData, activity, locationsForBounds, mapData) {
+    activityData.transport = {
+        modeOfTransport: activity.transport.modeOfTransport,
+        startLocation: activity.transport.startLoc ? {
+            name: activity.transport.startLoc.name,
+            address: activity.transport.startLoc.address,
+            coordinates: activity.transport.startLoc.coordinates ? {
+                lat: activity.transport.startLoc.coordinates.lat,
+                lng: activity.transport.startLoc.coordinates.lng
+            } : null
+        } : null,
+        endLocation: activity.transport.endLoc ? {
+            name: activity.transport.endLoc.name,
+            address: activity.transport.endLoc.address,
+            coordinates: activity.transport.endLoc.coordinates ? {
+                lat: activity.transport.endLoc.coordinates.lat,
+                lng: activity.transport.endLoc.coordinates.lng
+            } : null
+        } : null,
+        estimatedDuration: null,
+        actualDuration: null
+    };
+    if (activityData.transport.startLocation?.coordinates) {
+        locationsForBounds.push(activityData.transport.startLocation.coordinates);
+    }
+    if (activityData.transport.endLocation?.coordinates) {
+        locationsForBounds.push(activityData.transport.endLocation.coordinates);
+    }
+    mapData.stats.transportActivities++;
+}
+
+function otherActivitiesToMapData(activityData, activity, locationsForBounds, mapData) {
+    activityData.location = {
+        name: activity.location.name,
+        address: activity.location.address,
+        coordinates: activity.location.coordinates ? {
+            lat: activity.location.coordinates.lat,
+            lng: activity.location.coordinates.lng
+        } : null
+    };
+
+    if (activityData.location.coordinates) {
+        locationsForBounds.push(activityData.location.coordinates);
+        mapData.stats.activitiesWithLocation++;
+    }
+}
+
+function consecutiveActivitiesToMapData(previousActivity, activityData, mapData) {
+    mapData.routes.push({
+        from: {
+            activityId: previousActivity.id,
+            activityName: previousActivity.name,
+            coordinates: previousActivity.location.coordinates
+        },
+        to: {
+            activityId: activityData.id,
+            activityName: activityData.name,
+            coordinates: activityData.location.coordinates
+        },
+        sequence: mapData.routes.length + 1
+    });
+}
+
+
 module.exports = {
     searchPlaces,
     getPlaceDetails,
-    calculateTravelTime
+    calculateTravelTime,
+    transportActivityToMapData,
+    otherActivitiesToMapData,
+    consecutiveActivitiesToMapData
 };

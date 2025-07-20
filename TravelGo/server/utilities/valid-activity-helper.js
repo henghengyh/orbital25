@@ -1,6 +1,7 @@
 /** valid-activity-helper.js
  * To check if an activity is valid for a given itinerary
  */
+const { Location } = require("../models/Location");
 
 async function isValidActivity(itinerary, activity, originalActivity) {
     
@@ -27,6 +28,11 @@ async function isValidActivity(itinerary, activity, originalActivity) {
         if (!originalActivity || activity.hasTimeChanged(originalActivity) || activity.hasLocationChanged(originalActivity)) {
             await activity.calculateRecommendedTravelTime();
             activity.updateTravelDurationPass();
+        }
+    } else {
+        if (activity.location) {
+            const withCoor = await Location.createFromGoogleResponse(activity.location);
+            activity.location.coordinates = withCoor.coordinates;
         }
     }
 

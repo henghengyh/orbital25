@@ -260,7 +260,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                     return res.status(400).json({ error: "Invalid activity" });
                 }
             }
-
+            console.log(temp.location);
             const updatedItinerary = await itinerary.updateActivity(activity, temp);
 
             function timeToStart(activity, now = new Date()) {
