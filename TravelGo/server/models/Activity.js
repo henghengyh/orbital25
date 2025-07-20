@@ -27,6 +27,7 @@ const ActivitySchema = new mongoose.Schema({
         enum: typeOfActivities, 
         required: true
     },
+    location: LocationSchema,
     notes: String,
     transport: {
         recommendedTravelTime: {
