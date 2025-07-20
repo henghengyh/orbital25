@@ -9,6 +9,7 @@ import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
 import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
 import WarningModal from "../Modals/WarningModal";
 
+
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
     const [dates, setDates] = useState([]);
@@ -95,9 +96,6 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
             leaveItinerary();
         }
     };
-
-
-
 
     return (
         <div className="flex flex-col bg-white shadow-xl rounded-xl border-2">

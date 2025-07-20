@@ -37,7 +37,6 @@ export default function EditSignUpModal({ isOpen, onClose, onSave }) {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        console.log(e.target.name);
     };
 
     return (
