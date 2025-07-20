@@ -4,7 +4,7 @@ import EmptyExpenses from "./emptyexpenses";
 import ExpensesInfoCard from "./expensesinfocard";
 import SearchLoading from "../Loading/searchloading";
 
-export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDelete, showMore }) {
+export default function RecentExpenses({ recentExpenses, xRate, editExpenses, onDelete }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,23 +14,19 @@ export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDel
         }, 1000);
 
         return () => clearTimeout(timer);
-    }, [latestExpenses]);
+    }, [recentExpenses]);
 
     return (
-        <div className="card col-span-2">
+        <div className="card">
             <div className="flex items-center justify-between">
-                <h5 className="text-lg">All Expenditure</h5>
-                {latestExpenses.length > 0 &&
-                    <div className="card-button" onClick={showMore}>
-                        Show More <ion-icon name="arrow-forward"></ion-icon>
-                    </div>}
+                <h5 className="text-lg">Recent Expenditure</h5>
             </div>
 
-            {loading
-                ? <SearchLoading />
-                : latestExpenses.length > 0
-                    ? <div className="grid grid-cols-2 gap-4 mt-2">
-                        {latestExpenses.map((entry, idx) => (
+            <div className="mt-6">
+                {loading
+                    ? <SearchLoading />
+                    : recentExpenses.length > 0
+                        ? recentExpenses.map((entry, idx) => (
                             <ExpensesInfoCard
                                 key={idx}
                                 data={entry}
@@ -38,9 +34,9 @@ export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDel
                                 editExpenses={editExpenses}
                                 onDelete={onDelete}
                             />
-                        ))}
-                    </div>
-                    : <EmptyExpenses />}
+                        ))
+                        : <EmptyExpenses />}
+            </div>
         </div>
     )
 }

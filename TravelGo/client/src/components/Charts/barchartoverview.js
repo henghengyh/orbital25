@@ -4,8 +4,8 @@ import BarChartTooltip from "./barcharttooltip";
 import CustomLegend from "./customlegend";
 
 export default function BarChartOverview({ data }) {
-    const colors = ["#e85c66", "#3db9a4", "#5a7dff", "#c14db4", "#875de6", "#42aaff", "#ffae40"];
-    const dataKey = ["others", "accommodation", "transport", "gift", "activities", "food", "shopping"];
+    const colors = ["#e85c66", "#ffae40", "#3db9a4", "#42aaff", "#5a7dff", "#875de6", "#c14db4"];
+    const dataKey = ["transport", "shopping", "others", "gift", "food", "activities", "accommodation"];
 
     return (
         <div className="bg-white mt-6">

@@ -2,6 +2,8 @@
  * This file contains helper functions for the TravelGo server routes.
  */
 
+const Budget = require("../models/Budget");
+const Expenses = require("../models/Expenses");
 const Itinerary = require("../models/Itineraries");
 const Invitation = require("../models/Invitation");
 
@@ -32,8 +34,28 @@ async function findInvitationOr404(token, status, res) {
     return invitation;
 }
 
+async function findBudgetOr404(itineraryId, res) {
+    const budget = await Budget.findOne({ itineraryId });
+    if (!budget) {
+        res.status(404).json({ error: "Budget not found" });
+        return null;
+    }
+    return budget;
+}
+
+async function findExpensesOr404(expensesId, res) {
+    const expenses = await Expenses.findById(expensesId);
+    if (!expenses) {
+        res.status(404).json({error: "Expenses not found"});
+        return null;
+    }
+    return expenses;
+}
+
 module.exports = {
     findItineraryOr404,
     findActivityOr404,
-    findInvitationOr404
+    findInvitationOr404,
+    findBudgetOr404,
+    findExpensesOr404,
 };

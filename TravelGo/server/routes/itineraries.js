@@ -31,10 +31,12 @@ const Itinerary = require("../models/Itineraries");
 const Activity = require("../models/Activity");
 const User = require("../models/User");
 const Invitation = require('../models/Invitation');
+const Budget = require('../models/Budget');
 
 // IMPORTING HELPER MODULES
+const mongoose = require("mongoose");
 const email = require("../utilities/email-helper");
-const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
+const { findItineraryOr404, findActivityOr404, findBudgetOr404 } = require("../utilities/finder-helper");
 const { isValidActivity } = require("../utilities/valid-activity-helper");
 const { hasAccessToItinerary } = require("../utilities/valid-access-helper");
 
@@ -183,6 +185,11 @@ router.put("/:id", authenticateToken, async (req, res) => {
             return res.status(403).json({ error: "You do not have permission to access this itinerary" });
         } else {
             for (const key in req.body) {
+                if (key === "tripName") {
+                    const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
+                    const itineraryBudget = await Budget.findOne(itineraryId);
+                    if (itineraryBudget) { itineraryBudget["itineraryTitle"] = req.body[key]; await itineraryBudget.save(); }
+                }
                 itinerary[key] = req.body[key];
             }
             await itinerary.save();
@@ -381,7 +388,7 @@ router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) =>
 
 /** Sending a collaboration invite to ONE user */
 router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, res) => {
-    
+
     const user = req.user;
     const { itineraryId } = req.params;
 
@@ -415,7 +422,7 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
 
             email.sendCollabInvitation(invitedEmail, invitingUser.name, invitedUser.name, itinerary.tripName, message, req.params.itineraryId, token);
             return res.status(200).json({ success: true, message: `Invitation sent to ${invitedEmail}` });
-        }        
+        }
     } catch (error) {
         console.error("Error inviting collaborator:", error);
         return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
@@ -424,7 +431,7 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
 
 /** Getting all existing collaborators */
 router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
-     try {
+    try {
         const user = req.user;
         const itinerary = await findItineraryOr404(req.params.itineraryId, res);
         if (!itinerary) {

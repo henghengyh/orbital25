@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { formatDate } from "../../utils/helper";
 import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
 import EmptyActivity from "../Cards/emptyactivity";
@@ -23,18 +24,13 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [isOwner, setIsOwner] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [confirmAction, setConfirmAction] = useState(""); 
+    const [confirmAction, setConfirmAction] = useState("");
     const [showWarningModal, setShowWarningModal] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
 
     const edit = mode === "edit";
-
-    const formatDate = (date) => {
-        if (!date) return "";
-        return date.slice(0, 10);
-    }
 
     const dateRange = (startDate, endDate) => {
         if (!startDate || !endDate) return [];
@@ -282,7 +278,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                 </div>
 
                 <div className="w-71vw pr-4 overflow-x-auto scrollbar">
-                    <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300 flex h-[428px]">
+                    <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300 h-[428px]">
                         {dates.length > 0
                             ? dates.map((date, idx) => (
                                 <ActivityLayout
