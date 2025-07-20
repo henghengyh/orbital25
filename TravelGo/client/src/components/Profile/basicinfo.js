@@ -5,7 +5,7 @@ function basicInfo(user) {
         <div>
             <h2 className="text-2xl font-bold mb-4">User Profile</h2>
 
-            <div className="flex grid grid-cols-8 items-center gap-y-4">
+            <div className="grid grid-cols-8 items-center gap-y-4">
                 <span className="col-span-8 flex justify-center items-center">
                     {user?.profilePhoto ? (
                         <img
@@ -14,7 +14,7 @@ function basicInfo(user) {
                             className="w-60 h-60 rounded-full object-cover border"
                         />
                     ) : (
-                        <div 
+                        <div
                             className="w-60 h-60 flex items-center justify-center rounded-full object-cover border text-6xl font-medium bg-blue-100 cursor-pointer"
                         >
                             {getInitials(user.name)}

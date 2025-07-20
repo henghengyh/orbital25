@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import AboutPage from './pages/About/about';
+import AllExpenditurePage from './pages/Budget/allexpenditure';
 import AuthProvider from './context/AuthContext/authcontext';
+import BudgetLayoutPage from './components/Layout/budgetlayout';
 import BudgetPage from './pages/Budget/budget';
 import CreateItineraryPage from './pages/Itinerary/createitinerary';
 import DashboardPage from './pages/Dashboard/dashboard';
@@ -36,6 +38,8 @@ function App() {
                         }>
                             <Route path="/about" element={<AboutPage />} />
                             <Route path="/budget" element={<BudgetPage />} />
+                            <Route path="/budget/:id" element={<BudgetLayoutPage />} />
+                            <Route path="/budget/:id/:xRate/all-expenditure" element={<AllExpenditurePage />} />
                             <Route path="/create-itinerary" element={<CreateItineraryPage />} />
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/itinerary/:id" element={<ItineraryPage />} />

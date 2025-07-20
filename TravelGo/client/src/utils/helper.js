@@ -1,3 +1,5 @@
+import axiosInstance from "./axiosInstance";
+
 export const getInitials = (name) => {
     if (!name) return '';
 
@@ -27,4 +29,36 @@ export const validateEmail = (email) => {
 
 export const styleAmount = (amount) => {
     return !amount ? 0 : amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
+export const formatDate = (date) => {
+    if (!date) return "";
+    return date.slice(0, 10);
+};
+
+export const getRate = async (currency) => {
+    const cached = JSON.parse(localStorage.getItem("exchangeRates") || "{}");
+    const now = Date.now();
+
+    if (cached.rates && (now - cached.timestamp) < 24 * 60 * 60 * 1000) return cached.rates[currency]?.value;
+
+    try {
+        const res = await axiosInstance.post('/budget/currency');
+        const response = res.data;
+
+        localStorage.setItem("exchangeRates", JSON.stringify({
+            rates: response,
+            timestamp: now,
+        }));
+        return response[currency]?.value;
+    } catch (err) {
+        console.error("Failed to get currency", err);
+        return null;
+    }
+};
+
+export const convertToSGD = async (amount, currency) => {
+    if (currency === "SGD") return Number(amount);
+    const rate = await getRate(currency);
+    return Number(amount) / rate;
 };
