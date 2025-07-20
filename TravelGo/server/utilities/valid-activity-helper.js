@@ -1,9 +1,10 @@
 /** valid-activity-helper.js
  * To check if an activity is valid for a given itinerary
  */
+const { Location } = require("../models/Location");
 
-function isValidActivity(itinerary, activity) {
-
+async function isValidActivity(itinerary, activity, originalActivity) {
+    
     //FIRST LAYER CHECK #####################################################
     if (activity.getActivityDuration() <= 0) return false;
 
@@ -18,6 +19,24 @@ function isValidActivity(itinerary, activity) {
         return result;
     }
 
+    //ADDITIONAL CHECKS #####################################################
+    if (activity.type === 'Transport') {
+        if (!isValidTransportLocations(activity.transport)) {
+            return false;
+        }
+        
+        if (!originalActivity || activity.hasTimeChanged(originalActivity) || activity.hasLocationChanged(originalActivity)) {
+            await activity.calculateRecommendedTravelTime();
+            activity.updateTravelDurationPass();
+        }
+    } else {
+        if (activity.location) {
+            const withCoor = await Location.createFromGoogleResponse(activity.location);
+            activity.location.coordinates = withCoor.coordinates;
+        }
+    }
+
+    
     let counter = 0;
     for (const existingActivity of itinerary.activities) {
         if (new Date(existingActivity.date).toDateString() !== new Date(activity.date).toDateString()) continue;
@@ -40,4 +59,20 @@ function isValidActivity(itinerary, activity) {
     return counter < 2;
 }
 
-module.exports = { isValidActivity };
+/** isValidTransportLocations
+ * @param {Object} transport - Transport object with startLoc and endLoc
+ * @returns {boolean} - true if transport locations are valid
+ */
+function isValidTransportLocations(transport) {
+    if (!transport) return true;
+    if (transport.startLoc && transport.endLoc && 
+        transport.startLoc.placeId === transport.endLoc.placeId) {
+        console.log("Start and end locations cannot be the same:", transport.startLoc.placeId);
+        return false;
+    }
+    
+    return true;
+}
+
+
+module.exports = { isValidActivity, isValidTransportLocations };

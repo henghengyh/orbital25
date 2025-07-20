@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import axiosInstance from '../../utils/axiosInstance';
 
@@ -20,7 +20,6 @@ export default function AuthProvider({ children }) {
         }
         axiosInstance.get("/protected")
             .then(res => {
-                console.log(res.data);
                 if (res.data) {
                     setAuth(prev => ({
                         ...prev,

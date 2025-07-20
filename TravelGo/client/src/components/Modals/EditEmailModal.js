@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, currentEmail }) {
-    const [step, setStep] = useState(1); 
-    // This is in alignmnetn with the backend
+    // This is in alignment with the backend
     // which has two steps for email change : (1) Request code, (2) Verify code
-
-    const [newEmail, setNewEmail] = useState(currentEmail || "");
     const [code, setCode] = useState("");
-    const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const [newEmail, setNewEmail] = useState(currentEmail || "");
+    const [step, setStep] = useState(1); 
 
     useEffect(() => {
         if (isOpen) {
@@ -80,7 +79,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
                         <div className="flex justify-end gap-2 mt-4">
                             <button className="px-3 py-1 bg-gray-300 rounded" onClick={onClose}>Cancel</button>
                             <button
-                                className="px-3 py-1 bg-blue-600 text-white rounded"
+                                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                                 onClick={handleRequestCode}
                                 disabled={loading}
                             >

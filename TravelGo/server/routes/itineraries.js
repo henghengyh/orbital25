@@ -7,25 +7,36 @@
  * 2. GET /get-all-itineraries - Get all itineraries for the authenticated user
  * 3. GET /search-itineraries - Search for itineraries by trip name or destination
  * 4. GET /filter - Filter itineraries by start and end dates
- * 5. PUT /:itineraryId - Update an itinerary by ID
- * 6. DELETE /:itineraryId - Delete an itinerary by ID
- * 7. POST /:itineraryId/activities - Add an activity
- * 8. PUT /:itineraryId/activities/:activityId - Update an activity by ID
- * 9. DELETE /:itineraryId/activities/:activityId - Remove an activity by ID
- * 10. GET /:itineraryId/activities - Get all activities for an itinerary
- * 11. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
+ * 5. GET /:id - Get a specific itinerary
+ * 6. PUT /:itineraryId - Update an itinerary by ID
+ * 7. DELETE /:itineraryId - Delete an itinerary by ID
+ * 
+ * 8. POST /:itineraryId/activities - Add an activity
+ * 9. PUT /:itineraryId/activities/:activityId - Update an activity by ID
+ * 10. DELETE /:itineraryId/activities/:activityId - Remove an activity by ID
+ * 11. GET /:itineraryId/activities - Get all activities for an itinerary
+ * 12. GET /:itineraryId/activities/:activityId - Get a specific activity by ID
+ * 
+ * 13. GET /:itineraryId/collaborators - Get all collaborators for an itinerary
+ * 14. POST /:itineraryId/invite-collaborator - Invite a collaborator to an itinerary using ID
+ * 15. GET /:itineraryId/owner - Get the owner of an itinerary
  */
 
 //Express routes for itineraries CRUD (Create, Read, Update, and Delete)
 const authenticateToken = require("../middleware/authenticateToken");
 const express = require("express");
 const router = express.Router();
+const crypto = require('crypto');
 const Itinerary = require("../models/Itineraries");
 const Activity = require("../models/Activity");
+const User = require("../models/User");
+const Invitation = require('../models/Invitation');
+const Budget = require('../models/Budget');
 
 // IMPORTING HELPER MODULES
+const mongoose = require("mongoose");
 const email = require("../utilities/email-helper");
-const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
+const { findItineraryOr404, findActivityOr404, findBudgetOr404 } = require("../utilities/finder-helper");
 const { isValidActivity } = require("../utilities/valid-activity-helper");
 const { hasAccessToItinerary } = require("../utilities/valid-access-helper");
 
@@ -55,8 +66,8 @@ router.post("/", authenticateToken, async (req, res) => {
         // allow activities to be created along with the new itinerary
         if (Array.isArray(activities)) {
             for (const activityData of activities) {
-                const newActivity = Activity.newActivity(activityData);
-                if (!isValidActivity(newItinerary, newActivity)) {
+                const newActivity = await Activity.newActivity(activityData);
+                if (!(await isValidActivity(newItinerary, newActivity))) {
                     return res.status(400).json({ error: "Invalid activities" });
                 }
                 await newItinerary.addActivity(newActivity);
@@ -85,7 +96,7 @@ router.get("/get-all-itineraries", authenticateToken, async (req, res) => {
 
     try {
         const itinerary = await Itinerary
-            .find({ user: user._id })
+            .findAccessibleByUser(user._id)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -109,16 +120,10 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     if (!query) {
         return res.status(400).json({ error: true, message: "Search query required" })
     }
-
     try {
         const matchingItinerary = await Itinerary
-            .find({
-                user: user._id,
-                $or: [
-                    { tripName: { $regex: new RegExp(query, "i") } },
-                    { destination: { $regex: new RegExp(query, "i") } }
-                ],
-            })
+            .findAccessibleByUser(user._id)
+            .searchByText(query)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -134,18 +139,14 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     }
 });
 
-/** Filter itineraries */
+/** Filter itineraries by start and end date*/
 router.get("/filter", authenticateToken, async (req, res) => {
     const user = req.user;
     const { start, end } = req.query;
 
     try {
-        const matchingItinerary = await Itinerary
-            .find({
-                user: user._id,
-                startDate: { $gte: new Date(start) },
-                endDate: { $lte: new Date(end) }
-            })
+        const matchingItinerary = await Itinerary.findAccessibleByUser(user._id)
+            .withinDateRange(start, end)
             .sort({ startDate: 1 })
             .select({
                 tripName: 1,
@@ -184,6 +185,11 @@ router.put("/:id", authenticateToken, async (req, res) => {
             return res.status(403).json({ error: "You do not have permission to access this itinerary" });
         } else {
             for (const key in req.body) {
+                if (key === "tripName") {
+                    const itineraryId = new mongoose.Types.ObjectId(req.params.itineraryId);
+                    const itineraryBudget = await Budget.findOne(itineraryId);
+                    if (itineraryBudget) { itineraryBudget["itineraryTitle"] = req.body[key]; await itineraryBudget.save(); }
+                }
                 itinerary[key] = req.body[key];
             }
             await itinerary.save();
@@ -226,8 +232,8 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
             return res.status(403).json({ error: "You do not have permission to access this itinerary" });
         }
 
-        const x = Activity.newActivity(req.body);
-        if (!isValidActivity(itinerary, x)) {
+        const x = await Activity.newActivity(req.body);
+        if (!( await isValidActivity(itinerary, x))) {
             return res.status(400).json({ error: "Invalid activity" });
         }
         await itinerary.addActivity(x);
@@ -251,18 +257,18 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         } else {
             const activity = await findActivityOr404(itinerary, req.params.activityId, res);
             if (!activity) return;
-
             const isSame = Object.keys(req.body)
                 .every(key => JSON.stringify(activity[key]) === JSON.stringify(req.body[key]));
+            const temp = await Activity.newActivity(req.body);
             if (!isSame) {
-                const temp = Activity.newActivity(req.body);
                 temp._id = activity._id;
-                if (!isValidActivity(itinerary, temp)) {
+                const isValid = await isValidActivity(itinerary, temp, activity);
+                if (!isValid) {
                     return res.status(400).json({ error: "Invalid activity" });
                 }
             }
-
-            await itinerary.updateActivity(activity, req.body);
+            console.log(temp.location);
+            const updatedItinerary = await itinerary.updateActivity(activity, temp);
 
             function timeToStart(activity, now = new Date()) {
                 const [hours, minutes] = activity.startTime.split(':').map(Number);
@@ -274,16 +280,18 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                 return diffHours;
             }
 
-            const duration = timeToStart(activity, new Date()).toFixed(2);
-            await itinerary.populate('user');
+            const updatedActivity = await findActivityOr404(updatedItinerary, req.params.activityId, res);
+
+            if (!updatedActivity) return;
+            const duration = timeToStart(updatedActivity, new Date()).toFixed(2);
+            await updatedItinerary.populate('user');
 
             try {
-                email.sendUpdateEmail(itinerary, activity, Math.floor(duration));
+                email.sendUpdateEmail(updatedItinerary, updatedActivity, Math.floor(duration));
             } catch (emailError) {
                 console.error("Error sending email:", emailError);
-                // At this point, we can still return the saved itinerary even if the email is invalid.
             }
-            return res.status(200).json({ itinerary, message: "Activity updated" });
+            return res.status(200).json({ itinerary: updatedItinerary, message: "Activity updated" });
         }
     } catch (error) {
         console.error("Error updating activity:", error);
@@ -346,6 +354,97 @@ router.get("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         }
     } catch (error) {
         return res.status(500).json({ error: "Failed to fetch activity" });
+    }
+});
+
+/** Getting the owner of itinerary */
+router.get('/:itineraryId/owner', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+    const owner = await itinerary.getOwner();
+    res.json({ owner });
+});
+
+/** Getting the owner of itinerary */
+router.get('/:itineraryId/isOwner', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+
+    const user = req.user;
+    const isOwner = itinerary.user.toString() === user._id.toString();
+    res.json({ isOwner });
+});
+
+/** Getting all existing collaborators */
+router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) => {
+    const { itineraryId } = req.params;
+    const itinerary = await findItineraryOr404(itineraryId, res);
+    if (!itinerary) return res.status(404).json({ error: "Not found" });
+    const collaborators = await itinerary.getListOfCollaborators();
+    res.json({ collaborators });
+});
+
+/** Sending a collaboration invite to ONE user */
+router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, res) => {
+
+    const user = req.user;
+    const { itineraryId } = req.params;
+
+    try {
+        const itinerary = await findItineraryOr404(itineraryId, res);
+
+        if (!itinerary) {
+            return;
+        } else if (!hasAccessToItinerary(itinerary, user)) {
+            return res.status(403).json({ success: false, error: "You do not have permission to access this itinerary" });
+        } else {
+            const { invitedEmail, message } = req.body;
+            const invitedUser = await User.findByEmail(invitedEmail);
+            if (!invitedUser) return res.status(404).json({ success: false, error: "User not found" });
+            const invitingUser = await User.findById(user._id);
+
+            const token = crypto.randomBytes(32).toString('hex');
+
+            if (itinerary.collaborators.some(id => id.toString() === invitedUser._id.toString())) {
+                return res.status(400).json({ success: false, error: "User is already a collaborator on this itinerary" });
+            }
+
+            const invitation = new Invitation({
+                invitedEmail,
+                itineraryId: req.params.itineraryId,
+                inviter: req.user._id,
+                invitee: invitedUser._id,
+                token
+            });
+            await invitation.save();
+
+            email.sendCollabInvitation(invitedEmail, invitingUser.name, invitedUser.name, itinerary.tripName, message, req.params.itineraryId, token);
+            return res.status(200).json({ success: true, message: `Invitation sent to ${invitedEmail}` });
+        }
+    } catch (error) {
+        console.error("Error inviting collaborator:", error);
+        return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
+    }
+});
+
+/** Getting all existing collaborators */
+router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
+    try {
+        const user = req.user;
+        const itinerary = await findItineraryOr404(req.params.itineraryId, res);
+        if (!itinerary) {
+            return;
+        } else {
+            console.log("trying to remove collaborator");
+            await itinerary.removeCollaborator(user._id);
+            console.log("collaborator removed");
+            return res.status(200).json({ message: "You have left the itinerary" });
+        }
+    } catch (error) {
+        console.error("Error leaving itinerary:", error);
+        return res.status(500).json({ error: "Failed to leave itinerary" });
     }
 });
 

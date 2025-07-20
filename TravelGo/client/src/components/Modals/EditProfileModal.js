@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 
+import { formatDate } from "../../utils/helper";
 import { useUser } from "../../context/UserContext/usercontext";
 
 export default function EditProfileModal({ isOpen, onClose, onSave }) {
     const { user } = useUser();
-    const [message, setMessage] = useState("");
-    const [success, setSuccess] = useState(false);
     const [form, setForm] = useState({
         newName: user.name || "",
         bio: user.profileInfo?.bio || "",
@@ -14,6 +13,8 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
         dateOfBirth: user.profileInfo?.dateOfBirth || "",
         location: user.profileInfo?.location || "",
     });
+    const [message, setMessage] = useState("");
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         setForm({
@@ -38,7 +39,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
                     type={type}
                     name={name}
                     placeholder={"Enter new " + display}
-                    value={value}
+                    value={formatDate(value)}
                     onChange={handleChange}
                     className="w-full border rounded px-2 py-1"
                 />
@@ -95,7 +96,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
                     </button>
                     <button
                         className="px-3 py-1 bg-blue-600 text-white rounded"
-                        onClick={async () => { 
+                        onClick={async () => {
                             const res = await onSave(form)
                             setMessage("Profile updated successfully!");
                             setSuccess(res.data.success);
