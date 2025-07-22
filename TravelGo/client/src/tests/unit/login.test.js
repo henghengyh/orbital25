@@ -34,8 +34,8 @@ describe("Login component", () => {
                 token: 'fake-token',
                 isAuthenticated: true,
                 loading: false,
-            })
-        })
+            });
+        });
     });
 
     test("show error on invalid email", async () => {
@@ -66,7 +66,7 @@ describe("Login component", () => {
             message: "Registration successful! Please log in.",
         };
 
-        renderWithAuth(<Login />)
+        renderWithAuth(<Login />);
 
         expect(screen.getByText(/registration successful! please log in/i)).toBeInTheDocument();
     });
@@ -77,7 +77,7 @@ describe("Login component", () => {
             message: "Please log in to continue.",
         };
 
-        renderWithAuth(<Login />)
+        renderWithAuth(<Login />);
 
         expect(screen.getByText(/please log in to continue/i)).toBeInTheDocument();
     });
