@@ -39,10 +39,10 @@ export default function ExpensesInfoCard({ data, xRate, editExpenses, onDelete }
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <button onClick={() => editExpenses(data)} className="text-gray-400 grid place-items-center hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        <ion-icon name="pencil" style={{ height: "24px", width: "24px" }}></ion-icon>
+                        <ion-icon data-testid="pencil" name="pencil" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>
                     <button onClick={() => setOpenModal(true)} className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
+                        <ion-icon data-testid="trash" name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 text-blue-500">
                         <h6 className="text-md font-semibold">${styleAmount(data.amount * xRate)}</h6>

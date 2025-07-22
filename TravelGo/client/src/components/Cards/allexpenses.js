@@ -21,9 +21,9 @@ export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDel
             <div className="flex items-center justify-between">
                 <h5 className="text-lg">All Expenditure</h5>
                 {latestExpenses.length > 0 &&
-                    <div className="card-button" onClick={showMore}>
+                    <button className="card-button" onClick={showMore}>
                         Show More <ion-icon name="arrow-forward"></ion-icon>
-                    </div>}
+                    </button>}
             </div>
 
             {loading

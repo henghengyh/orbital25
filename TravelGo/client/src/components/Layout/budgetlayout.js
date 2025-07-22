@@ -240,10 +240,10 @@ export default function BudgetLayout() {
 
                 <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })}
                     className="mr-6 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
-                    <div className="items-center flex gap-1">
+                    <button className="items-center flex gap-1">
                         <ion-icon name="logo-usd" style={{ height: "20px", width: "20px" }}></ion-icon>
                         <span className="text-md font-semibold">Add Expenses</span>
-                    </div>
+                    </button>
                 </div>
             </div>
 
