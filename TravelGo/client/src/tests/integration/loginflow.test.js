@@ -4,21 +4,26 @@ import userEvent from '@testing-library/user-event';
 import { axiosInstance, renderWithProvAuth } from './test-helper';
 import { mockItinerary } from '../mock-const';
 
-beforeEach(async () => await act(async () => renderWithProvAuth()));
-
 describe("Login flow", () => {
-    test("successful (new user) login and redirects to dashboard", async () => {
+    const login = async ({ itineraries }) => {
         axiosInstance.post.mockResolvedValue({
             data: {
                 token: "fake-token",
                 user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
             }
         });
-        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: [] } });
+        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries } });
 
-        userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
-        userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
-        userEvent.click(screen.getByRole('button', { name: /log in/i }));
+        renderWithProvAuth();
+        await act(async () => {
+            userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
+            userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
+            userEvent.click(screen.getByRole('button', { name: /log in/i }));
+        });
+    };
+
+    test("successful (new user) login and redirects to dashboard", async () => {
+        await login({ itineraries: [] });
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: /create itinerary/i })).toBeInTheDocument();
@@ -27,17 +32,7 @@ describe("Login flow", () => {
     });
 
     test("successful (existing) login and redirects to dashboard", async () => {
-        axiosInstance.post.mockResolvedValue({
-            data: {
-                token: "fake-token",
-                user: { _id: '123', name: 'testuser', email: 'unit@test.com' },
-            }
-        });
-        axiosInstance.get.mockResolvedValueOnce({ data: { itineraries: mockItinerary } });
-
-        userEvent.type(screen.getByPlaceholderText(/email/i), 'unit@test.com');
-        userEvent.type(screen.getByPlaceholderText(/password/i), 'PASSword123!');
-        userEvent.click(screen.getByRole('button', { name: /log in/i }));
+        await login({ itineraries: mockItinerary });
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: /create itinerary/i })).toBeInTheDocument();
