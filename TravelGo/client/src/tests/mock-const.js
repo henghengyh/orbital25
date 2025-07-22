@@ -1,3 +1,5 @@
+import { getISOWeek, getISOWeekYear } from "date-fns";
+
 export const mockUser1 = {
     _id: '123',
     name: 'testuser',
@@ -147,3 +149,202 @@ export const mockItinerary = [
         notes: "Escape from city life",
     },
 ];
+
+export const mockExpenses = [
+    {
+        itineraryId: "2",
+        title: "Hotel Stay at Traders Hotel",
+        date: "2025-08-01",
+        amount: 320,
+        currency: "MYR",
+        type: "accommodation",
+        whoPaid: "John",
+        notes: "2-night stay with breakfast"
+    },
+    {
+        itineraryId: "2",
+        title: "Petronas Towers Entry",
+        date: "2025-08-02",
+        amount: 40,
+        currency: "MYR",
+        type: "activities",
+        whoPaid: "Jane",
+        notes: "Observation deck tickets"
+    },
+    {
+        itineraryId: "2",
+        title: "Street Food at Jalan Alor",
+        date: "2025-08-03",
+        amount: 65,
+        currency: "MYR",
+        type: "food",
+        whoPaid: "John",
+        notes: "Dinner for 2 including drinks"
+    },
+    {
+        itineraryId: "2",
+        title: "Souvenirs from Central Market",
+        date: "2025-08-01",
+        amount: 120,
+        currency: "MYR",
+        type: "gift",
+        whoPaid: "Jane",
+        notes: "Local crafts and souvenirs"
+    },
+    {
+        itineraryId: "2",
+        title: "Laundry Service",
+        date: "2025-08-02",
+        amount: 30,
+        currency: "MYR",
+        type: "others",
+        whoPaid: "John",
+        notes: "Hotel laundry charges"
+    },
+    {
+        itineraryId: "2",
+        title: "Shopping at Pavilion Mall",
+        date: "2025-08-02",
+        amount: 250,
+        currency: "MYR",
+        type: "shopping",
+        whoPaid: "Jane",
+        notes: "Clothes and accessories"
+    },
+    {
+        itineraryId: "2",
+        title: "Grab ride to Batu Caves",
+        date: "2025-08-03",
+        amount: 25,
+        currency: "MYR",
+        type: "transport",
+        whoPaid: "John",
+        notes: "Taxi fare for 2 people"
+    },
+];
+
+export const mockWeeklyOverview = (startOfWeek, mockExpenses) => {
+    const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
+
+    const days = Array.from({ length: 7 }).map((_, i) => {
+        const date = new Date(startOfWeek);
+        date.setDate(date.getDate() + i);
+        const isoDate = date.toISOString().split("T")[0];
+
+        const dayData = { date: isoDate };
+        typesOfExpenses.forEach(type => (dayData[type] = 0));
+        return dayData;
+    });
+
+    const groupedByWeek = {};
+
+    mockExpenses
+        .forEach(e => {
+            const date = new Date(e.date);
+            const week = getISOWeek(date);
+            const year = getISOWeekYear(date);
+            const key = `${year}-${week}`;
+
+            if (!groupedByWeek[key]) {
+                groupedByWeek[key] = {
+                    _id: { year, week },
+                    transactions: [],
+                };
+            }
+
+            groupedByWeek[key].transactions.push({
+                date: e.date,
+                amount: e.amount,
+                type: e.type,
+            });
+        });
+
+    const weeklyOverview = Object.values(groupedByWeek)
+        .sort((a, b) => {
+            if (b._id.year !== a._id.year) return b._id.year - a._id.year;
+            return b._id.week - a._id.week;
+        })
+        .slice(0, 1);
+
+
+    // tabulate all expenses for each day in the week
+    weeklyOverview[0].transactions.forEach(tx => {
+        const txDate = new Date(tx.date).toISOString().split("T")[0];
+        const matchingDay = days.find(d => d.date === txDate);
+        if (!matchingDay) return;
+
+        const type = typesOfExpenses.includes(tx.type) ? tx.type : "others";
+        matchingDay[type] += tx.amount;
+    });
+
+    return days;
+};
+
+export const mockBreakdown = (mockExpenses) => {
+    return Object.values(
+        mockExpenses
+            .reduce((acc, curr) => {
+                const { type, amount } = curr;
+                if (!acc[type]) {
+                    acc[type] = { type, totalAmount: 0 };
+                }
+                acc[type].totalAmount += amount;
+                return acc;
+            }, {})
+    ).sort((a, b) => b.type.localeCompare(a.type));
+};
+
+export const mockSplitExpenses = (mockExpenses) => {
+    const splitExpenses = Object.values(
+        mockExpenses
+            .reduce((acc, curr) => {
+                const whoPaid = curr.whoPaid.trim().toLowerCase();
+                if (!acc[whoPaid]) {
+                    acc[whoPaid] = { whoPaid, totalAmount: 0 };
+                }
+                acc[whoPaid].totalAmount += curr.amount;
+                return acc;
+            }, {})
+    ).sort((a, b) => a.whoPaid.localeCompare(b.whoPaid));
+
+    const reorderSplit = (splitExpenses) => {
+        if (!splitExpenses || splitExpenses.length <= 0) return [];
+
+        const totalExpenses = splitExpenses.reduce((total, curr) => curr.totalAmount + total, 0);
+        const costPerPerson = totalExpenses / splitExpenses.length;
+
+        const balance = splitExpenses.map(e => ({
+            name: e.whoPaid,
+            netBalance: e.totalAmount - costPerPerson,
+        }));
+
+        let creditors = balance.filter(e => e.netBalance > 0).sort((a, b) => b.netBalance - a.netBalance);
+        let debtors = balance.filter(e => e.netBalance < 0).sort((a, b) => b.netBalance - a.netBalance);
+
+        const settlement = [];
+        let credIdx = 0;
+        let debtIdx = 0;
+
+        while (credIdx < creditors.length && debtIdx < debtors.length) {
+            const creditor = creditors[credIdx];
+            const debtor = debtors[debtIdx];
+            const amt = Math.min(creditor.netBalance, Math.abs(debtor.netBalance));
+
+            settlement.push({
+                from: debtor.name,
+                to: creditor.name,
+                amount: Math.round(amt * 100) / 100,
+            });
+
+            creditor.netBalance -= amt;
+            debtor.netBalance += amt;
+
+            if (creditor.netBalance < 0.01) credIdx++;
+            if (Math.abs(debtor.netBalance) < 0.01) debtIdx++;
+        }
+
+        return settlement.sort((a, b) => b.amount - a.amount);
+    };
+
+    return { splitExpenses: splitExpenses, settlement: reorderSplit(splitExpenses) };
+};

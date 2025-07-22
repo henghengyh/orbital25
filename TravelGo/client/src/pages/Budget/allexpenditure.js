@@ -170,25 +170,25 @@ export default function AllExpenditure() {
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="flex mx-16 mt-10 justify-between">
                 <div className="gap-4 flex items-center">
-                    <div className="card-button font-semibold hover:text-black hover:bg-slate-200 text-sm" onClick={() => navigate(`/budget/${id}`)}>
+                    <button className="card-button font-semibold hover:text-black hover:bg-slate-200 text-sm" onClick={() => navigate(`/budget/${id}`)}>
                         <ion-icon name="arrow-back"></ion-icon>Back
-                    </div>
-                    <h5 className="text-2xl font-semibold">All Expenditure for itinerary</h5>
+                    </button>
+                    <h5 className="text-2xl font-semibold">All Expenditure for Itinerary</h5>
                 </div>
 
                 <div className="flex justify-center items-center gap-4">
                     <div className="flex items-center justify-center p-3 rounded-lg cursor-pointer">
-                        <div className="flex justify-center items-center gap-2 font-semibold">
+                        <button className="flex justify-center items-center gap-2 font-semibold">
                             <p className="underline">Filter By:</p>
                             {!filter && showFiltered()}
-                            <ion-icon name={filter ? "chevron-up" : "chevron-down"} onClick={() => setFilter(filter ? false : true)}></ion-icon>
-                        </div>
+                            <ion-icon data-testid="filter-icon" name={filter ? "chevron-up" : "chevron-down"} onClick={() => setFilter(filter ? false : true)}></ion-icon>
+                        </button>
                     </div>
                     <div className="items-center justify-center flex p-3 bg-white shadow-md text-gray-700 hover:bg-blue-50 hover:text-blue-500 cursor-pointer rounded-xl">
-                        <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })} className="items-center flex gap-1">
+                        <button onClick={() => setOpenModal({ shown: true, mode: "add", data: null })} className="items-center flex gap-1">
                             <ion-icon name="logo-usd" style={{ height: "18px", width: "18px" }}></ion-icon>
                             <span className="text-sm font-semibold">Add Expenses</span>
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
