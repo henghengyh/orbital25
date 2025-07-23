@@ -1,23 +1,41 @@
 import { useEffect } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
+import Modal from 'react-modal';
 
 import { mockUser1 } from '../mock-const';
+import AboutPage from '../../pages/About/about';
+import AllExpenditurePage from '../../pages/Budget/allexpenditure';
 import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
+import BudgetLayoutPage from '../../components/Layout/budgetlayout';
+import BudgetPage from '../../pages/Budget/budget';
+import CreateItineraryPage from '../../pages/Itinerary/createitinerary';
 import DashboardPage from '../../pages/Dashboard/dashboard';
+import ItineraryPage from '../../pages/Itinerary/itinerary';
 import ItineraryProvider from '../../context/ItineraryContext/itinerarycontext';
 import Layout from '../../components/Layout/layout';
 import LoginPage from '../../pages/Login&Register/login';
+import MapsPage from '../../pages/Maps/maps';
 import ProfilePage from '../../pages/Profile/profile';
 import ProtectedRoute from '../../components/ProtectedRoutes/protectedroutes';
 import RegisterPage from '../../pages/Login&Register/register';
 import UserProvider from '../../context/UserContext/usercontext';
+import WeatherPage from '../../pages/Weather/weather';
 
 jest.mock('../../utils/axiosInstance', () => ({
     post: jest.fn(),
     get: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
 }));
+
+beforeAll(() => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    document.body.appendChild(root);
+    Modal.setAppElement('#root');
+});
 
 beforeEach(() => {
     // mock AuthContext
@@ -45,8 +63,16 @@ const renderWithProvAuth = (initialRoute = '/') => {
                                     <Layout />
                                 </ItineraryProvider>
                             </UserProvider>}>
-                            <Route path='/dashboard' element={<DashboardPage />} />
-                            <Route path='/profile' element={<ProfilePage />} />
+                            <Route path="/about" element={<AboutPage />} />
+                            <Route path="/budget" element={<BudgetPage />} />
+                            <Route path="/budget/:id" element={<BudgetLayoutPage />} />
+                            <Route path="/budget/:id/:xRate/all-expenditure" element={<AllExpenditurePage />} />
+                            <Route path="/create-itinerary" element={<CreateItineraryPage />} />
+                            <Route path="/dashboard" element={<DashboardPage />} />
+                            <Route path="/itinerary/:id" element={<ItineraryPage />} />
+                            <Route path="/maps" element={<MapsPage />} />
+                            <Route path="/profile" element={<ProfilePage />} />
+                            <Route path="/weather" element={<WeatherPage />} />
                         </Route>
                     </Route>
                 </Routes>

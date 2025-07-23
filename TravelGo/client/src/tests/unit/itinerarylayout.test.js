@@ -144,7 +144,7 @@ describe("Itinerary layout component", () => {
             });
         });
 
-        test("itinerary is added when save button is clicked", async () => {
+        test("itinerary is updated when save button is clicked", async () => {
             axiosInstance.put.mockResolvedValueOnce({
                 data: {
                     itinerary: {

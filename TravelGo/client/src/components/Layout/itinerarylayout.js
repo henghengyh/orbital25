@@ -221,6 +221,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                         <div className="flex flex-col gap-2">
                             <h6 className="text-label">Notes:</h6>
                             <textarea
+                                data-testid="itinerary notes"
                                 type="text"
                                 placeholder="notes"
                                 name="notes"
@@ -253,6 +254,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                                     </button>
                                 </div>
                                 : <button
+                                    data-testid="itinerary add button"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         validInputCheck(() => addItinerary({ tripName, destination, startDate, endDate, numberOfPeople, activities, notes }));

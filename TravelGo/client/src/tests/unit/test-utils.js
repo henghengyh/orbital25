@@ -1,5 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import Modal from 'react-modal';
 
 import AuthProvider, { useAuth } from '../../context/AuthContext/authcontext';
 import axiosInstance from '../../utils/axiosInstance';
@@ -27,6 +29,13 @@ jest.mock('../../context/AuthContext/authcontext', () => ({
 
 const mockSetAuth = jest.fn();
 
+beforeAll(() => {
+  const root = document.createElement('div');
+  root.id = 'root';
+  document.body.appendChild(root);
+  Modal.setAppElement('#root');
+});
+
 beforeEach(() => {
   useAuth.mockReturnValue({ setAuth: mockSetAuth });
   localStorage.setItem('token', 'fake-token');
@@ -49,4 +58,30 @@ const renderWithAuth = (ui, options = {}) => {
   );
 };
 
-export { axiosInstance, mockLocation, mockNavigate, mockParams, mockSetAuth, renderWithAuth, useAuth };
+const fillForm = async ({ activityName, startTime, endTime, type, notes }) => {
+  if (activityName !== undefined) {
+    userEvent.clear(screen.getByPlaceholderText(/activity name/i));
+    if (activityName) userEvent.type(screen.getByPlaceholderText(/activity name/i), activityName);
+  }
+
+  if (startTime !== undefined) {
+    userEvent.clear(screen.getByLabelText(/start time/i));
+    if (startTime) userEvent.type(screen.getByLabelText(/start time/i), startTime);
+  }
+
+  if (endTime !== undefined) {
+    userEvent.clear(screen.getByLabelText(/end time/i));
+    if (endTime) userEvent.type(screen.getByLabelText(/end time/i), endTime);
+  }
+
+  if (type !== undefined && type !== '-') {
+    userEvent.selectOptions(screen.getByRole('combobox', { name: /type/i }), type);
+  }
+
+  if (notes !== undefined) {
+    userEvent.clear(screen.getByTestId('activity notes'));
+    if (notes) userEvent.type(screen.getByTestId('activity notes'), notes);
+  }
+};
+
+export { axiosInstance, fillForm, mockLocation, mockNavigate, mockParams, mockSetAuth, renderWithAuth, useAuth };

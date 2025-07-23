@@ -125,6 +125,7 @@ export default function ActivityModal({
                 <div className="flex flex-col gap-3 pt-2">
                     <h6 className="text-label">Notes:</h6>
                     <textarea
+                        data-testid="activity notes"
                         type="text"
                         placeholder="notes"
                         name="notes"
@@ -153,6 +154,7 @@ export default function ActivityModal({
                         </button>
                     </div>
                     : <button
+                        data-testid="activity add button"
                         onClick={(e) => {
                             e.preventDefault();
                             validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, notes }));

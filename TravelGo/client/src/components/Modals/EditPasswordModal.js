@@ -51,14 +51,15 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
             const res = await onSave({ currentPassword, newPassword, confirmPassword });
             setSuccess(res.data.success);
             if (res.data.success) {
-                setTimeout(() => {
-                    setMessage("Password updated successfully!");
-                    setSuccess(false);
-                    onClose();
-                }, 1000);
+                setMessage(res.data.message);
             } else {
                 setMessage(res.data.message || "Error updating password");
             }
+            setTimeout(() => {
+                setMessage("");
+                setSuccess(false);
+                onClose();
+            }, 1000);
         } catch (err) {
             setMessage(err.response?.data?.message || "Error updating password");
             setFeedback(err.response?.data?.feedback?.join(" ") || "");
