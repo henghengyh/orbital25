@@ -37,7 +37,7 @@ export default function WeeklyOverview({ weeklyOverview, xRate }) {
 
             {loading
                 ? <SearchLoading />
-                : newOverview.length > 0
+                : newOverview?.length > 0
                     ? <BarChartOverview data={newOverview} />
                     : <EmptyExpenses />}
         </div>

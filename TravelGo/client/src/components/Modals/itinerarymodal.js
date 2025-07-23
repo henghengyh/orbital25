@@ -68,7 +68,7 @@ export default function ItineraryModal({ chosen, onClose, changeItinerary }) {
                             .filter(t => t._id !== chosen)
                             .map(t => (
                                 <option key={t._id} value={t._id}>
-                                    {t.tripName.length > 13 ? `${t.tripName.slice(0, 13)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
+                                    {t.tripName?.length > 13 ? `${t.tripName?.slice(0, 13)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
                                 </option>
                             ))}
                     </select>

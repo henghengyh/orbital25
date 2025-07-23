@@ -339,9 +339,9 @@ export default function AllExpenditure() {
             <div className="p-6 mx-10 mb-8">
                 {loading
                     ? <SearchLoading />
-                    : filterExpenses.length > 0
+                    : filterExpenses?.length > 0
                         ? <div className="grid grid-cols-3 gap-6">
-                            {filterExpenses.map((entry, idx) => (
+                            {filterExpenses?.map((entry, idx) => (
                                 <ExpensesDetailedCard
                                     key={idx}
                                     data={entry}

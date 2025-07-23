@@ -4,9 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../utils/helper";
 import ActivityLayout from "./activitylayout";
 import axiosInstance from "../../utils/axiosInstance";
+import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
 import EmptyActivity from "../Cards/emptyactivity";
 import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
-import ConfirmDeleteLeaveModal from "../Modals/ConfirmDeleteLeaveModal";
 import WarningModal from "../Modals/WarningModal";
 
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
@@ -268,8 +268,8 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
 
                 <div className="w-71vw pr-4 overflow-x-auto scrollbar">
                     <div className="flex flex-row gap-2 px-1 overflow-x-auto scrollbar border-slate-300 rounded bg-gray-300 h-[428px]">
-                        {dates.length > 0
-                            ? dates.map((date, idx) => (
+                        {dates?.length > 0
+                            ? dates?.map((date, idx) => (
                                 <ActivityLayout
                                     key={idx}
                                     date={date}
