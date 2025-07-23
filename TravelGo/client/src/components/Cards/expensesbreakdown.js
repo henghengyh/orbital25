@@ -34,7 +34,7 @@ export default function ExpensesBreakdown({ totalExpenses, breakdown, xRate }) {
 
             {loading
                 ? <SearchLoading />
-                : breakdown.length > 0
+                : breakdown?.length > 0
                     ? <PieChartOverview
                         mode="breakdown"
                         data={newBreakdown}

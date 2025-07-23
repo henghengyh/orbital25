@@ -99,7 +99,7 @@ export default function Budget() {
                         <option disabled value="">Select one:</option>
                         {allItineraries.map(t => (
                             <option key={t._id} value={t._id}>
-                                {t.tripName.length > 20 ? `${t.tripName.slice(0, 20)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
+                                {t.tripName?.length > 20 ? `${t.tripName?.slice(0, 20)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
                             </option>
                         ))}
                     </select>

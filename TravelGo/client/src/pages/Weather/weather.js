@@ -195,7 +195,7 @@ const Weather = () => {
 
     //A6. Display itinerary weather warnings
     const showWeatherWarnings = () => {
-        if (allItineraries.length === 0) return;
+        if (allItineraries?.length === 0) return;
         if (!selectedItinerary) return;
 
         const tripStart = selectedItinerary.startDate.slice(0, 10);

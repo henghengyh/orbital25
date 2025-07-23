@@ -70,9 +70,9 @@ export default function Dashboard() {
                 {popup && <div className="error bg-[#dcf0fa] text-orange-600">{error}</div>}
                 <div className="flex-1 overflow-y-auto scrollbar">
                     {loading ? <SearchLoading />
-                        : itineraries.length > 0
+                        : itineraries?.length > 0
                             ? (<div className="grid grid-cols-2 gap-6">
-                                {itineraries.map((item) => {
+                                {itineraries?.map((item) => {
                                     return (
                                         <ItineraryCard
                                             key={item._id}

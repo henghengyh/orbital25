@@ -37,7 +37,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                 setFeedback(res.data.error || "Failed to send invitation.");
             }
         } catch (err) {
-            setFeedback("Failed to send invitation!!!");
+            setFeedback("Failed to send invitation");
         }
         setLoading(false);
     };
@@ -62,7 +62,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                             </li>
                         </ul>
                     </div>
-                    {collaborators.length > 0 ? (
+                    {collaborators?.length > 0 ? (
                         <div className="mb-4">
                             <hr className="mb-4"></hr>
                             <h4 className="italic mb-1 text-gray-600">{collaborators ? "Collaborators" : null}</h4>
@@ -74,7 +74,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                                     </li>
                                 ))}
                             </ul>
-                            {collaborators.length > 3 && !showAll && (
+                            {collaborators?.length > 3 && !showAll && (
                                 <button
                                     className="text-blue-600 hover:underline mt-1 text-xs"
                                     onClick={() => setShowAll(true)}

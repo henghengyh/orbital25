@@ -25,8 +25,8 @@ export default function RecentExpenses({ recentExpenses, xRate, editExpenses, on
             <div className="mt-6">
                 {loading
                     ? <SearchLoading />
-                    : recentExpenses.length > 0
-                        ? recentExpenses.map((entry, idx) => (
+                    : recentExpenses?.length > 0
+                        ? recentExpenses?.map((entry, idx) => (
                             <ExpensesInfoCard
                                 key={idx}
                                 data={entry}

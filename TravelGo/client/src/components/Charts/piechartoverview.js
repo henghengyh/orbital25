@@ -18,7 +18,7 @@ export default function PieChartOverview({ mode, data, label, totalAmount, color
                     labelLine={false}
                 >
                     {data.map((entry, idx) => (
-                        <Cell key={`cell-${idx}`} fill={colors[idx % colors.length]} />
+                        <Cell key={`cell-${idx}`} fill={colors[idx % colors?.length]} />
                     ))}
                 </Pie>
                 <Tooltip content={CustomTooltip} />
