@@ -23,6 +23,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
     }, [itinerary]);
 
     const handleInvite = async (e) => {
+        e.preventDefault();
         setLoading(true);
         try {
             const res = await onInvite(email, message);

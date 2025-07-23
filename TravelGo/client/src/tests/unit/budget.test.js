@@ -11,14 +11,6 @@ import ExpensesDetailedCard from "../../components/Cards/expensesdetailedcard";
 import RecentExpenses from "../../components/Cards/recentexpenses";
 import SplitExpenses from "../../components/Cards/splitexpenses";
 import ExpensesInfoCard from "../../components/Cards/expensesinfocard";
-import Modal from "react-modal";
-
-beforeAll(() => {
-    const root = document.createElement('div');
-    root.id = 'root';
-    document.body.appendChild(root);
-    Modal.setAppElement('#root');
-});
 
 describe("Budget component", () => {
     describe("Budget landing page", () => {

@@ -1,18 +1,10 @@
-import Modal from "react-modal";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { axiosInstance, mockParams, renderWithAuth } from "./test-utils";
+import { axiosInstance, fillForm, mockParams, renderWithAuth } from "./test-utils";
 import { mockItinerary } from "../mock-const";
 import ActivityLayout from "../../components/Layout/activitylayout";
 import ActivityModal from "../../components/Modals/activitymodal";
-
-beforeAll(() => {
-    const root = document.createElement('div');
-    root.id = 'root';
-    document.body.appendChild(root);
-    Modal.setAppElement('#root');
-});
 
 describe("Activity layout component", () => {
     describe("Rendering layout", () => {
@@ -88,31 +80,6 @@ describe("Activity layout component", () => {
 
     describe("Add, Edit, Delete activity", () => {
         const sampleActivity = mockItinerary[1].activities[0];
-        const fillForm = async ({ activityName, startTime, endTime, type, notes }) => {
-            if (activityName !== undefined) {
-                userEvent.clear(screen.getByPlaceholderText(/activity name/i));
-                if (activityName) userEvent.type(screen.getByPlaceholderText(/activity name/i), activityName);
-            }
-
-            if (startTime !== undefined) {
-                userEvent.clear(screen.getByLabelText(/start time/i));
-                if (startTime) userEvent.type(screen.getByLabelText(/start time/i), startTime);
-            }
-
-            if (endTime !== undefined) {
-                userEvent.clear(screen.getByLabelText(/end time/i));
-                if (endTime) userEvent.type(screen.getByLabelText(/end time/i), endTime);
-            }
-
-            if (type !== undefined && type !== '-') {
-                userEvent.selectOptions(screen.getByRole('combobox', { name: /type/i }), type);
-            }
-
-            if (notes !== undefined) {
-                userEvent.clear(screen.getByPlaceholderText(/notes/i));
-                if (notes) userEvent.type(screen.getByPlaceholderText(/notes/i), notes);
-            }
-        };
 
         test.each([
             ["Invalid Activity Name", "", "10:00", "12:00", "Meal"],
