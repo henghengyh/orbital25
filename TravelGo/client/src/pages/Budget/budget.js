@@ -123,15 +123,15 @@ export default function Budget() {
                                 />
                             </div>
 
-                            <div onClick={startBudget} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
+                            <button onClick={startBudget} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
                                 <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
                                 <span>Start Budgeting</span>
-                            </div>
+                            </button>
                         </>)
-                        : (<div onClick={() => navigate(`/budget/${selectedTrip}`)} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
+                        : (<button onClick={() => navigate(`/budget/${selectedTrip}`)} className="flex items-center gap-3 text-blue-600 text-xl font-medium mt-5 p-2 px-4 w-fit mx-auto rounded-lg justify-center cursor-pointer hover:bg-blue-100 hover:text-red-500">
                             <ion-icon name="card" style={{ fontSize: "30px" }}></ion-icon>
                             <span>Continue Budgeting</span>
-                        </div>)
+                        </button>)
                 )}
             </div>
 

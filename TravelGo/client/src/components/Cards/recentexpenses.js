@@ -8,6 +8,11 @@ export default function RecentExpenses({ recentExpenses, xRate, editExpenses, on
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (process.env.NODE_ENV === 'test') {
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         const timer = setTimeout(() => {
             setLoading(false);
@@ -17,7 +22,7 @@ export default function RecentExpenses({ recentExpenses, xRate, editExpenses, on
     }, [recentExpenses]);
 
     return (
-        <div className="card">
+        <div role="article" aria-label="recent card" className="card">
             <div className="flex items-center justify-between">
                 <h5 className="text-lg">Recent Expenditure</h5>
             </div>

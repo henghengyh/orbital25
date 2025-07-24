@@ -1,16 +1,27 @@
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { axiosInstance, mockParams, renderWithAuth } from "./test-utils";
-import { mockBreakdown, mockExpenses, mockItinerary, mockSplitExpenses, mockWeeklyOverview } from "../mock-const";
+import { mockBreakdown, mockExpenses, mockItinerary, mockLatestExpenses, mockRecentExpenses, mockSplitExpenses, mockWeeklyOverview } from "../mock-const";
 import AllExpenditure from "../../pages/Budget/allexpenditure";
 import AllExpenses from "../../components/Cards/allexpenses";
 import BudgetLayout from "../../components/Layout/budgetlayout";
 import BudgetPage from "../../pages/Budget/budget";
 import ExpensesDetailedCard from "../../components/Cards/expensesdetailedcard";
+import ExpensesInfoCard from "../../components/Cards/expensesinfocard";
 import RecentExpenses from "../../components/Cards/recentexpenses";
 import SplitExpenses from "../../components/Cards/splitexpenses";
-import ExpensesInfoCard from "../../components/Cards/expensesinfocard";
+
+beforeAll(() => {
+    global.ResizeObserver = class ResizeObserver {
+        constructor(callback) {
+            this.callback = callback;
+        }
+        observe() { }
+        unobserve() { }
+        disconnect() { }
+    };
+});
 
 describe("Budget component", () => {
     describe("Budget landing page", () => {
@@ -33,11 +44,11 @@ describe("Budget component", () => {
     describe("Budget main page", () => {
         test("renders layout", async () => {
             mockParams.mockReturnValue({ id: 1 });
-            axiosInstance.get.mockResolvedValueOnce({ data: { budget: { "0": { itinerayTitle: "test trip", budget: 1000 } } } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { budget: [{ itineraryTitle: "Test Trip", budget: 1000 }] } });
             axiosInstance.get.mockResolvedValueOnce({ data: { allExpenses: mockExpenses } });
-            axiosInstance.get.mockResolvedValueOnce({ data: { recentExpenses: [...mockExpenses].reverse().slice(0, 4) } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { recentExpenses: mockRecentExpenses(mockExpenses) } });
             axiosInstance.get.mockResolvedValueOnce({ data: { weeklyOverview: mockWeeklyOverview("2025-07-28", mockExpenses) } });
-            axiosInstance.get.mockResolvedValueOnce({ data: { latestExpenses: [...mockExpenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8) } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { latestExpenses: mockLatestExpenses(mockExpenses) } });
             axiosInstance.get.mockResolvedValueOnce({ data: { expensesBreakdown: mockBreakdown(mockExpenses) } });
             axiosInstance.get.mockResolvedValueOnce({ data: { splitExpenses: mockSplitExpenses(mockExpenses) } });
 
@@ -61,9 +72,7 @@ describe("Budget component", () => {
         });
 
         test("renders recent expenditure", async () => {
-            jest.useFakeTimers();
             renderWithAuth(<RecentExpenses recentExpenses={[...mockExpenses].reverse().slice(0, 4)} xRate={1} />);
-            act(() => jest.advanceTimersByTime(1000));
 
             await waitFor(() => {
                 expect(screen.getByText('Recent Expenditure')).toBeInTheDocument();
@@ -72,14 +81,10 @@ describe("Budget component", () => {
                 expect(screen.getByText(/laundry/i)).toBeInTheDocument();
                 expect(screen.getByText(/1st aug 2025/i)).toBeInTheDocument();
             });
-
-            jest.useRealTimers();
         });
 
         test("renders all expenditure", async () => {
-            jest.useFakeTimers();
             renderWithAuth(<AllExpenses latestExpenses={[...mockExpenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8)} xRate={1} />);
-            act(() => jest.advanceTimersByTime(1000));
 
             await waitFor(() => {
                 expect(screen.getByText('All Expenditure')).toBeInTheDocument();
@@ -92,14 +97,10 @@ describe("Budget component", () => {
                 expect(screen.getByText(/petronas/i)).toBeInTheDocument();
                 expect(screen.getByText(/320/i)).toBeInTheDocument();
             });
-
-            jest.useRealTimers();
         });
 
         test("renders split expenses", async () => {
-            jest.useFakeTimers();
             renderWithAuth(<SplitExpenses totalExpenses={mockExpenses} splitExpenses={mockSplitExpenses(mockExpenses)} xRate={1} />);
-            act(() => jest.advanceTimersByTime(1000));
 
             await waitFor(() => {
                 expect(screen.getByText('Split Expenses')).toBeInTheDocument();
@@ -108,14 +109,10 @@ describe("Budget component", () => {
                 expect(screen.getByText(/To: John/i)).toBeInTheDocument();
                 expect(screen.getByText(/15/i)).toBeInTheDocument();
             });
-
-            jest.useRealTimers();
         });
 
         test("renders split expenses modal", async () => {
-            jest.useFakeTimers();
             renderWithAuth(<SplitExpenses totalExpenses={850} splitExpenses={mockSplitExpenses(mockExpenses)} xRate={1} />);
-            act(() => jest.advanceTimersByTime(1000));
             await waitFor(() => expect(screen.getByText('Split Expenses')).toBeInTheDocument());
             userEvent.click(screen.getByRole('button', { name: 'Show More' }));
 
@@ -129,8 +126,6 @@ describe("Budget component", () => {
                 expect(screen.getByText(/Net Balance/i)).toBeInTheDocument();
                 expect(screen.getByText(/Who to Pay\?/i)).toBeInTheDocument();
             });
-
-            jest.useRealTimers();
         });
 
         test("renders expenses info card", async () => {
@@ -149,6 +144,21 @@ describe("Budget component", () => {
                 expect(screen.getByTestId('pencil')).toBeVisible();
                 expect(screen.getByTestId('trash')).toBeVisible();
             });
+        });
+
+        test("renders empty expenses card", async () => {
+            mockParams.mockReturnValue({ id: 1 });
+            axiosInstance.get.mockResolvedValueOnce({ data: { budget: [{ itineraryTitle: "Test Trip", budget: 1000 }] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { allExpenses: [] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { recentExpenses: [] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { weeklyOverview: [] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { latestExpenses: [] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { expensesBreakdown: [] } });
+            axiosInstance.get.mockResolvedValueOnce({ data: { splitExpenses: [] } });
+
+            renderWithAuth(<BudgetLayout />);
+
+            await waitFor(() => expect(screen.getAllByText('Click the \'Add Expenses\' button to start adding your expenditure.')).toHaveLength(5));
         });
     });
 

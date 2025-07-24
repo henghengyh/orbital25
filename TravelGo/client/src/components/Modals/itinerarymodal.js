@@ -54,18 +54,19 @@ export default function ItineraryModal({ chosen, onClose, changeItinerary }) {
                 </div>
             </div>
             <div className="flex flex-col justify-center items-center gap-4 mt-4">
-                <label className="text-xl font-semibold text-blue-700 text-center">
+                <label htmlFor="itinerary" className="text-xl font-semibold text-blue-700 text-center">
                     Select Your Trip
                 </label>
                 <div className="flex justify-center">
                     <select
+                        id="itinerary"
                         value={selectedTrip}
                         onChange={(e) => setSelectedTrip(e.target.value)}
                         className="w-fit h-12 px-3 py-2 border border-blue-300 rounded-lg shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-200 ease-in-out cursor-pointer hover:border-blue-400"
                     >
                         <option disabled value="">Select one:</option>
                         {allItinerary
-                            .filter(t => t._id !== chosen)
+                            ?.filter(t => t._id !== chosen)
                             .map(t => (
                                 <option key={t._id} value={t._id}>
                                     {t.tripName?.length > 13 ? `${t.tripName?.slice(0, 13)}...` : t.tripName} ({t.startDate.slice(0, 10)} - {t.endDate.slice(0, 10)})
@@ -76,13 +77,13 @@ export default function ItineraryModal({ chosen, onClose, changeItinerary }) {
             </div>
 
             <div className="flex items-center justify-center mt-7 w-full h-10">
-                <div onClick={(e) => {
+                <button onClick={(e) => {
                     e.preventDefault();
                     changeItinerary(selectedTrip);
                 }}
                     className="itinerary-button h-10 bg-green-200 hover:bg-green-300">
                     Change
-                </div>
+                </button>
             </div>
         </div>
     )
