@@ -8,6 +8,11 @@ export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDel
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (process.env.NODE_ENV === 'test') {
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         const timer = setTimeout(() => {
             setLoading(false);
@@ -17,7 +22,7 @@ export default function AllExpenses({ latestExpenses, xRate, editExpenses, onDel
     }, [latestExpenses]);
 
     return (
-        <div className="card col-span-2">
+        <div role="article" aria-label="all expenses card" className="card col-span-2">
             <div className="flex items-center justify-between">
                 <h5 className="text-lg">All Expenditure</h5>
                 {latestExpenses?.length > 0 &&

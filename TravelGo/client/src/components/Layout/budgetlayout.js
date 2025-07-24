@@ -193,7 +193,7 @@ export default function BudgetLayout() {
                             <span className="line-clamp-1 max-w-[130px]">{itineraryTitle}</span>
                             <span onClick={() => setOpenModal({ shown: true, mode: "itinerary", data: null })}
                                 className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
+                                <ion-icon data-testid="change itinerary" name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
                             </span>
                         </div>
                     </div>
@@ -203,7 +203,7 @@ export default function BudgetLayout() {
                         <div className="text-2xl font-semibold gap-1 flex">{currency.toUpperCase()}
                             <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
+                                <ion-icon data-testid="change currency" name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
                             </span>
                         </div>
                     </div>

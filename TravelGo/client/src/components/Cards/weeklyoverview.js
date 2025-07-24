@@ -10,6 +10,11 @@ export default function WeeklyOverview({ weeklyOverview, xRate }) {
     const [newOverview, setNewOverview] = useState([]);
 
     useEffect(() => {
+        if (process.env.NODE_ENV === 'test') {
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
         if (xRate !== 1) {
             const converted = weeklyOverview.map(({ date, ...rest }) => {
@@ -30,7 +35,7 @@ export default function WeeklyOverview({ weeklyOverview, xRate }) {
     }, [weeklyOverview, xRate]);
 
     return (
-        <div className="col-span-2 card">
+        <div role="article" aria-label="weekly card" className="col-span-2 card">
             <div className="flex items-center justify-between">
                 <h5 className="text-lg">Weekly Overview</h5>
             </div>

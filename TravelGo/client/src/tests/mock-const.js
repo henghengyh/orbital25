@@ -152,6 +152,7 @@ export const mockItinerary = [
 
 export const mockExpenses = [
     {
+        _id: "e1a",
         itineraryId: "2",
         title: "Hotel Stay at Traders Hotel",
         date: "2025-08-01",
@@ -162,6 +163,7 @@ export const mockExpenses = [
         notes: "2-night stay with breakfast"
     },
     {
+        _id: "e1b",
         itineraryId: "2",
         title: "Petronas Towers Entry",
         date: "2025-08-02",
@@ -172,6 +174,7 @@ export const mockExpenses = [
         notes: "Observation deck tickets"
     },
     {
+        _id: "e1c",
         itineraryId: "2",
         title: "Street Food at Jalan Alor",
         date: "2025-08-03",
@@ -182,6 +185,7 @@ export const mockExpenses = [
         notes: "Dinner for 2 including drinks"
     },
     {
+        _id: "e1d",
         itineraryId: "2",
         title: "Souvenirs from Central Market",
         date: "2025-08-01",
@@ -192,6 +196,7 @@ export const mockExpenses = [
         notes: "Local crafts and souvenirs"
     },
     {
+        _id: "e1f",
         itineraryId: "2",
         title: "Laundry Service",
         date: "2025-08-02",
@@ -202,6 +207,7 @@ export const mockExpenses = [
         notes: "Hotel laundry charges"
     },
     {
+        _id: "e1g",
         itineraryId: "2",
         title: "Shopping at Pavilion Mall",
         date: "2025-08-02",
@@ -212,6 +218,7 @@ export const mockExpenses = [
         notes: "Clothes and accessories"
     },
     {
+        _id: "e1h",
         itineraryId: "2",
         title: "Grab ride to Batu Caves",
         date: "2025-08-03",
@@ -223,8 +230,14 @@ export const mockExpenses = [
     },
 ];
 
+export const mockRecentExpenses = (mockExpenses) => [...mockExpenses].reverse().slice(0, 4);
+
+export const mockLatestExpenses = (mockExpenses) => [...mockExpenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+
 export const mockWeeklyOverview = (startOfWeek, mockExpenses) => {
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
+
+    if (!mockExpenses || !startOfWeek) return [];
 
     const days = Array.from({ length: 7 }).map((_, i) => {
         const date = new Date(startOfWeek);
@@ -268,7 +281,7 @@ export const mockWeeklyOverview = (startOfWeek, mockExpenses) => {
 
 
     // tabulate all expenses for each day in the week
-    weeklyOverview[0].transactions.forEach(tx => {
+    weeklyOverview[0]?.transactions.forEach(tx => {
         const txDate = new Date(tx.date).toISOString().split("T")[0];
         const matchingDay = days.find(d => d.date === txDate);
         if (!matchingDay) return;
