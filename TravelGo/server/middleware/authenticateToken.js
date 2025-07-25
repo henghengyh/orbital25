@@ -13,22 +13,22 @@ const jwt = require('jsonwebtoken');
  * @return {void}
  */
 const authenticateToken = (req, res, next) => {
-  // Get the token from the Authorization header
-  const authHeader = req.headers['authorization']; // Use req.header.Authorization to access the Authorization header
-  const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer <token>"
+    // Get the token from the Authorization header
+    const authHeader = req.headers['authorization']; // Use req.header.Authorization to access the Authorization header
+    const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer <token>"
 
-  if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
-  }
+    if (!token) {
+        return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
 
-  try {
-    // Verify the token
-    const verified = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = verified; // Attach the decoded user data to the request object
-    next(); // Proceed to the next middleware or route handler
-  } catch (err) {
-    res.status(403).json({ message: 'Invalid or expired token.' });
-  }
+    try {
+        // Verify the token
+        const verified = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = verified; // Attach the decoded user data to the request object
+        next(); // Proceed to the next middleware or route handler
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid or expired token.' });
+    }
 };
 
 module.exports = authenticateToken;

@@ -113,7 +113,6 @@ const searchPlaces = async (query, map, markers, setMarkers) => {
                     reject(new Error(`Search failed: ${status}`));
                 }
             });
-
         } catch (error) {
             console.error('Error searching places:', error);
             reject(error);
