@@ -7,17 +7,16 @@ export default function TransportRow({
     setShowDropdown,
     onLocationSelect,
     searchLocations,
-    placeholder
 }) {
     return (
-        <div className="flex gap-5 items-center">
-            <div className="w-36">
-                <h6 className="text-label">{label}:</h6>
-            </div>
+        <div className={`flex ${label === "Start Location" ? "gap-3" : "gap-5"} items-center`}>
+            <h6 className="text-label">{label}:</h6>
             <div className="flex-1 relative">
                 <input
                     type="text"
+                    name={label}
                     value={searchQuery}
+                    autoComplete="off"
                     onChange={(e) => {
                         setSearchQuery(e.target.value);
                         searchLocations(e.target.value, "location");
@@ -27,13 +26,13 @@ export default function TransportRow({
                             setShowDropdown(true);
                         }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder={placeholder}
+                    className="text-input w-full"
+                    placeholder={label.toLowerCase()}
                     required
                 />
-                
+
                 {showDropdown && searchResults.length > 0 && (
-                    <div className="absolute z-10 max-h-48 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg overflow-y-auto">
+                    <div className="absolute z-10 max-h-48 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg overflow-y-auto scrollbar">
                         {searchResults.map((location) => (
                             <div
                                 key={location.placeId}

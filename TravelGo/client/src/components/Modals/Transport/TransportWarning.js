@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../../utils/axiosInstance'; 
+import { useEffect, useState } from 'react';
+
+import axiosInstance from '../../../utils/axiosInstance';
 
 export default function TransportWarning({ activity }) {
-    const [warningData, setWarningData] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [warningData, setWarningData] = useState(null);
 
     useEffect(() => {
         const fetchTransportWarning = async () => {
             if (!activity) return;
 
-            if (!activity || activity.type !== 'Transport') {
-                return null;
-            }
+            if (!activity || activity.type !== 'Transport') return null;
 
             try {
                 setLoading(true);
@@ -21,7 +20,7 @@ export default function TransportWarning({ activity }) {
                     params: {
                         activity: JSON.stringify(activity)
                     }
-                });  
+                });
                 setWarningData(response.data.transportWarning);
             } catch (err) {
                 console.error('Error fetching transport warning:', err);
@@ -42,7 +41,7 @@ export default function TransportWarning({ activity }) {
         ) : null;
     }
 
-        if (error) {
+    if (error) {
         return (
             <div className="flex items-center gap-2 mt-3 p-2 bg-red-100 text-red-800 rounded-md">
                 <ion-icon name="alert-circle-outline" className="text-xl"></ion-icon>
