@@ -75,7 +75,7 @@ export default function Itinerary() {
     if (loading) return <Loading />;
 
     return (
-        <div className="start-block py-8">
+        <div className="start-block py-8 pb-6">
             {popup && <div className="error">{error}</div>}
             <ItineraryLayout
                 mode="edit"

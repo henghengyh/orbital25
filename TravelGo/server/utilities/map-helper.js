@@ -70,17 +70,17 @@ async function calculateTravelTime(startLoc, endLoc, mode, apiKey) {
     try {
         const origin = startLoc.getCoordinatesString();
         const destination = endLoc.getCoordinatesString();
-        
+
         //as our implementation has a different naming convention for modes
         //we map them to the Google Maps API equivalents
         const modeMapping = {
             'walk': 'walking',
-            'car': 'driving', 
+            'car': 'driving',
             'public': 'transit'
         };
-        
+
         const googleMode = modeMapping[mode] || 'driving';
-        
+
         const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
             params: {
                 origins: origin,
@@ -92,7 +92,7 @@ async function calculateTravelTime(startLoc, endLoc, mode, apiKey) {
         });
 
         const element = response.data.rows[0]?.elements[0];
-        
+
         if (element?.status === 'OK' && element.duration) {
             return Math.round(element.duration.value / 60);
         } else {
@@ -104,7 +104,7 @@ async function calculateTravelTime(startLoc, endLoc, mode, apiKey) {
     }
 }
 
-function transportActivityToMapData (activityData, activity, locationsForBounds, mapData) {
+function transportActivityToMapData(activityData, activity, locationsForBounds, mapData) {
     activityData.transport = {
         modeOfTransport: activity.transport.modeOfTransport,
         startLocation: activity.transport.startLoc ? {

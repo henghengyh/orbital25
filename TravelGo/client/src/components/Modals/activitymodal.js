@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+import axiosInstance from '../../utils/axiosInstance';
+import LocationRow from './LocationRow';
 import TransportModal from "../Modals/TransportModal";
 import TransportWarning from "../Modals/Transport/TransportWarning";
-import LocationRow from './LocationRow';
-import axiosInstance from '../../utils/axiosInstance';
 
 export default function ActivityModal({
     mode, activity, date, onClose, addActivity, editActivitiy, deleteActivity }) {
     const [activityName, setActivityName] = useState(activity?.activityName || "");
+    const [endLocation, setEndLocation] = useState(activity?.transport?.endLoc || "");
     const [endTime, setEndTime] = useState(activity?.endTime || "");
     const [error, setError] = useState("");
-    const [notes, setNotes] = useState(activity?.notes || "");
-    const [popup, setPopup] = useState(false);
-    const [startTime, setStartTime] = useState(activity?.startTime || "");
-    const [type, setType] = useState(activity?.type || "-");
-    const [modeOfTransport, setModeOfTransport] = useState(activity?.transport?.modeOfTransport || "");
-    const [startLocation, setStartLocation] = useState(activity?.transport?.startLoc || "");
-    const [endLocation, setEndLocation] = useState(activity?.transport?.endLoc || "");
+    const [location, setLocation] = useState(activity?.location || null);
     const [locationSearchQuery, setLocationSearchQuery] = useState('');
     const [locationSearchResults, setLocationSearchResults] = useState([]);
+    const [modeOfTransport, setModeOfTransport] = useState(activity?.transport?.modeOfTransport || "");
+    const [notes, setNotes] = useState(activity?.notes || "");
+    const [popup, setPopup] = useState(false);
     const [showLocationDropdown, setShowLocationDropdown] = useState(false);
-    const [location, setLocation] = useState(activity?.location || null);
+    const [startLocation, setStartLocation] = useState(activity?.transport?.startLoc || "");
+    const [startTime, setStartTime] = useState(activity?.startTime || "");
+    const [type, setType] = useState(activity?.type || "-");
 
     const edit = mode === "edit";
     const typeOfActivities = ["Meal", "Shopping", "Sightseeing", "Transport", "Other"];
@@ -47,6 +48,7 @@ export default function ActivityModal({
             setResults([]);
         }
     };
+
     const handleLocationSelect = (location) => {
         setLocation(location);
         setLocationSearchQuery(location.description);
@@ -72,7 +74,7 @@ export default function ActivityModal({
     }, [location]);
 
     return (
-        <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full h-full scrollbar overflow-auto">
             {popup && <div className="error">{error}</div>}
             <div className="flex items-center justify-between pl-5 pr-3 py-2">
                 <h5 className="text-xl font-semibold">{edit ? "Edit Activity" : "Add Activity"}</h5>
@@ -104,16 +106,16 @@ export default function ActivityModal({
                     />
                 </div>
                 <div className="pt-2 flex gap-5">
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 w-[33%]">
                         <h6 className="text-label">Date:</h6>
                         <input
                             type="text"
                             value={date}
                             disabled
-                            className="text-input w-[142px]"
+                            className="text-input w-full"
                         />
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 w-[33%]">
                         <label htmlFor="startTime" className="text-label">Start Time:</label>
                         <div className="flex">
                             <input
@@ -123,12 +125,12 @@ export default function ActivityModal({
                                 max={endTime ? endTime : undefined}
                                 value={startTime}
                                 required
-                                className="text-input w-[142px] cursor-text"
+                                className="text-input w-full cursor-text"
                                 onChange={(e) => setStartTime(e.target.value)}
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 w-[33%]">
                         <label htmlFor="endTime" className="text-label">End Time:</label>
                         <div className="flex">
                             <input
@@ -138,15 +140,17 @@ export default function ActivityModal({
                                 min={startTime ? startTime : undefined}
                                 value={endTime}
                                 required
-                                className="text-input w-[142px] cursor-text"
+                                className="text-input w-full cursor-text"
                                 onChange={(e) => setEndTime(e.target.value)}
                             />
                         </div>
                     </div>
                 </div>
-                <TransportWarning 
+
+                <TransportWarning
                     activity={activity}
                 />
+
                 <div className="flex gap-5 pt-4">
                     <h6 className="text-label">Type:</h6>
                     <select
@@ -164,7 +168,8 @@ export default function ActivityModal({
                         ))}
                     </select>
                 </div>
-                {type === "Transport" ? 
+
+                {type === "Transport" ?
                     <TransportModal
                         modeOfTransport={modeOfTransport}
                         setModeOfTransport={setModeOfTransport}
@@ -172,7 +177,7 @@ export default function ActivityModal({
                         setStartLocation={setStartLocation}
                         endLocation={endLocation}
                         setEndLocation={setEndLocation}
-                    /> : 
+                    /> :
                     <LocationRow
                         label="Location"
                         searchQuery={locationSearchQuery}
@@ -182,9 +187,9 @@ export default function ActivityModal({
                         setShowDropdown={setShowLocationDropdown}
                         onLocationSelect={handleLocationSelect}
                         searchLocations={(query) => searchLocations(query, setLocationSearchResults, setShowLocationDropdown, "end location")}
-                        placeholder="Search for location..."
                     />
                 }
+
                 <div className="flex flex-col gap-3 pt-2">
                     <h6 className="text-label">Notes:</h6>
                     <textarea
@@ -204,11 +209,13 @@ export default function ActivityModal({
                     ? <div className="flex gap-2 mt-7 mb-6 w-full h-10">
                         <button onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, location, notes, transport:{
-                                modeOfTransport,
-                                startLoc: startLocation,
-                                endLoc: endLocation
-                            } }));
+                            validInputCheck(() => editActivitiy(activity._id, {
+                                activityName, date: new Date(date), startTime, endTime, type, location, notes, transport: {
+                                    modeOfTransport,
+                                    startLoc: startLocation,
+                                    endLoc: endLocation
+                                }
+                            }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -224,7 +231,13 @@ export default function ActivityModal({
                         data-testid="activity add button"
                         onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, notes }));
+                            validInputCheck(() => addActivity({
+                                activityName, date: new Date(date), startTime, endTime, type, location, notes, transport: {
+                                    modeOfTransport,
+                                    startLoc: startLocation,
+                                    endLoc: endLocation
+                                }
+                            }));
                         }}
                         className="flex gap-2 mt-7 mb-6 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>

@@ -24,7 +24,7 @@ export default function MapsOverlaysSearchBar({
             <button
                 type="button"
                 onClick={() => {
-                    const filteredMarkers = markers.filter(marker => 
+                    const filteredMarkers = markers.filter(marker =>
                         marker.getTitle() === "Your Location" || marker.getLabel()
                     );
                     markers.forEach(marker => {

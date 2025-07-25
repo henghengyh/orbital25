@@ -23,7 +23,7 @@ const { searchPlaces, getPlaceDetails, transportActivityToMapData, otherActiviti
 router.get("/search-locations", authenticateToken, async (req, res) => {
     try {
         const { query } = req.query;
-        
+
         if (!query || query.trim().length < 2) {
             return res.status(400).json({ error: "Search query must be at least 2 characters" });
         }
@@ -45,7 +45,7 @@ router.get("/search-locations", authenticateToken, async (req, res) => {
 router.get("/location-details/:placeId", authenticateToken, async (req, res) => {
     try {
         const { placeId } = req.params;
-        
+
         const apiKey = process.env.GOOGLE_MAPS_API_KEY;
         if (!apiKey) {
             return res.status(500).json({ error: "Google Places API key not configured" });
@@ -66,10 +66,10 @@ router.get("/transport-warning", authenticateToken, async (req, res) => {
 
         const activitySchemaObject = new Activity(activity);
 
-            //TRANSPORT CHECK
+        //TRANSPORT CHECK
         if (activity.type !== 'Transport') {
-            return res.status(400).json({ 
-                error: "Transport warning is only available for Transport activities" 
+            return res.status(400).json({
+                error: "Transport warning is only available for Transport activities"
             });
         }
         const warningInfo = activitySchemaObject.transportWarning();
@@ -77,7 +77,7 @@ router.get("/transport-warning", authenticateToken, async (req, res) => {
             activityId: activity._id,
             activityName: activity.activityName,
             transportWarning: warningInfo
-        });        
+        });
 
     } catch (error) {
         console.error("Error getting transport warning:", error);
@@ -160,7 +160,7 @@ router.get("/itinerary-overlay/:itineraryId", authenticateToken, async (req, res
         if (locationsForBounds.length > 0) {
             const lats = locationsForBounds.map(loc => loc.lat);
             const lngs = locationsForBounds.map(loc => loc.lng);
-            
+
             mapData.bounds = {
                 north: Math.max(...lats),
                 south: Math.min(...lats),
