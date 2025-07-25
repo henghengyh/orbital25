@@ -1,0 +1,178 @@
+const axios = require('axios');
+
+/**
+ * Search for places using Google Maps API
+ * @param {string} query - Search query
+ * @param {string} apiKey - Google Maps API key
+ * @returns {Promise<Array>} - Array of place suggestions
+ */
+async function searchPlaces(query, apiKey) {
+    try {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/place/autocomplete/json', {
+            params: {
+                input: query,
+                key: apiKey,
+                types: 'establishment|geocode',
+                language: 'en'
+            }
+        });
+
+        return response.data.predictions.map(prediction => ({
+            placeId: prediction.place_id,
+            description: prediction.description,
+            mainText: prediction.structured_formatting.main_text,
+            secondaryText: prediction.structured_formatting.secondary_text
+        }));
+    } catch (error) {
+        console.error('Error searching places:', error);
+        throw new Error('Failed to search places');
+    }
+}
+
+/**
+ * Get place details by place ID
+ * @param {string} placeId - Google Place ID
+ * @param {string} apiKey - Google Maps API key
+ * @returns {Promise<Object>} - Place details
+ */
+async function getPlaceDetails(placeId, apiKey) {
+    try {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
+            params: {
+                place_id: placeId,
+                key: apiKey,
+                fields: 'name,formatted_address,geometry'
+            }
+        });
+
+        const place = response.data.result;
+        return {
+            name: place.name,
+            address: place.formatted_address,
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng
+        };
+    } catch (error) {
+        console.error('Error getting place details:', error);
+        throw new Error('Failed to get place details');
+    }
+}
+
+/**
+ * Calculate travel time between two locations using Google Distance Matrix API
+ * @param {Object} startLoc - Start location with coordinates
+ * @param {Object} endLoc - End location with coordinates  
+ * @param {String} mode - Mode of transport ('walking', 'driving', 'transit')
+ * @param {String} apiKey - Google Maps API key
+ * @returns {Promise<Number>} - Travel time in minutes
+ */
+async function calculateTravelTime(startLoc, endLoc, mode, apiKey) {
+    try {
+        const origin = startLoc.getCoordinatesString();
+        const destination = endLoc.getCoordinatesString();
+        
+        //as our implementation has a different naming convention for modes
+        //we map them to the Google Maps API equivalents
+        const modeMapping = {
+            'walk': 'walking',
+            'car': 'driving', 
+            'public': 'transit'
+        };
+        
+        const googleMode = modeMapping[mode] || 'driving';
+        
+        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+            params: {
+                origins: origin,
+                destinations: destination,
+                mode: googleMode,
+                key: apiKey,
+                units: 'metric'
+            }
+        });
+
+        const element = response.data.rows[0]?.elements[0];
+        
+        if (element?.status === 'OK' && element.duration) {
+            return Math.round(element.duration.value / 60);
+        } else {
+            throw new Error(`Unable to calculate travel time: ${element?.status}`);
+        }
+    } catch (error) {
+        console.error('Error calculating travel time:', error);
+        throw new Error('Failed to calculate travel time');
+    }
+}
+
+function transportActivityToMapData (activityData, activity, locationsForBounds, mapData) {
+    activityData.transport = {
+        modeOfTransport: activity.transport.modeOfTransport,
+        startLocation: activity.transport.startLoc ? {
+            name: activity.transport.startLoc.name,
+            address: activity.transport.startLoc.address,
+            coordinates: activity.transport.startLoc.coordinates ? {
+                lat: activity.transport.startLoc.coordinates.lat,
+                lng: activity.transport.startLoc.coordinates.lng
+            } : null
+        } : null,
+        endLocation: activity.transport.endLoc ? {
+            name: activity.transport.endLoc.name,
+            address: activity.transport.endLoc.address,
+            coordinates: activity.transport.endLoc.coordinates ? {
+                lat: activity.transport.endLoc.coordinates.lat,
+                lng: activity.transport.endLoc.coordinates.lng
+            } : null
+        } : null,
+        estimatedDuration: null,
+        actualDuration: null
+    };
+    if (activityData.transport.startLocation?.coordinates) {
+        locationsForBounds.push(activityData.transport.startLocation.coordinates);
+    }
+    if (activityData.transport.endLocation?.coordinates) {
+        locationsForBounds.push(activityData.transport.endLocation.coordinates);
+    }
+    mapData.stats.transportActivities++;
+}
+
+function otherActivitiesToMapData(activityData, activity, locationsForBounds, mapData) {
+    activityData.location = {
+        name: activity.location.name,
+        address: activity.location.address,
+        coordinates: activity.location.coordinates ? {
+            lat: activity.location.coordinates.lat,
+            lng: activity.location.coordinates.lng
+        } : null
+    };
+
+    if (activityData.location.coordinates) {
+        locationsForBounds.push(activityData.location.coordinates);
+        mapData.stats.activitiesWithLocation++;
+    }
+}
+
+function consecutiveActivitiesToMapData(previousActivity, activityData, mapData) {
+    mapData.routes.push({
+        from: {
+            activityId: previousActivity.id,
+            activityName: previousActivity.name,
+            coordinates: previousActivity.location.coordinates
+        },
+        to: {
+            activityId: activityData.id,
+            activityName: activityData.name,
+            coordinates: activityData.location.coordinates
+        },
+        sequence: mapData.routes.length + 1
+    });
+}
+
+
+module.exports = {
+    searchPlaces,
+    getPlaceDetails,
+    calculateTravelTime,
+    transportActivityToMapData,
+    otherActivitiesToMapData,
+    consecutiveActivitiesToMapData
+};

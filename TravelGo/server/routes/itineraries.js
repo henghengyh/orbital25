@@ -66,8 +66,8 @@ router.post("/", authenticateToken, async (req, res) => {
         // allow activities to be created along with the new itinerary
         if (Array.isArray(activities)) {
             for (const activityData of activities) {
-                const newActivity = Activity.newActivity(activityData);
-                if (!isValidActivity(newItinerary, newActivity)) {
+                const newActivity = await Activity.newActivity(activityData);
+                if (!(await isValidActivity(newItinerary, newActivity))) {
                     return res.status(400).json({ error: "Invalid activities" });
                 }
                 await newItinerary.addActivity(newActivity);
@@ -139,7 +139,7 @@ router.get("/search-itineraries", authenticateToken, async (req, res) => {
     }
 });
 
-/** Filter itineraries */
+/** Filter itineraries by start and end date*/
 router.get("/filter", authenticateToken, async (req, res) => {
     const user = req.user;
     const { start, end } = req.query;
@@ -232,8 +232,8 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
             return res.status(403).json({ error: "You do not have permission to access this itinerary" });
         }
 
-        const x = Activity.newActivity(req.body);
-        if (!isValidActivity(itinerary, x)) {
+        const x = await Activity.newActivity(req.body);
+        if (!( await isValidActivity(itinerary, x))) {
             return res.status(400).json({ error: "Invalid activity" });
         }
         await itinerary.addActivity(x);
@@ -257,18 +257,18 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         } else {
             const activity = await findActivityOr404(itinerary, req.params.activityId, res);
             if (!activity) return;
-
             const isSame = Object.keys(req.body)
                 .every(key => JSON.stringify(activity[key]) === JSON.stringify(req.body[key]));
+            const temp = await Activity.newActivity(req.body);
             if (!isSame) {
-                const temp = Activity.newActivity(req.body);
                 temp._id = activity._id;
-                if (!isValidActivity(itinerary, temp)) {
+                const isValid = await isValidActivity(itinerary, temp, activity);
+                if (!isValid) {
                     return res.status(400).json({ error: "Invalid activity" });
                 }
             }
-
-            await itinerary.updateActivity(activity, req.body);
+            console.log(temp.location);
+            const updatedItinerary = await itinerary.updateActivity(activity, temp);
 
             function timeToStart(activity, now = new Date()) {
                 const [hours, minutes] = activity.startTime.split(':').map(Number);
@@ -280,16 +280,18 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                 return diffHours;
             }
 
-            const duration = timeToStart(activity, new Date()).toFixed(2);
-            await itinerary.populate('user');
+            const updatedActivity = await findActivityOr404(updatedItinerary, req.params.activityId, res);
+
+            if (!updatedActivity) return;
+            const duration = timeToStart(updatedActivity, new Date()).toFixed(2);
+            await updatedItinerary.populate('user');
 
             try {
-                email.sendUpdateEmail(itinerary, activity, Math.floor(duration));
+                email.sendUpdateEmail(updatedItinerary, updatedActivity, Math.floor(duration));
             } catch (emailError) {
                 console.error("Error sending email:", emailError);
-                // At this point, we can still return the saved itinerary even if the email is invalid.
             }
-            return res.status(200).json({ itinerary, message: "Activity updated" });
+            return res.status(200).json({ itinerary: updatedItinerary, message: "Activity updated" });
         }
     } catch (error) {
         console.error("Error updating activity:", error);
