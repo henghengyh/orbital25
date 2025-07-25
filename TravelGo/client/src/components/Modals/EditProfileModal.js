@@ -32,10 +32,11 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
     const inputBox = (type, display, name, value) => {
         return (
             <div className="flex items-center mb-3">
-                <label className="w-40 mr-2">
+                <label htmlFor={`${display}`} className="w-40 mr-2">
                     {display.charAt(0).toUpperCase() + display.slice(1)}
                 </label>
                 <input
+                    id={display}
                     type={type}
                     name={name}
                     placeholder={"Enter new " + display}
@@ -52,6 +53,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave }) {
             <div className="flex items-center mb-3">
                 <label className="w-40 mr-2">{display.charAt(0).toUpperCase() + display.slice(1)}</label>
                 <select
+                    aria-label="gender"
                     name={name}
                     value={value}
                     onChange={handleChange}

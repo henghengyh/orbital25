@@ -35,6 +35,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
                 />
                 <button
                     type="button"
+                    aria-label="show hide"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 h-6 flex items-center no-underline hover:underline"
                     onClick={() => setShow(s => !s)}
                     tabIndex={-1}
@@ -50,17 +51,17 @@ export default function EditProfileModal({ isOpen, onClose, onSave, currentEmail
             const res = await onSave({ currentPassword, newPassword, confirmPassword });
             setSuccess(res.data.success);
             if (res.data.success) {
-                setTimeout(() => {
-                    setMessage("Password updated successfully!");
-                    setSuccess(false);
-                    onClose();
-                }, 1000);
+                setMessage(res.data.message);
             } else {
                 setMessage(res.data.message || "Error updating password");
             }
+            setTimeout(() => {
+                setMessage("");
+                setSuccess(false);
+                onClose();
+            }, 1000);
         } catch (err) {
-
-            setMessage(err.response?.data?.message || "Error updating password!!!!!");
+            setMessage(err.response?.data?.message || "Error updating password");
             setFeedback(err.response?.data?.feedback?.join(" ") || "");
             setSuccess(false);
         }

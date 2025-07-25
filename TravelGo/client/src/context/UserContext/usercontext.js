@@ -17,12 +17,12 @@ export default function UserProvider({ children }) {
         if (!token) return;
 
         axiosInstance.get("/users/getUserInfo")
-            .then((res) => {
+            .then(res => {
                 if (res.data && res.data.user) {
                     setUser(res.data.user);
                 }
             })
-            .catch((err) => {
+            .catch(err => {
                 if (err.response && err.response.status === 401) {
                     console.error("Unauthorized access, redirecting to login.");
                 }

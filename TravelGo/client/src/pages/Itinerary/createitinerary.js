@@ -13,8 +13,11 @@ export default function CreateItinerary() {
     const addItinerary = async (data) => {
         axiosInstance
             .post('/itineraries', data)
-            .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
-            .catch((err) => { console.error(err); setError(err.response.data.error); });
+            .then(res => navigate('/dashboard', { state: { message: res.data.message } }))
+            .catch(err => {
+                console.error("Error adding itinerary:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            });
     }
 
     useEffect(() => {
