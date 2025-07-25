@@ -50,19 +50,32 @@ describe("Activity layout component", () => {
                 expect(screen.getByLabelText(/end time:/i)).toBeInTheDocument();
                 expect(screen.getByRole('combobox', { name: /type/i })).toBeInTheDocument();
                 expect(screen.getByRole('combobox', { name: /type/i })).toHaveDisplayValue('Select type');
+                expect(screen.getByPlaceholderText('location')).toBeInTheDocument();
                 expect(screen.getByPlaceholderText(/notes/i)).toBeInTheDocument();
                 expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
             });
+
+            userEvent.selectOptions(screen.getByRole('combobox', { name: /type/i }), 'Transport');
+
+            await waitFor(() => {
+                expect(screen.getByRole('combobox', { name: /mode of transport/i })).toBeInTheDocument();
+                expect(screen.getByRole('combobox', { name: /mode of transport/i })).toHaveDisplayValue('Select mode of transport');
+                expect(screen.getByPlaceholderText('start location')).toBeInTheDocument();
+                expect(screen.getByPlaceholderText('end location')).toBeInTheDocument();
+                expect(screen.queryByPlaceholderText('location')).not.toBeInTheDocument();
+            })
         });
 
         test("renders activity modal with info when edit button clicked", async () => {
             mockParams.mockReturnValue({ id: 2 });
+            axiosInstance.get.mockResolvedValueOnce({ data: { transportWarning: { travelDurationPass: true } } });
 
             renderWithAuth(<ActivityLayout date="2025-08-01" activities={mockItinerary[1].activities} />);
             await waitFor(() => expect(screen.getByText(/1st aug 2025/i)).toBeInTheDocument());
             const card = screen.getAllByRole('article', { name: /activity card/i })[0];
             userEvent.hover(card);
             userEvent.click(within(card).getByRole('button', { name: /edit activity/i }));
+            await waitFor(() => expect(screen.queryByText('Checking transport details...')).not.toBeInTheDocument());
 
             await waitFor(() => {
                 expect(screen.getByRole('heading', { name: /edit activity/i })).toBeInTheDocument();
@@ -71,10 +84,34 @@ describe("Activity layout component", () => {
                 expect(screen.getByLabelText(/start time:/i)).toHaveDisplayValue('09:00');
                 expect(screen.getByLabelText(/end time:/i)).toHaveDisplayValue('13:00');
                 expect(screen.getByRole('combobox', { name: /type/i })).toHaveDisplayValue('Transport');
+                expect(screen.getByRole('combobox', { name: /mode of transport/i })).toHaveDisplayValue('Public Transport');
+                expect(screen.getByPlaceholderText('start location')).toHaveDisplayValue('Golden Mile Tower, Singapore');
+                expect(screen.getByPlaceholderText('end location')).toHaveDisplayValue('Berjaya Times Square, Kuala Lumpur');
                 expect(screen.getByPlaceholderText(/notes/i)).toHaveDisplayValue('Express coach from Singapore');
                 expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
                 expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
             });
+        });
+
+        test("renders warnings on activity modal when timings are off from recommended time", async () => {
+            mockParams.mockReturnValue({ id: 2 });
+            axiosInstance.get.mockResolvedValueOnce({
+                data: {
+                    transportWarning: {
+                        message: "Warning: Your allocated time (60 min) differs from recommended travel time (8 min) by 52 minutes.",
+                        travelDurationPass: false,
+                    }
+                }
+            });
+
+            renderWithAuth(<ActivityLayout date="2025-08-01" activities={mockItinerary[1].activities} />);
+            await waitFor(() => expect(screen.getByText(/1st aug 2025/i)).toBeInTheDocument());
+            const card = screen.getAllByRole('article', { name: /activity card/i })[0];
+            userEvent.hover(card);
+            userEvent.click(within(card).getByRole('button', { name: /edit activity/i }));
+            await waitFor(() => expect(screen.queryByText('Checking transport details...')).not.toBeInTheDocument());
+
+            await waitFor(() => expect(screen.getByText('Warning: Your allocated time (60 min) differs from recommended travel time (8 min) by 52 minutes.')).toBeInTheDocument());
         });
     });
 
@@ -107,7 +144,10 @@ describe("Activity layout component", () => {
                 await waitFor(() => expect(screen.getByText(/1st aug 2025/i)).toBeInTheDocument());
             };
 
-            beforeEach(() => mockParams.mockReturnValue({ id: undefined }));
+            beforeEach(() => {
+                mockParams.mockReturnValue({ id: undefined });
+                axiosInstance.get.mockResolvedValueOnce({ data: { transportWarning: { travelDurationPass: true } } });
+            });
 
             test("activity is added when add button is clicked", async () => {
                 await renderLayout({ activities: [sampleActivity] });
@@ -213,29 +253,13 @@ describe("Activity layout component", () => {
                 await waitFor(() => expect(screen.getByText(/1st aug 2025/i)).toBeInTheDocument());
             };
 
-            beforeEach(() => mockParams.mockReturnValue({ id: 2 }));
+            beforeEach(() => {
+                mockParams.mockReturnValue({ id: 2 });
+                axiosInstance.get.mockResolvedValueOnce({ data: { transportWarning: { travelDurationPass: true } } });
+            });
 
             test("activity is added when add button is clicked", async () => {
-                const newActivities = [
-                    {
-                        _id: "2a",
-                        activityName: "Bus Ride",
-                        date: "2025-08-01",
-                        startTime: "09:00",
-                        endTime: "13:00",
-                        type: "Transport",
-                        notes: "Express coach from Singapore",
-                    },
-                    {
-                        _id: "2b",
-                        activityName: "lunch",
-                        date: "2025-08-01",
-                        startTime: "13:30",
-                        endTime: "14:00",
-                        type: "Meal",
-                        notes: "",
-                    },
-                ];
+                const newActivities = [mockItinerary[1].activities[0], mockItinerary[1].activities[1]];
                 axiosInstance.post.mockResolvedValueOnce({
                     data: {
                         itinerary: { _id: "2", activities: newActivities },
@@ -263,17 +287,7 @@ describe("Activity layout component", () => {
             });
 
             test("activity is updated when save button is clicked", async () => {
-                const newActivities = [
-                    {
-                        _id: "2a",
-                        activityName: "Bus Ride",
-                        date: "2025-08-01",
-                        startTime: "09:00",
-                        endTime: "13:00",
-                        type: "Transport",
-                        notes: "big and lux bus",
-                    },
-                ];
+                const newActivities = [{ ...mockItinerary[1].activities[0], notes: "big and lux bus" }];
                 axiosInstance.put.mockResolvedValueOnce({
                     data: {
                         itinerary: { _id: "2", activities: newActivities },
