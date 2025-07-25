@@ -10,6 +10,7 @@ export default function Register() {
     const [error, setError] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState("");
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,7 +19,6 @@ export default function Register() {
         }
     }, [error]);
 
-    // send a POST request to backend server with 3 info: username, email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
@@ -34,8 +34,7 @@ export default function Register() {
                 email: email,
                 password: password,
             })
-            .then((res) => {
-                console.log(res.data);
+            .then(res => {
                 if (res.data.success) {
                     navigate("/", {
                         state: {
@@ -45,8 +44,13 @@ export default function Register() {
                     });
                 }
             })
-            .catch((err) => {
-                const message = ("Password too weak. " + err.response?.data?.feedback?.[0]) || err.response?.data?.message || "Something went wrong. Please try again.";
+            .catch(err => {
+                let message = "";
+                if (err.response?.data?.feedback) {
+                    message = "Password too weak. " + err.response?.data?.feedback;
+                } else {
+                    message = err.response?.data?.message || "Something went wrong. Please try again.";
+                }
                 console.error("Registration error:", message);
                 setError(message);
             });

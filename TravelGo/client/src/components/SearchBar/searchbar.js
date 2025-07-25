@@ -21,9 +21,9 @@ export default function SearchBar({ value, onChange, handleSearch, onClearSearch
                     <ion-icon name="close"></ion-icon>
                 </p>
             }
-            <p onClick={handleSearch} className="place-items-center grid text-slate-400 cursor-pointer hover:text-black">
+            <button aria-label="search" onClick={handleSearch} className="place-items-center grid text-slate-400 cursor-pointer hover:text-black">
                 <ion-icon name="search"></ion-icon>
-            </p>
+            </button>
         </div>
     );
 }

@@ -33,7 +33,6 @@ export default function Login() {
         }
     }, [location.state, error])
 
-    // send a POST request to backend server with 2 info: email & password
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
@@ -48,7 +47,7 @@ export default function Login() {
                 email: email,
                 password: password,
             })
-            .then((res) => {
+            .then(res => {
                 if (res.data) {
                     localStorage.setItem("token", res.data.token);
                     setAuth({
@@ -60,7 +59,7 @@ export default function Login() {
                     navigate("/dashboard");
                 }
             })
-            .catch((err) => {
+            .catch(err => {
                 const message = err.response?.data?.message || "Something went wrong.";
                 console.error("Registration error:", message);
                 setError(message);

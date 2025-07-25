@@ -31,8 +31,8 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
     const isValidActivity = (data) => {
         let counter = 0;
-        for (const exisitng of todayActivities) {
-            if (data._id.toString() === exisitng._id.toString()) continue;
+        for (const existing of todayActivities) {
+            if (data._id.toString() === existing._id.toString()) continue;
 
             const parseDateTime = (date, timeStr) => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
@@ -41,14 +41,14 @@ export default function ActivityLayout({ date, activities, setActivities, update
                 return result;
             }
 
-            const existingStart = parseDateTime(date, exisitng.startTime);
-            const existingEnd = parseDateTime(date, exisitng.endTime);
+            const existingStart = parseDateTime(date, existing.startTime);
+            const existingEnd = parseDateTime(date, existing.endTime);
             const activityStart = parseDateTime(date, data.startTime);
             const activityEnd = parseDateTime(date, data.endTime);
 
             const overlap = activityStart < existingEnd && activityEnd > existingStart;
             if (overlap) {
-                if (data.type !== "Other" && exisitng.type !== "Other") return false;
+                if (data.type !== "Other" && existing.type !== "Other") return false;
                 counter++;
             }
         }
@@ -71,8 +71,11 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .post(`/itineraries/${id}/activities`, data)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error adding activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 
@@ -91,8 +94,11 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .put(`/itineraries/${id}/activities/${activityId}`, data)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error updating activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 
@@ -106,8 +112,11 @@ export default function ActivityLayout({ date, activities, setActivities, update
 
         axiosInstance
             .delete(`/itineraries/${id}/activities/${activityId}`)
-            .then((res) => { updateActivities(); setMessage(res.data.message); })
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => { updateActivities(); setMessage(res.data.message); })
+            .catch(err => {
+                console.error("Error deleting activity:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, type: "add", data: null, date: date }));
     }
 
@@ -138,7 +147,7 @@ export default function ActivityLayout({ date, activities, setActivities, update
                     : (<div className="error bg-[#dcf0fa] text-orange-600">{message}</div>))}
             <div className="p-2 bg-slate-200 rounded flex justify-between">
                 <span className="font-semibold justify-center items-center flex">{moment(date).format("Do MMM YYYY")}</span>
-                <div
+                <div data-testid="add-button"
                     onClick={() => setOpenModal({ shown: true, type: "add", data: null, date: date })}
                     className="flex justify-center items-center gap-[2px] rounded p-1 hover:bg-slate-300 cursor-pointer"
                 >
@@ -148,8 +157,8 @@ export default function ActivityLayout({ date, activities, setActivities, update
             </div>
 
             <div className="flex flex-col gap-2 mt-1 overflow-y-auto scrollbar flex-1">
-                {todayActivities.length > 0
-                    ? todayActivities.map((activity) => (
+                {todayActivities?.length > 0
+                    ? todayActivities?.map((activity) => (
                         <ActivityCard
                             key={activity._id}
                             activityName={activity.activityName}

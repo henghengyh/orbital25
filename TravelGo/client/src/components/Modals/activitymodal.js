@@ -30,7 +30,7 @@ export default function ActivityModal({
         if (!endTime || endTime <= startTime) { setError("Invalid End Time"); return; }
         if (!type || type === "-") { setError("Invalid Activity Type"); return; }
         fn();
-    }
+    };
 
     const searchLocations = async function (query, setResults, setShowDropdown, name) {
         if (query.length < 2) {
@@ -114,9 +114,10 @@ export default function ActivityModal({
                         />
                     </div>
                     <div className="flex flex-col gap-3">
-                        <h6 className="text-label">Start Time:</h6>
+                        <label htmlFor="startTime" className="text-label">Start Time:</label>
                         <div className="flex">
                             <input
+                                id="startTime"
                                 type="time"
                                 name="startTime"
                                 max={endTime ? endTime : undefined}
@@ -128,9 +129,10 @@ export default function ActivityModal({
                         </div>
                     </div>
                     <div className="flex flex-col gap-3">
-                        <h6 className="text-label">End Time:</h6>
+                        <label htmlFor="endTime" className="text-label">End Time:</label>
                         <div className="flex">
                             <input
+                                id="endTime"
                                 type="time"
                                 name="endTime"
                                 min={startTime ? startTime : undefined}
@@ -148,6 +150,7 @@ export default function ActivityModal({
                 <div className="flex gap-5 pt-4">
                     <h6 className="text-label">Type:</h6>
                     <select
+                        aria-label="type"
                         value={type}
                         required
                         onChange={(e) => setType(e.target.value)}
@@ -185,6 +188,7 @@ export default function ActivityModal({
                 <div className="flex flex-col gap-3 pt-2">
                     <h6 className="text-label">Notes:</h6>
                     <textarea
+                        data-testid="activity notes"
                         type="text"
                         placeholder="notes"
                         name="notes"
@@ -197,8 +201,8 @@ export default function ActivityModal({
                 </div>
 
                 {edit
-                    ? <div className="flex gap-2 mt-7 mb-6  w-full h-10">
-                        <div onClick={(e) => {
+                    ? <div className="flex gap-2 mt-7 mb-6 w-full h-10">
+                        <button onClick={(e) => {
                             e.preventDefault();
                             validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, location, notes, transport:{
                                 modeOfTransport,
@@ -209,14 +213,15 @@ export default function ActivityModal({
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
                             Save
-                        </div>
-                        <div onClick={(e) => { e.preventDefault(); deleteActivity(activity._id) }}
+                        </button>
+                        <button onClick={(e) => { e.preventDefault(); deleteActivity(activity._id) }}
                             className="itinerary-button bg-red-200 hover:bg-red-300">
                             <ion-icon name="trash"></ion-icon>
                             Delete
-                        </div>
+                        </button>
                     </div>
-                    : <div
+                    : <button
+                        data-testid="activity add button"
                         onClick={(e) => {
                             e.preventDefault();
                             validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, notes }));
@@ -224,7 +229,7 @@ export default function ActivityModal({
                         className="flex gap-2 mt-7 mb-6 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>
                         Add
-                    </div>}
+                    </button>}
             </div>
         </div >
     )

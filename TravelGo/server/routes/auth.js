@@ -55,7 +55,6 @@ router.post("/register", async (req, res) => {
 
         // Check password strength using zxcvbn API embedded in Node.js
         const result = zxcvbn(password);
-        console.log('Password strength score:', result.score);
         if (result.score < 2) {
             return res.status(400).json({ success: false, message: 'Password is too weak', feedback: result.feedback.suggestions });
         }
@@ -233,7 +232,7 @@ router.post('/update-password', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, message: 'New passwords do not match' });
         } else if (currentPassword === newPassword) {
             return res.status(400).json({ success: false, message: 'New password cannot be the same as the current password' });
-        } else if (!( await bcrypt.compare(currentPassword, isUser.password))) {
+        } else if (!(await bcrypt.compare(currentPassword, isUser.password))) {
             return res.status(400).json({ success: false, message: 'Current password is incorrect' });
         }
 
@@ -258,11 +257,10 @@ router.post('/upload-profile-photo', authenticateToken, upload.single('photo'), 
     try {
         const user = req.user;
         const isUser = await User.findOne({ _id: user._id });
-        console.log('File received:', req.file);
         if (isUser.profilePhotoPublicId) {
             await cloudinary.uploader.destroy(isUser.profilePhotoPublicId);
         }
-        console.log('Uploading new profile photo...');
+
         const streamUpload = (buffer) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
@@ -275,15 +273,12 @@ router.post('/upload-profile-photo', authenticateToken, upload.single('photo'), 
                 streamifier.createReadStream(buffer).pipe(stream);
             });
         };
-        console.log('Stream upload function created, uploading...');
         const result = await streamUpload(req.file.buffer);
-        console.log('Upload result:', result);
+
         isUser.profilePhoto = result.secure_url;
         isUser.profilePhotoPublicId = result.public_id;
 
         await isUser.save();
-        console.log('Profile photo uploaded successfully:', isUser.profilePhoto);
-
         res.json({ success: true, profilePhoto: isUser.profilePhoto });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' });
@@ -316,7 +311,7 @@ router.post('/update-email-signup', authenticateToken, async (req, res) => {
         const user = req.user;
         const isUser = await User.findOne({ _id: user._id });
         isUser.emailSignUp = req.body.emailSignUp;
-        
+
         await isUser.save();
         res.json({ success: true, updatedUser: isUser });
     } catch (error) {

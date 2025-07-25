@@ -41,23 +41,23 @@ export default function BudgetLayout() {
     useEffect(() => {
         axiosInstance
             .get(`/budget/${id}`)
-            .then((res) => { setItineraryTitle(res.data.budget?.[0].itineraryTitle); setBudget(res.data.budget?.[0].budget) })
-            .catch((err) => (console.error(err.error)));
+            .then(res => { setItineraryTitle(res.data.budget?.[0].itineraryTitle); setBudget(res.data.budget?.[0].budget) })
+            .catch(err => console.error("Error getting budget:", err.response?.data?.message || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/all-expenses`)
             .then(res => setTotalExpenses(totalSum(res.data.allExpenses)))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting all expenses:", err.response?.data?.error || "Something went wrong"));
     }, [id]);
 
     const changeItinerary = (id) => {
         axiosInstance
             .get(`/budget/${id}`)
-            .then((res) => {
+            .then(res => {
                 if (res.data?.budget?.[0]?.budget) navigate(`/budget/${id}`)
                 else navigate('/budget');
             })
-            .catch((err) => console.error(err.message))
+            .catch(err => console.error("Error checking if budget is set for this itinerary:", err.response?.data?.message || "Something went wrong"))
             .finally(() => setOpenModal({ shown: false, mode: "add", data: null }));
     };
 
@@ -65,7 +65,10 @@ export default function BudgetLayout() {
         axiosInstance
             .put(`/budget/${id}`, amt)
             .then(res => { setBudget(res.data.budget); setMessage(res.data.message); })
-            .catch(err => { console.error(err); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error updating budget", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -83,27 +86,27 @@ export default function BudgetLayout() {
         axiosInstance
             .get(`/expenses/${id}/recent-expenses`)
             .then(res => setRecentExpenses(res.data?.recentExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting recent expenses", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/weekly-overview`)
             .then(res => setWeeklyOverview(res.data?.weeklyOverview))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting weekly overview:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/latest-expenses`)
             .then(res => setLatestExpenses(res.data?.latestExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting latest expenses:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/expenses-breakdown`)
             .then(res => setBreakdown(res.data?.expensesBreakdown))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting expenses breakdown:", err.response?.data?.error || "Something went wrong"));
 
         axiosInstance
             .get(`/expenses/${id}/split-expenses`)
             .then(res => setSplitExpenses(res.data?.splitExpenses))
-            .catch(err => console.error(err.error));
+            .catch(err => console.error("Error getting split expenses:", err.response?.data?.error || "Something went wrong"));
     }, [id]);
 
     useEffect(() => {
@@ -118,7 +121,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error adding expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -132,7 +138,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error updating expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -144,7 +153,10 @@ export default function BudgetLayout() {
                 setMessage(res.data.message);
                 fetchExpensesInfo();
             })
-            .catch(err => { console.error(err.error); setError(err.response.data.error); })
+            .catch(err => {
+                console.error("Error deleting expenses:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => setOpenModal({ shown: false, mode: "budget", data: null }));
     };
 
@@ -181,7 +193,7 @@ export default function BudgetLayout() {
                             <span className="line-clamp-1 max-w-[130px]">{itineraryTitle}</span>
                             <span onClick={() => setOpenModal({ shown: true, mode: "itinerary", data: null })}
                                 className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
+                                <ion-icon data-testid="change itinerary" name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
                             </span>
                         </div>
                     </div>
@@ -191,7 +203,7 @@ export default function BudgetLayout() {
                         <div className="text-2xl font-semibold gap-1 flex">{currency.toUpperCase()}
                             <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <ion-icon name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
+                                <ion-icon data-testid="change currency" name="chevron-down" style={{ height: "20px", width: "20px" }}></ion-icon>
                             </span>
                         </div>
                     </div>
@@ -228,10 +240,10 @@ export default function BudgetLayout() {
 
                 <div onClick={() => setOpenModal({ shown: true, mode: "add", data: null })}
                     className="mr-6 items-center justify-center flex p-4 bg-white shadow-md text-gray-700 hover:bg-purple-50 hover:text-purple-500 cursor-pointer rounded-xl">
-                    <div className="items-center flex gap-1">
+                    <button className="items-center flex gap-1">
                         <ion-icon name="logo-usd" style={{ height: "20px", width: "20px" }}></ion-icon>
                         <span className="text-md font-semibold">Add Expenses</span>
-                    </div>
+                    </button>
                 </div>
             </div>
 
