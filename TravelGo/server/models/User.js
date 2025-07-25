@@ -28,12 +28,12 @@ const UserSchema = new mongoose.Schema({
         dateOfBirth: { type: Date, default: null },
         location: { type: String, default: "" },
     },
-    friendsWith: {type: [String], default: []},
+    friendsWith: { type: [String], default: [] },
     emailSignUp: { type: Boolean, default: true },
 }, {
     // SECURITY! To remove the password field from the response
     toJSON: {
-        transform: function(_, ret) {
+        transform: function (_, ret) {
             delete ret.password;
             return ret;
         }
@@ -56,18 +56,18 @@ UserSchema.pre("save", async function (next) {
 
 /** STATIC METHODS */
 
-UserSchema.statics.listAllUsers = function() {
+UserSchema.statics.listAllUsers = function () {
     return this.find({});
 };
 
-UserSchema.statics.findByEmail = function(email) {
+UserSchema.statics.findByEmail = function (email) {
     if (typeof email === "object" && email.email) {
         return this.findOne({ email: email.email });
     }
     return this.findOne({ email });
 };
 
-UserSchema.statics.findById = function(id) {
+UserSchema.statics.findById = function (id) {
     if (typeof id === "object" && id._id) {
         return this.findOne({ _id: id._id });
     }

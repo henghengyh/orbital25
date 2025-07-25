@@ -5,7 +5,7 @@ import Navbar from "../Navbar/navbar";
 
 export default function Layout() {
     const { user } = useUser();
-    
+
     return (
         <>
             <Navbar user={user} />

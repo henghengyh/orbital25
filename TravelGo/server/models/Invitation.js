@@ -10,7 +10,7 @@ const InvitationSchema = new mongoose.Schema({
     token: String,
     status: {
         type: String,
-        enum: typeOfActivities, 
+        enum: typeOfActivities,
         default: 'Pending'
     },
     createdAt: { type: Date, default: Date.now }

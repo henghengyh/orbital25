@@ -17,6 +17,7 @@ export const mockUser1 = {
     friendsWith: ['456', '789'],
     emailSignUp: true,
 };
+
 export const mockUser2 = {
     _id: '456',
     name: 'janedoe',
@@ -34,6 +35,7 @@ export const mockUser2 = {
     friendsWith: ['123'],
     emailSignUp: true,
 };
+
 export const mockUser3 = {
     _id: '789',
     name: 'alexwander',
@@ -84,7 +86,23 @@ export const mockItinerary = [
                 startTime: "09:00",
                 endTime: "13:00",
                 type: "Transport",
+                location: null,
                 notes: "Express coach from Singapore",
+                transport: {
+                    recommendedTravelTime: 240,
+                    modeOfTransport: "public transport",
+                    startLoc: {
+                        placeId: "ChIJc1KjzX0Z2jERzH1FvKuk4gI",
+                        description: "Golden Mile Tower, Singapore",
+                        coordinates: { lat: 1.3039, lng: 103.8645 }
+                    },
+                    endLoc: {
+                        placeId: "ChIJqz5vJ28z3TERaMOmLt8hM0A",
+                        description: "Berjaya Times Square, Kuala Lumpur",
+                        coordinates: { lat: 3.1412, lng: 101.7109 }
+                    },
+                    travelDurationPass: true
+                },
             },
             {
                 _id: "2b",
@@ -93,7 +111,23 @@ export const mockItinerary = [
                 startTime: "14:00",
                 endTime: "14:30",
                 type: "Transport",
+                location: null,
                 notes: "Hilton KL",
+                transport: {
+                    recommendedTravelTime: 15,
+                    modeOfTransport: "walk",
+                    startLoc: {
+                        placeId: "ChIJqz5vJ28z3TERaMOmLt8hM0A",
+                        description: "Berjaya Times Square",
+                        coordinates: { lat: 3.1412, lng: 101.7109 }
+                    },
+                    endLoc: {
+                        placeId: "ChIJ2T7Axtcz3TERbb0xk-KPgZs",
+                        description: "Hilton Kuala Lumpur",
+                        coordinates: { lat: 3.1357, lng: 101.6861 }
+                    },
+                    travelDurationPass: true
+                },
             },
             {
                 _id: "2c",
@@ -102,7 +136,19 @@ export const mockItinerary = [
                 startTime: "19:00",
                 endTime: "20:30",
                 type: "Meal",
+                location: {
+                    placeId: "ChIJDdLIoZcz3TERQuFE5_fD4tk",
+                    description: "Jalan Alor Night Market, Bukit Bintang",
+                    coordinates: { lat: 3.1456, lng: 101.7080 }
+                },
                 notes: "Try satay and char kway teow",
+                transport: {
+                    recommendedTravelTime: null,
+                    modeOfTransport: null,
+                    startLoc: null,
+                    endLoc: null,
+                    travelDurationPass: true
+                },
             }
         ],
         notes: "Relaxing city trip"
@@ -125,7 +171,23 @@ export const mockItinerary = [
                 startTime: "10:00",
                 endTime: "14:00",
                 type: "Transport",
+                location: null,
                 notes: "Flight SQ938",
+                transport: {
+                    recommendedTravelTime: 240,
+                    modeOfTransport: "public",
+                    startLoc: {
+                        placeId: "ChIJ7aVxnOTHlzARxKIntFtakKo",
+                        description: "Changi Airport, Singapore",
+                        coordinates: { lat: 1.3644, lng: 103.9915 }
+                    },
+                    endLoc: {
+                        placeId: "ChIJ1zVI2n5r0i0R3TSZ8JBCFfQ",
+                        description: "Ngurah Rai International Airport, Bali",
+                        coordinates: { lat: -8.7482, lng: 115.1675 }
+                    },
+                    travelDurationPass: true
+                },
             },
             {
                 _id: "3b",
@@ -134,7 +196,19 @@ export const mockItinerary = [
                 startTime: "09:00",
                 endTime: "12:00",
                 type: "Sightseeing",
+                location: {
+                    placeId: "ChIJZ33aA1Oe0i0RqHw_YvDKUYY",
+                    description: "Tegalalang Rice Terrace, Ubud",
+                    coordinates: { lat: -8.4355, lng: 115.2795 }
+                },
                 notes: "Photography session",
+                transport: {
+                    recommendedTravelTime: null,
+                    modeOfTransport: null,
+                    startLoc: null,
+                    endLoc: null,
+                    travelDurationPass: true
+                },
             },
             {
                 _id: "3c",
@@ -142,8 +216,20 @@ export const mockItinerary = [
                 date: "2025-09-13",
                 startTime: "11:00",
                 endTime: "17:00",
-                type: "Leisure",
+                type: "Sightseeing",
+                location: {
+                    placeId: "ChIJOfFv2ltz0i0R07DE9RX7zYQ",
+                    description: "Seminyak Beach, Bali",
+                    coordinates: { lat: -8.6914, lng: 115.1629 }
+                },
                 notes: "Seminyak beach",
+                transport: {
+                    recommendedTravelTime: null,
+                    modeOfTransport: null,
+                    startLoc: null,
+                    endLoc: null,
+                    travelDurationPass: true
+                },
             }
         ],
         notes: "Escape from city life",

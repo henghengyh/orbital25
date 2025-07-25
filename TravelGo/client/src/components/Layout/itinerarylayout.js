@@ -139,7 +139,7 @@ export default function ItineraryLayout({ mode, itinerary, addItinerary, editIti
                     <div onClick={() => navigate('/dashboard')} className="cursor-pointer rounded-full hover:bg-slate-200">
                         <ion-icon
                             name="close"
-                            style={{ alignItems: "center", display: "flex", height: "20px", width: "20px" }}
+                            style={{ alignItems: "center", display: "flex", height: "25px", width: "25px" }}
                         />
                     </div>
                 </div>

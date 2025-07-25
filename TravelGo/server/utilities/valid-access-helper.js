@@ -1,8 +1,6 @@
 /** valid-access-helper.js
  * This file contains helper functions for the TravelGo server routes.
  */
-
-
 function hasAccessToItinerary(itinerary, user) {
     if (itinerary.user._id.equals(user._id)) return true;
     if (Array.isArray(itinerary.collaborators)) {
