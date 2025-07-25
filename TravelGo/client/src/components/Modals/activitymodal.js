@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+import axiosInstance from '../../utils/axiosInstance';
+import LocationRow from './LocationRow';
 import TransportModal from "../Modals/TransportModal";
 import TransportWarning from "../Modals/Transport/TransportWarning";
-import LocationRow from './LocationRow';
-import axiosInstance from '../../utils/axiosInstance';
 
 export default function ActivityModal({
     mode, activity, date, onClose, addActivity, editActivitiy, deleteActivity }) {
@@ -146,7 +147,7 @@ export default function ActivityModal({
                     </div>
                 </div>
 
-                <TransportWarning 
+                <TransportWarning
                     activity={activity}
                 />
 
@@ -168,7 +169,7 @@ export default function ActivityModal({
                     </select>
                 </div>
 
-                {type === "Transport" ? 
+                {type === "Transport" ?
                     <TransportModal
                         modeOfTransport={modeOfTransport}
                         setModeOfTransport={setModeOfTransport}
@@ -176,7 +177,7 @@ export default function ActivityModal({
                         setStartLocation={setStartLocation}
                         endLocation={endLocation}
                         setEndLocation={setEndLocation}
-                    /> : 
+                    /> :
                     <LocationRow
                         label="Location"
                         searchQuery={locationSearchQuery}
@@ -208,11 +209,13 @@ export default function ActivityModal({
                     ? <div className="flex gap-2 mt-7 mb-6 w-full h-10">
                         <button onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => editActivitiy(activity._id, { activityName, date: new Date(date), startTime, endTime, type, location, notes, transport:{
-                                modeOfTransport,
-                                startLoc: startLocation,
-                                endLoc: endLocation
-                            } }));
+                            validInputCheck(() => editActivitiy(activity._id, {
+                                activityName, date: new Date(date), startTime, endTime, type, location, notes, transport: {
+                                    modeOfTransport,
+                                    startLoc: startLocation,
+                                    endLoc: endLocation
+                                }
+                            }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -228,11 +231,13 @@ export default function ActivityModal({
                         data-testid="activity add button"
                         onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => addActivity({ activityName, date: new Date(date), startTime, endTime, type, location, notes, transport:{
-                                modeOfTransport,
-                                startLoc: startLocation,
-                                endLoc: endLocation
-                            } }));
+                            validInputCheck(() => addActivity({
+                                activityName, date: new Date(date), startTime, endTime, type, location, notes, transport: {
+                                    modeOfTransport,
+                                    startLoc: startLocation,
+                                    endLoc: endLocation
+                                }
+                            }));
                         }}
                         className="flex gap-2 mt-7 mb-6 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>

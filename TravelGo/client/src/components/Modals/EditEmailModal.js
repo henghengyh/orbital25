@@ -9,7 +9,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [newEmail, setNewEmail] = useState(currentEmail || "");
-    const [step, setStep] = useState(1); 
+    const [step, setStep] = useState(1);
 
     useEffect(() => {
         if (isOpen) {
@@ -47,7 +47,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
                     setMessage("");
                     setStep(1);
                     setCode("");
-                    onEmailUpdated && onEmailUpdated(newEmail); 
+                    onEmailUpdated && onEmailUpdated(newEmail);
                     onClose();
                 }, 1000);
             }
@@ -74,7 +74,7 @@ export default function EditEmailModal({ isOpen, onClose, onEmailUpdated, curren
             <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
                 <h2 className="text-lg font-bold mb-4">Edit Email</h2>
                 {step === 1 ? (
-                    <> 
+                    <>
                         {inputBox("email", setNewEmail, "Enter new email", newEmail)}
                         <div className="flex justify-end gap-2 mt-4">
                             <button className="px-3 py-1 bg-gray-300 rounded" onClick={onClose}>Cancel</button>

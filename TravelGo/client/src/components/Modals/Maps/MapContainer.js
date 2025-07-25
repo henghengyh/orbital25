@@ -18,7 +18,7 @@ export default function MapContainer({
                 <>
                     <div ref={mapRef} className="w-full h-full" />
                     {customPopup && customPopup.visible && (
-                        <div 
+                        <div
                             className="absolute z-50 pointer-events-none"
                             style={{
                                 left: '50%',
@@ -26,7 +26,7 @@ export default function MapContainer({
                                 transform: 'translate(-50%, -50%)'
                             }}
                         >
-                            <div 
+                            <div
                                 className="pointer-events-auto"
                                 style={{
                                     maxWidth: '280px',
@@ -58,9 +58,9 @@ export default function MapContainer({
                                 </div>
 
                                 <div style={{ padding: '15px' }}></div>
-                                
+
                                 <div style={{ padding: '15px' }}>
-                                    
+
                                     <h3 style={{
                                         margin: '0 0 8px 0',
                                         fontSize: '18px',
@@ -70,7 +70,7 @@ export default function MapContainer({
                                     }}>
                                         {customPopup.activity.name}
                                     </h3>
-                                    
+
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',

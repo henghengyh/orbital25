@@ -9,7 +9,7 @@ const MapInstructions = ({ showInstructions, setShowInstructions }) => {
                         <h2 className="text-2xl font-bold text-gray-900">How to Use the Interactive Maps</h2>
                         <button
                             onClick={() => setShowInstructions(false)}
-                            className="text-gray-700 rounded-full hover:bg-gray-300 focus:outline-none"
+                            className="rounded-full hover:bg-slate-200 focus:outline-none"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

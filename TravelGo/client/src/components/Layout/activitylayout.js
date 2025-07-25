@@ -30,6 +30,14 @@ export default function ActivityLayout({ date, activities, setActivities, update
     const todayActivities = useMemo(() => { return filterActivity(date, activities) }, [date, activities]);
 
     const isValidActivity = (data) => {
+        if (data.type === "Transport") {
+            if (!data.transport) return true;
+            if (data.transport.startLoc && data.transport.endLoc &&
+                data.transport.startLoc.placeId === data.transport.endLoc.placeId) {
+                return false;
+            }
+        }
+
         let counter = 0;
         for (const existing of todayActivities) {
             if (data._id.toString() === existing._id.toString()) continue;
