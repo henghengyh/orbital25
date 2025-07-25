@@ -9,6 +9,7 @@ import EmptyActivity from "../Cards/emptyactivity";
 import InviteCollaboratorModal from "../Modals/InviteCollaboratorModal";
 import WarningModal from "../Modals/WarningModal";
 
+
 export default function ItineraryLayout({ mode, itinerary, addItinerary, editItinerary, deleteItinerary, leaveItinerary }) {
     const [activities, setActivities] = useState(itinerary?.activities || []);
     const [dates, setDates] = useState([]);

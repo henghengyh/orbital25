@@ -68,12 +68,28 @@ ItinerarySchema.methods.removeActivity = async function (activityId) {
     return this;
 };
 
-ItinerarySchema.methods.updateActivity = function (oldActivity, updatedFields) {
+ItinerarySchema.methods.updateActivity = async function (oldActivity, updatedFields) {
+    const fieldsToUpdate = updatedFields.toObject();
     if (oldActivity) {
-        Object.assign(oldActivity, updatedFields);
+
+        delete fieldsToUpdate._id;
+        delete fieldsToUpdate.__v;
+        Object.assign(oldActivity, fieldsToUpdate);
+        
+        // Programmer is actually unsure why this is needed
+        // It seems to be a workaround for Mongoose not detecting changes
+        // A deep google search didn't yield any findings, but recommended this change
+        // SO DO NOT DELETE THIS LINE, PLEASE
+        if (oldActivity._doc) {
+            Object.assign(oldActivity._doc, fieldsToUpdate);
+        }
+
+        //TO highlight the changes in the UI
         oldActivity.markModified && oldActivity.markModified();
         this.markModified('activities');
-        return this.save();
+
+        await this.save();
+        return this;
     } else {
         throw new Error("Activity not found");
     }
