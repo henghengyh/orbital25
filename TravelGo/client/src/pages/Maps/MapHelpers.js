@@ -23,15 +23,15 @@ const getColorByTransportMode = (mode) => {
 };
 
 const getGradientByActivityType = (type) => {
-        const colors = {
-            'Meal': '#ff6b6b',
-            'Transport': '#4ecdc4',
-            'Sightseeing': '#667eea',
-            'Shopping': '#ffc048',
-            'Other': '#d299c2'
-        };
-        return colors[type] || '#667eea';
+    const colors = {
+        'Meal': '#ff6b6b',
+        'Transport': '#4ecdc4',
+        'Sightseeing': '#667eea',
+        'Shopping': '#ffc048',
+        'Other': '#d299c2'
     };
+    return colors[type] || '#667eea';
+};
 
 /**
  * Searches for places using Google Maps Places API and adds markers to the map
@@ -70,7 +70,7 @@ const searchPlaces = async (query, map, markers, setMarkers) => {
             service.textSearch(searchRequest, (results, status) => {
                 if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
                     const newSearchMarkers = [];
-                    
+
                     results.slice(0, 5).forEach((place) => {
                         const marker = new window.google.maps.Marker({
                             position: place.geometry.location,
@@ -97,7 +97,7 @@ const searchPlaces = async (query, map, markers, setMarkers) => {
                         newSearchMarkers.push(marker);
                     });
 
-                    const filteredMarkers = markers.filter(m => 
+                    const filteredMarkers = markers.filter(m =>
                         m.getLabel() || m.getTitle() === "Your Location"
                     );
                     setMarkers([...filteredMarkers, ...newSearchMarkers]);
@@ -134,33 +134,33 @@ const searchPlaces = async (query, map, markers, setMarkers) => {
  * @param {Object} itineraryData.bounds.stats - The statistics for the itinerary.
  */
 const displayItineraryOnMap = (
-    itineraryData, 
-    map, 
-    clearItineraryOverlay, 
-    showCustomPopup, 
-    setMarkers, 
+    itineraryData,
+    map,
+    clearItineraryOverlay,
+    showCustomPopup,
+    setMarkers,
     setPolylines
 ) => {
     if (!map || !itineraryData) return;
     clearItineraryOverlay();
-    
+
     const newMarkers = [];
     const newPolylines = [];
 
     itineraryData.activities.forEach((activity, index) => {
         let coordinates = null;
         let title = activity.name;
-        
+
         if (activity.location?.coordinates) {
             coordinates = activity.location.coordinates;
         } else if (activity.transport?.startLocation?.coordinates) {
             coordinates = activity.transport.startLocation.coordinates;
             title = `${activity.name} (Start)`;
         }
-        
+
         if (coordinates) {
             const markerNumber = newMarkers.length + 1;
-            
+
             const baseIcon = getMarkerIconByActivityType(activity.type);
             const marker = new window.google.maps.Marker({
                 position: coordinates,
@@ -175,14 +175,14 @@ const displayItineraryOnMap = (
                     className: 'custom-marker-label'
                 }
             });
-                
+
             marker.addListener('click', (event) => {
                 showCustomPopup(activity, event.latLng, markerNumber);
             });
             newMarkers.push(marker);
         }
     });
-    
+
     itineraryData.activities.forEach(activity => {
         if (activity.transport?.startLocation?.coordinates && activity.transport?.endLocation?.coordinates) {
             const transportRoute = new window.google.maps.Polyline({
@@ -195,7 +195,7 @@ const displayItineraryOnMap = (
                 strokeOpacity: 0.8,
                 strokeWeight: 4
             });
-            
+
             transportRoute.setMap(map);
             newPolylines.push(transportRoute);
         }
@@ -218,11 +218,11 @@ const displayItineraryOnMap = (
                 repeat: '20px'
             }]
         });
-        
+
         routePath.setMap(map);
         newPolylines.push(routePath);
     });
-    
+
     if (itineraryData.bounds) {
         const bounds = new window.google.maps.LatLngBounds(
             { lat: itineraryData.bounds.south, lng: itineraryData.bounds.west },
