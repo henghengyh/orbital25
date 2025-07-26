@@ -302,7 +302,14 @@ export default function Maps() {
                     </div>
                     {itineraryOverlay && (
                         <div className="mt-2 text-sm text-blue-700">
-                            <strong>{itineraryOverlay.itineraryName}</strong> - {itineraryOverlay.stats.totalActivities} activities, {itineraryOverlay.stats.activitiesWithLocation} with locations
+                            <strong>Itinerary:</strong> {itineraryOverlay.itineraryName}
+                            <ul className="list-disc list-inside space-y-1">
+                                <li><strong>Total Activities:</strong> {itineraryOverlay.stats.totalActivities}</li>
+                                <li><strong>Activities with Locations:</strong> {itineraryOverlay.stats.activitiesWithLocation}</li>
+                                {itineraryOverlay.stats.transportActivities > 0 && (
+                                    <li><strong>Transport Activities:</strong> {itineraryOverlay.stats.transportActivities}</li>
+                                )}
+                            </ul>
                         </div>
                     )}
                     {selectedItinerary && !itineraryOverlay && (
