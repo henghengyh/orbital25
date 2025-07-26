@@ -9,10 +9,15 @@ export default function CurrencyModal({ data, onClose, setCurrency, setXRate }) 
     const [popup, setPopup] = useState(false);
 
     const handleSearch = async () => {
-        if (newCurrency === "") { setError("Invalid Currency"); return; }
-        setCurrency(newCurrency);
-        setXRate(await getRate(newCurrency))
-        onClose();
+        if (newCurrency === "") { setError("Invalid currency"); return; }
+        const rate = await getRate(newCurrency);
+        if (rate) {
+            setCurrency(newCurrency);
+            setXRate(rate);
+            onClose();
+        } else {
+            setError("Invalid currency");
+        }
     }
 
     const handleKeyDown = (event) => { if (event.key === 'Enter') handleSearch(); };
