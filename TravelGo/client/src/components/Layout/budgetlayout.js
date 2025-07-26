@@ -199,7 +199,7 @@ export default function BudgetLayout() {
                     </div>
 
                     <div className="flex gap-2 items-center justify-left group">
-                        <p className="text-lg">Current Currency:</p>
+                        <p className="text-lg flex-nowrap min-w-fit">Current Currency:</p>
                         <div className="text-2xl font-semibold gap-1 flex">{currency.toUpperCase()}
                             <span onClick={() => setOpenModal({ shown: true, mode: "currency", data: currency })}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -293,7 +293,6 @@ export default function BudgetLayout() {
                             : <ExpensesModal
                                 mode={openModal.mode}
                                 data={openModal.data}
-                                xRate={xRate}
                                 onClose={() => setOpenModal({ shown: false, mode: "budget", data: null })}
                                 onAdd={onAdd}
                                 onEdit={onEdit}
@@ -305,6 +304,7 @@ export default function BudgetLayout() {
                 <ExpensesOverview
                     totalExpenses={totalExpenses * xRate}
                     remainingAmount={remainingAmount * xRate}
+                    xRate={xRate}
                 />
                 <RecentExpenses
                     recentExpenses={recentExpenses}

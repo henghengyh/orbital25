@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
+
 import { styleAmount } from "../../utils/helper";
 import PieChartOverview from "../Charts/piechartoverview";
 import SearchLoading from "../Loading/searchloading";
 
-export default function ExpensesOverview({ totalExpenses, remainingAmount }) {
+export default function ExpensesOverview({ totalExpenses, remainingAmount, xRate }) {
     const [loading, setLoading] = useState(true);
 
     let remainAmtColor = "";
-    if (remainingAmount > 500) remainAmtColor = "#4ade80";
-    else if (remainingAmount > 0) remainAmtColor = "#fb923c";
+    if (remainingAmount > 500 * xRate) remainAmtColor = "#4ade80"
+    else if (remainingAmount > 0) remainAmtColor = "#fb923c"
     else remainAmtColor = "#f87171";
 
     const colors = ['#a78bfa', remainAmtColor];
     const data = [
-        { name: "Total Expenses", amount: Number(styleAmount(totalExpenses)) },
-        { name: "Remaining Amount", amount: Number(styleAmount(remainingAmount)) },
+        { name: "Total Expenses", amount: Number(totalExpenses) },
+        { name: "Remaining Amount", amount: Number(remainingAmount) },
     ];
 
     useEffect(() => {
