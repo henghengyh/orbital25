@@ -202,10 +202,10 @@ function sendCollabAcceptedEmail(inviterEmail, inviterName, inviteeName, tripNam
 }
 
 
-module.exports = { 
-    sendCreateEmail, 
-    sendUpdateEmail, 
-    sendCodeToEmail, 
-    sendCollabInvitation, 
-    sendCollabAcceptedEmail 
+module.exports = {
+    sendCreateEmail,
+    sendUpdateEmail,
+    sendCodeToEmail,
+    sendCollabInvitation,
+    sendCollabAcceptedEmail
 };

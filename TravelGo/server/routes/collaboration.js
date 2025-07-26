@@ -30,7 +30,7 @@ router.get("/accept", async (req, res) => {
 
         itinerary.collaborators.push(invitation.invitee);
         await itinerary.save();
-        
+
         invitation.status = 'Accepted';
         await invitation.save();
 
@@ -44,7 +44,7 @@ router.get("/accept", async (req, res) => {
         );
     } catch (error) {
         console.error("Error accepting invitation:", error);
-        return res.status(500).json({ error: "Failed to accept collaboration invitation" });
+        return res.status(500).json({ error: error.message });
     }
 });
 

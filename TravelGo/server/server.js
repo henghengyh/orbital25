@@ -36,8 +36,8 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 
 // All other GET requests (INVALID) not handled before will return the React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  console.log(`GET request to ${req.url} served by index.html`);
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    console.log(`GET request to ${req.url} served by index.html`);
 });
 
 // Finally, start the server

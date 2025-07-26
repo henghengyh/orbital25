@@ -81,8 +81,8 @@ router.get('/:city/:period', async (req, res) => {
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherHistory(decodeWeatherData(responses));
         res.json(weatherRawData.getAlerts());
-    } catch (error) { 
-        console.error('Weather API error:', error); 
+    } catch (error) {
+        console.error('Weather API error:', error);
         res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });

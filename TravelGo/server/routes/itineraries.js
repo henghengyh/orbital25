@@ -36,7 +36,7 @@ const Budget = require('../models/Budget');
 // IMPORTING HELPER MODULES
 const mongoose = require("mongoose");
 const email = require("../utilities/email-helper");
-const { findItineraryOr404, findActivityOr404, findBudgetOr404 } = require("../utilities/finder-helper");
+const { findItineraryOr404, findActivityOr404 } = require("../utilities/finder-helper");
 const { isValidActivity } = require("../utilities/valid-activity-helper");
 const { hasAccessToItinerary } = require("../utilities/valid-access-helper");
 
@@ -86,7 +86,7 @@ router.post("/", authenticateToken, async (req, res) => {
         return res.status(201).json({ savedItinerary, message: "Itinerary added" });
     } catch (error) {
         console.error("Error creating itinerary:", error);
-        return res.status(500).json({ error: "Failed to create itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -197,7 +197,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
         }
     } catch (error) {
         console.error("Error updating itinerary:", error);
-        return res.status(500).json({ error: "Failed to update itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -216,11 +216,11 @@ router.delete("/:id", authenticateToken, async (req, res) => {
             return res.status(200).json({ itinerary, message: "Itinerary deleted" });
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to delete itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
-/** Adding an activity to exisitng itinerary */
+/** Adding an activity to existing itinerary */
 router.post("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -233,18 +233,18 @@ router.post("/:id/activities", authenticateToken, async (req, res) => {
         }
 
         const x = await Activity.newActivity(req.body);
-        if (!( await isValidActivity(itinerary, x))) {
+        if (!(await isValidActivity(itinerary, x))) {
             return res.status(400).json({ error: "Invalid activity" });
         }
         await itinerary.addActivity(x);
         return res.status(201).json({ itinerary, message: "Activity added" });
     } catch (error) {
         console.error("Error adding activity:", error);
-        return res.status(500).json({ error: "Failed to add activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
-/** Updating an activity to exisitng itinerary */
+/** Updating an activity to existing itinerary */
 router.put("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -267,7 +267,7 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
                     return res.status(400).json({ error: "Invalid activity" });
                 }
             }
-            console.log(temp.location);
+
             const updatedItinerary = await itinerary.updateActivity(activity, temp);
 
             function timeToStart(activity, now = new Date()) {
@@ -295,11 +295,11 @@ router.put("/:id/activities/:activityId", authenticateToken, async (req, res) =>
         }
     } catch (error) {
         console.error("Error updating activity:", error);
-        return res.status(500).json({ error: "Failed to update activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
-/** Removing an activity to exisitng itinerary */
+/** Removing an activity to existing itinerary */
 router.delete("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -315,11 +315,11 @@ router.delete("/:id/activities/:activityId", authenticateToken, async (req, res)
         }
     } catch (error) {
         console.error("Error removing activity:", error);
-        return res.status(500).json({ error: "Failed to delete activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
-/** Getting all activities to exisitng itinerary */
+/** Getting all activities to existing itinerary */
 router.get("/:id/activities", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -333,11 +333,11 @@ router.get("/:id/activities", authenticateToken, async (req, res) => {
             return res.status(200).json(itinerary.activities);
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to fetch activities" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
-/** Getting ONE Specific activity to exisitng itinerary */
+/** Getting ONE Specific activity to existing itinerary */
 router.get("/:id/activities/:activityId", authenticateToken, async (req, res) => {
     try {
         const user = req.user;
@@ -353,7 +353,7 @@ router.get("/:id/activities/:activityId", authenticateToken, async (req, res) =>
             return res.status(200).json(activity);
         }
     } catch (error) {
-        return res.status(500).json({ error: "Failed to fetch activity" });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -388,7 +388,6 @@ router.get('/:itineraryId/collaborators', authenticateToken, async (req, res) =>
 
 /** Sending a collaboration invite to ONE user */
 router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, res) => {
-
     const user = req.user;
     const { itineraryId } = req.params;
 
@@ -425,7 +424,7 @@ router.post("/:itineraryId/invite-collaborator", authenticateToken, async (req, 
         }
     } catch (error) {
         console.error("Error inviting collaborator:", error);
-        return res.status(500).json({ success: false, error: "Failed to invite collaborator" });
+        return res.status(500).json({ success: false, error: message });
     }
 });
 
@@ -437,14 +436,12 @@ router.post('/:itineraryId/quit', authenticateToken, async (req, res) => {
         if (!itinerary) {
             return;
         } else {
-            console.log("trying to remove collaborator");
             await itinerary.removeCollaborator(user._id);
-            console.log("collaborator removed");
             return res.status(200).json({ message: "You have left the itinerary" });
         }
     } catch (error) {
         console.error("Error leaving itinerary:", error);
-        return res.status(500).json({ error: "Failed to leave itinerary" });
+        return res.status(500).json({ error: error.message });
     }
 });
 

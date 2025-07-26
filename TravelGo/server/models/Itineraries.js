@@ -75,7 +75,7 @@ ItinerarySchema.methods.updateActivity = async function (oldActivity, updatedFie
         delete fieldsToUpdate._id;
         delete fieldsToUpdate.__v;
         Object.assign(oldActivity, fieldsToUpdate);
-        
+
         // Programmer is actually unsure why this is needed
         // It seems to be a workaround for Mongoose not detecting changes
         // A deep google search didn't yield any findings, but recommended this change
@@ -126,7 +126,7 @@ ItinerarySchema.methods.removeCollaborator = async function (userID) {
     return this;
 }
 
-ItinerarySchema.query.withinDateRange = function(startDate, endDate) {
+ItinerarySchema.query.withinDateRange = function (startDate, endDate) {
     if (startDate && endDate) {
         return this.where({
             startDate: { $gte: new Date(startDate) },
@@ -136,7 +136,7 @@ ItinerarySchema.query.withinDateRange = function(startDate, endDate) {
     return this;
 };
 
-ItinerarySchema.query.searchByText = function(searchQuery) {
+ItinerarySchema.query.searchByText = function (searchQuery) {
     if (searchQuery && searchQuery.trim()) {
         const trimmedQuery = searchQuery.trim();
 
@@ -170,7 +170,7 @@ ItinerarySchema.statics.findByDestination = function (destination) {
 };
 
 // Returns query objects NOTT document instances
-ItinerarySchema.statics.findAccessibleByUser = function(userId) {
+ItinerarySchema.statics.findAccessibleByUser = function (userId) {
     return this.find({
         $or: [
             { user: userId },

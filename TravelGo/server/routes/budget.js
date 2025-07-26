@@ -32,7 +32,7 @@ router.post("/", authenticateToken, async (req, res) => {
         return res.status(200).json({ message: "Budget added" });
     } catch (err) {
         console.error("Error adding budget:", err);
-        return res.status(500).json({ error: "Failed to add budget" });
+        return res.status(500).json({ error: err.message });
     }
 });
 
@@ -61,7 +61,7 @@ router.put("/:itineraryId", authenticateToken, async (req, res) => {
         }
     } catch (err) {
         console.error("Error updating budget:", err);
-        return res.status(500).json({ error: "Failed to update budget" });
+        return res.status(500).json({ error: err.message });
     }
 });
 
@@ -77,7 +77,7 @@ router.post("/currency", authenticateToken, async (req, res) => {
         return res.status(200).json(response.data.data);
     } catch (err) {
         console.error("Error retrieving currency:", err);
-        return res.status(500).json({ error: "Failed to get currency" });
+        return res.status(500).json({ error: err.message });
     }
 });
 
