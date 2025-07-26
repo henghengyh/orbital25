@@ -1,28 +1,29 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import axiosInstance from '../../utils/axiosInstance'; 
-import MapInstructions from './MapInstructions';
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { loadGoogleMaps } from '../../utils/googleMapsLoader';
 import { getGradientByActivityType, searchPlaces, displayItineraryOnMap } from './MapHelpers';
-import MapsOverlaysSearchBar from "../../components/Modals/Maps/MapsOverlaysSearchBar";
+import axiosInstance from '../../utils/axiosInstance';
 import MapContainer from "../../components/Modals/Maps/MapContainer";
+import MapInstructions from './MapInstructions';
 import MapLegend from "../../components/Modals/Maps/MapLegend";
+import MapsOverlaysSearchBar from "../../components/Modals/Maps/MapsOverlaysSearchBar";
 
 export default function Maps() {
     const mapRef = useRef(null);
-    const [map, setMap] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [markers, setMarkers] = useState([]);
     const [allItineraries, setAllItineraries] = useState([]);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [map, setMap] = useState(null);
+    const [markers, setMarkers] = useState([]);
     const [selectedItinerary, setSelectedItinerary] = useState(null);
     const [showInstructions, setShowInstructions] = useState(false);
-    
-    const [itineraryOverlay, setItineraryOverlay] = useState(null);
-    const [selectedItineraryId, setSelectedItineraryId] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
-    const [polylines, setPolylines] = useState([]);
-    const [isLoadingOverlay, setIsLoadingOverlay] = useState(false);
+
     const [customPopup, setCustomPopup] = useState(null);
-    
+    const [isLoadingOverlay, setIsLoadingOverlay] = useState(false);
+    const [itineraryOverlay, setItineraryOverlay] = useState(null);
+    const [polylines, setPolylines] = useState([]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedItineraryId, setSelectedItineraryId] = useState('');
+
     /**
      * There are 3 main functions to populate/ clean the map:
      * 1. addMarker: Adds a marker to the map at a specified location.
@@ -32,15 +33,15 @@ export default function Maps() {
      * Over here, we define a marker as a point on the map represented by a pin or icon. 
      */
 
-    const addMarker = (location, mapInstance) => {
+    const addMarker = useCallback((location, mapInstance) => {
         const marker = new window.google.maps.Marker({
             position: location,
             map: mapInstance,
             title: "Custom Location"
         });
-        
+
         setMarkers(prev => [...prev, marker]);
-    };
+    }, []);
 
     const clearItineraryOverlay = () => {
         markers.forEach(marker => {
@@ -57,7 +58,7 @@ export default function Maps() {
 
     const loadItineraryOverlay = async (itineraryId, date = null) => {
         if (!itineraryId) return;
-        
+
         try {
             setIsLoadingOverlay(true);
             const params = date ? { date } : {};
@@ -89,7 +90,7 @@ export default function Maps() {
             }
         `;
         document.head.appendChild(styleElement);
-        
+
         return () => {
             document.head.removeChild(styleElement);
         };
@@ -97,7 +98,7 @@ export default function Maps() {
 
     useEffect(() => {
         const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-        
+
         loadGoogleMaps(apiKey)
             .then(() => setIsLoaded(true))
             .catch(error => console.error('Error loading Google Maps:', error));
@@ -111,7 +112,7 @@ export default function Maps() {
             console.error('Error fetching itineraries:', error);
         }
     }
-    
+
     useEffect(() => {
         fetchAllItineraries();
     }, []);
@@ -119,7 +120,7 @@ export default function Maps() {
     const dropdownItinerary = () => {
         return (
             <div className="mb-2">
-                <label htmlFor="itinerary-select" className="block mb-1 font-medium text-gray-700">
+                <label htmlFor="itinerary-select" className="block mb-2 pl-2 font-medium text-gray-700">
                     Select Itinerary:
                 </label>
                 <select
@@ -135,7 +136,7 @@ export default function Maps() {
                     <option value="">-- Choose an Itinerary --</option>
                     {allItineraries.map(itinerary => (
                         <option key={itinerary._id} value={itinerary._id}>
-                            {itinerary.destination} ({itinerary.startDate.slice(0, 10)} to {itinerary.endDate.slice(0, 10)})
+                            {itinerary.destination.replace(/\b\w/g, c => c.toUpperCase())} ({itinerary.startDate.slice(0, 10)} to {itinerary.endDate.slice(0, 10)})
                         </option>
                     ))}
                 </select>
@@ -166,7 +167,7 @@ export default function Maps() {
                 }
             ]
         });
-        
+
         const userLocationMarker = new window.google.maps.Marker({
             position: center,
             map: mapInstance,
@@ -217,9 +218,9 @@ export default function Maps() {
             setPolylines
         );
     };
-    
+
     const showCustomPopup = (activity, position, sequenceNumber) => {
-        const popup = { activity, position, sequenceNumber, visible: true};
+        const popup = { activity, position, sequenceNumber, visible: true };
         setCustomPopup(popup);
     };
 
@@ -262,7 +263,7 @@ export default function Maps() {
 
     return (
         <div className="start-block">
-            <div className='flex-1 p-8'>
+            <div className='flex-1 p-8 pt-0'>
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-3xl font-bold mb-2">Welcome to Maps!</h1>
@@ -270,10 +271,10 @@ export default function Maps() {
                     </div>
                     {instructionsButton()}
                 </div>
-                
+
                 {/* Itinerary Overlay Controls */}
-                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                    <h3 className="font-semibold mb-3 text-blue-800">Itinerary Overlay</h3>
+                <div className="mb-4 p-4 px-6 bg-blue-50 border border-blue-200 rounded-md">
+                    <h3 className="font-semibold mb-2 text-blue-800 pl-2">Itinerary Overlay</h3>
                     <div className="flex flex-col gap-2 mb-2">
                         {dropdownItinerary()}
                         <input
@@ -284,7 +285,7 @@ export default function Maps() {
                             placeholder="Optional: Filter by date"
                         />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-4">
                         <button
                             onClick={handleLoadItinerary}
                             disabled={!selectedItineraryId || isLoadingOverlay}
@@ -301,7 +302,14 @@ export default function Maps() {
                     </div>
                     {itineraryOverlay && (
                         <div className="mt-2 text-sm text-blue-700">
-                            <strong>{itineraryOverlay.itineraryName}</strong> - {itineraryOverlay.stats.totalActivities} activities, {itineraryOverlay.stats.activitiesWithLocation} with locations
+                            <strong>Itinerary:</strong> {itineraryOverlay.itineraryName}
+                            <ul className="list-disc list-inside space-y-1">
+                                <li><strong>Total Activities:</strong> {itineraryOverlay.stats.totalActivities}</li>
+                                <li><strong>Activities with Locations:</strong> {itineraryOverlay.stats.activitiesWithLocation}</li>
+                                {itineraryOverlay.stats.transportActivities > 0 && (
+                                    <li><strong>Transport Activities:</strong> {itineraryOverlay.stats.transportActivities}</li>
+                                )}
+                            </ul>
                         </div>
                     )}
                     {selectedItinerary && !itineraryOverlay && (
@@ -327,15 +335,14 @@ export default function Maps() {
                     getGradientByActivityType={getGradientByActivityType}
                 />
 
-                {/* Legend */}
                 {itineraryOverlay && (
-                    <MapLegend/>
+                    <MapLegend />
                 )}
             </div>
-            {/* Instructions Popup */}
-            <MapInstructions 
-                showInstructions={showInstructions} 
-                setShowInstructions={setShowInstructions} 
+
+            <MapInstructions
+                showInstructions={showInstructions}
+                setShowInstructions={setShowInstructions}
             />
         </div>
     );

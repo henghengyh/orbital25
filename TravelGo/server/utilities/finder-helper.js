@@ -46,7 +46,7 @@ async function findBudgetOr404(itineraryId, res) {
 async function findExpensesOr404(expensesId, res) {
     const expenses = await Expenses.findById(expensesId);
     if (!expenses) {
-        res.status(404).json({error: "Expenses not found"});
+        res.status(404).json({ error: "Expenses not found" });
         return null;
     }
     return expenses;

@@ -1,11 +1,11 @@
 export default function ActivityCard({ activityName, startTime, endTime, type, onClick }) {
     return (
-        <div className="bg-zinc-200 flex rounded h-[60px] p-2 flex-col group shadow-sm">
+        <div role="article" aria-label="activity card" className="bg-zinc-200 flex rounded h-[60px] p-2 flex-col group shadow-sm">
             <div className="flex flex-row justify-between h-6">
                 <p className="font-medium w-[200px] line-clamp-1">{activityName}</p>
-                <div onClick={onClick} className="hidden justify-center items-center rounded p-1 hover:bg-zinc-300 cursor-pointer group-hover:inline">
+                <button aria-label="edit activity" onClick={onClick} className="hidden justify-center items-center rounded p-1 hover:bg-zinc-300 cursor-pointer group-hover:inline">
                     <ion-icon name="pencil"></ion-icon>
-                </div>
+                </button>
             </div>
 
             <p className="text-sm font-light text-slate-500">

@@ -72,8 +72,9 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                 </div>
                 <div className="pt-2 flex gap-5">
                     <div className="flex flex-col gap-3">
-                        <h6 className="text-label">Date:</h6>
+                        <label htmlFor="date" className="text-label">Date:</label>
                         <input
+                            id="date"
                             type="date"
                             placeholder="date"
                             name="date"
@@ -131,8 +132,9 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        <h6 className="text-label">Type:</h6>
+                        <label htmlFor="type" className="text-label">Type:</label>
                         <select
+                            id="type"
                             value={type}
                             required
                             onChange={(e) => setType(e.target.value)}
@@ -163,21 +165,21 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
 
                 {edit
                     ? <div className="flex gap-2 mt-7 w-full h-10">
-                        <div onClick={(e) => {
+                        <button onClick={(e) => {
                             e.preventDefault();
                             validInputCheck(() => onEdit(data._id, { title, date, amount, currency, type, whoPaid, notes }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
                             Save
-                        </div>
-                        <div onClick={(e) => { e.preventDefault(); onDelete(data._id); }}
+                        </button>
+                        <button onClick={(e) => { e.preventDefault(); onDelete(data._id); }}
                             className="itinerary-button bg-red-200 hover:bg-red-300">
                             <ion-icon name="trash"></ion-icon>
                             Delete
-                        </div>
+                        </button>
                     </div>
-                    : <div
+                    : <button
                         onClick={(e) => {
                             e.preventDefault();
                             validInputCheck(() => onAdd({ title, date, amount, currency, type, whoPaid, notes }));
@@ -185,7 +187,7 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                         className="flex gap-2 mt-7 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>
                         Add
-                    </div>}
+                    </button>}
             </div>
         </div>
     )

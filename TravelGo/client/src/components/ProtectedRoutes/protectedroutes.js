@@ -16,11 +16,11 @@ export default function PrivateRoutes() {
             to="/"
             replace
             state={auth.logout
-                    ? {}
-                    : {
-                        fromProtectedRoute: true,
-                        message: "Please log in to continue."
-                    }
+                ? {}
+                : {
+                    fromProtectedRoute: true,
+                    message: "Please log in to continue."
+                }
             } />
     );
 }

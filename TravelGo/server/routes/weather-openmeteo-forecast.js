@@ -11,7 +11,7 @@ const params = {
     "current": ["weather_code", "temperature_2m", "relative_humidity_2m", "apparent_temperature", "rain", "cloud_cover", "snowfall"],
     "timezone": "auto",
     "forecast_days": 16,
-	"forecast_hours": 24
+    "forecast_hours": 24
 };
 const url = "https://api.open-meteo.com/v1/forecast";
 
@@ -131,9 +131,9 @@ router.get('/current', async (req, res) => {
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherForecast(decodeWeatherData(responses));
         res.json(weatherRawData.getCurrentWeather());
-        params.latitude, params.longitude = null, null; 
-    } catch (error) { 
-        console.error('Weather API error:', error); 
+        params.latitude, params.longitude = null, null;
+    } catch (error) {
+        console.error('Weather API error:', error);
         res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
@@ -148,9 +148,9 @@ router.get('/forecast/:city', async (req, res) => {
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherForecast(decodeWeatherData(responses));
         res.json(weatherRawData.get16DayForecast());
-        params.latitude, params.longitude = null, null; 
-    } catch (error) { 
-        console.error('Weather API error:', error); 
+        params.latitude, params.longitude = null, null;
+    } catch (error) {
+        console.error('Weather API error:', error);
         res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });
@@ -170,9 +170,9 @@ router.get('/trip-forecast/:city', async (req, res) => {
         const responses = await fetchWeatherApi(url, params);
         const weatherRawData = new WeatherForecast(decodeWeatherData(responses));
         res.json(weatherRawData.getTripForecast(tripStart, tripEnd));
-        params.latitude, params.longitude = null, null; 
-    } catch (error) { 
-        console.error('Weather API error:', error); 
+        params.latitude, params.longitude = null, null;
+    } catch (error) {
+        console.error('Weather API error:', error);
         res.status(500).json({ error: 'Failed to fetch weather data', details: error.message });
     }
 });

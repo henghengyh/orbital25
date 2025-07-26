@@ -4,7 +4,7 @@
 const { Location } = require("../models/Location");
 
 async function isValidActivity(itinerary, activity, originalActivity) {
-    
+
     //FIRST LAYER CHECK #####################################################
     if (activity.getActivityDuration() <= 0) return false;
 
@@ -24,7 +24,7 @@ async function isValidActivity(itinerary, activity, originalActivity) {
         if (!isValidTransportLocations(activity.transport)) {
             return false;
         }
-        
+
         if (!originalActivity || activity.hasTimeChanged(originalActivity) || activity.hasLocationChanged(originalActivity)) {
             await activity.calculateRecommendedTravelTime();
             activity.updateTravelDurationPass();
@@ -36,7 +36,7 @@ async function isValidActivity(itinerary, activity, originalActivity) {
         }
     }
 
-    
+
     let counter = 0;
     for (const existingActivity of itinerary.activities) {
         if (new Date(existingActivity.date).toDateString() !== new Date(activity.date).toDateString()) continue;
@@ -65,12 +65,11 @@ async function isValidActivity(itinerary, activity, originalActivity) {
  */
 function isValidTransportLocations(transport) {
     if (!transport) return true;
-    if (transport.startLoc && transport.endLoc && 
+    if (transport.startLoc && transport.endLoc &&
         transport.startLoc.placeId === transport.endLoc.placeId) {
-        console.log("Start and end locations cannot be the same:", transport.startLoc.placeId);
         return false;
     }
-    
+
     return true;
 }
 

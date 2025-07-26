@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import AboutPage from './pages/About/about';
+import AcceptSuccess from './pages/Collaboration/acceptsuccess';
 import AllExpenditurePage from './pages/Budget/allexpenditure';
 import AuthProvider from './context/AuthContext/authcontext';
 import BudgetLayoutPage from './components/Layout/budgetlayout';
@@ -18,7 +19,6 @@ import ProtectedRoutes from './components/ProtectedRoutes/protectedroutes';
 import RegisterPage from './pages/Login&Register/register';
 import UserProvider from './context/UserContext/usercontext';
 import WeatherPage from './pages/Weather/weather';
-import AcceptSuccess from './pages/Collaboration/acceptsuccess';
 
 function App() {
     return (
