@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { styleAmount } from "../../utils/helper";
 import BarChartOverview from "../Charts/barchartoverview";
 import EmptyExpenses from "./emptyexpenses";
 import SearchLoading from "../Loading/searchloading";
@@ -18,7 +17,7 @@ export default function WeeklyOverview({ weeklyOverview, xRate }) {
         setLoading(true);
         if (xRate !== 1) {
             const converted = weeklyOverview.map(({ date, ...rest }) => {
-                const updated = Object.fromEntries(Object.entries(rest).map(([key, value]) => [key, Number(styleAmount(value * xRate))]));
+                const updated = Object.fromEntries(Object.entries(rest).map(([key, value]) => [key, Number(value * xRate)]));
                 return { date, ...updated };
             });
 

@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { formatDate } from "../../utils/helper";
+import { formatDate, getRate } from "../../utils/helper";
 import currencyCodes from "../../utils/currencylist";
 
-export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdit, onDelete }) {
-    const [amount, setAmount] = useState(data?.amount * xRate || 0);
+export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDelete }) {
+    const [amount, setAmount] = useState(data?.amount || 0);
     const [currency, setCurrency] = useState(data?.currency || "SGD");
     const [date, setDate] = useState(data?.date || formatDate(new Date().toISOString()));
+    const [displayAmt, setDisplayAmt] = useState(0);
     const [error, setError] = useState("");
     const [notes, setNotes] = useState(data?.notes || "");
     const [popup, setPopup] = useState(false);
@@ -16,6 +17,24 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
 
     const edit = mode === "edit";
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
+
+    const amtInCurrency = useCallback(async (amount) => {
+        if (mode === "edit" && currency !== "SGD") {
+            const rate = await getRate(currency);
+            if (rate) return Number(rate * amount).toFixed(2);
+        }
+        return Number(amount).toFixed(2);
+    }, [mode, currency]);
+
+    useEffect(() => {
+        const convertAmt = async () => {
+            if (amount === 0) { setDisplayAmt(0); return; }
+
+            setDisplayAmt(await amtInCurrency(amount));
+        };
+
+        convertAmt();
+    }, [amount, currency, amtInCurrency]);
 
     const validInputCheck = (fn) => {
         if (!title) { setError("Invalid Title"); return; }
@@ -91,7 +110,7 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                             type="number"
                             placeholder="0"
                             name="amount"
-                            value={Number(amount).toFixed(2)}
+                            value={displayAmt}
                             min={0}
                             required
                             className="text-input w-[122px]"
@@ -103,7 +122,7 @@ export default function ExpensesModal({ mode, data, xRate, onClose, onAdd, onEdi
                         <h6 className="text-label">Currency:</h6>
                         <input
                             type="text"
-                            placeholder="Type or select a code"
+                            placeholder="currency"
                             list="currency-codes"
                             value={currency}
                             onChange={(e) => setCurrency(e.target.value.toUpperCase())}

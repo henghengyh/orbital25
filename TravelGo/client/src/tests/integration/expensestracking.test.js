@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { axiosInstance, renderWithProvAuth } from "./test-helper";
@@ -139,13 +139,13 @@ describe("Expenses tracking", () => {
             }
 
             if (amount !== undefined) {
-                userEvent.clear(screen.getByPlaceholderText('0'));
-                if (amount) userEvent.type(screen.getByPlaceholderText('0'), amount);
+                await act(async () => { userEvent.clear(screen.getByPlaceholderText('0')) });
+                if (amount) await act(async () => { userEvent.type(screen.getByPlaceholderText('0'), amount) });
             }
 
             if (currency !== undefined) {
-                userEvent.clear(screen.getByPlaceholderText('Type or select a code'));
-                if (currency) userEvent.type(screen.getByPlaceholderText('Type or select a code'), currency);
+                await act(async () => { userEvent.clear(screen.getByPlaceholderText('currency')) });
+                if (currency) await act(async () => { userEvent.type(screen.getByPlaceholderText('currency'), currency) });
             }
 
             if (whoPaid !== undefined) {
@@ -198,7 +198,7 @@ describe("Expenses tracking", () => {
                 expect(screen.getByPlaceholderText('title')).toBeInTheDocument();
                 expect(screen.getByLabelText('Date:')).toBeInTheDocument();
                 expect(screen.getByPlaceholderText('0')).toBeInTheDocument();
-                expect(screen.getByPlaceholderText('Type or select a code')).toBeInTheDocument();
+                expect(screen.getByPlaceholderText('currency')).toBeInTheDocument();
                 expect(screen.getByPlaceholderText('Me')).toBeInTheDocument();
                 expect(screen.getByRole('combobox', { name: 'Type:' })).toBeInTheDocument();
                 expect(screen.getByPlaceholderText('notes')).toBeInTheDocument();
@@ -291,6 +291,7 @@ describe("Expenses tracking", () => {
 
         test("delete expenses via expenses modal", async () => {
             budgetAxios({ allExpenses: [mockExpenses[0], mockExpenses[1]] });
+            axiosInstance.post.mockResolvedValueOnce({ data: { "MYR": { value: 3.0 } } });
             axiosInstance.delete.mockResolvedValueOnce({ data: { message: "Expenses deleted", amount: 320 } });
             expenseInfo({ allExpenses: [mockExpenses[1]] });
 
