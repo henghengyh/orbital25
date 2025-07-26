@@ -114,7 +114,7 @@ router.get("/itinerary-overlay/:itineraryId", authenticateToken, async (req, res
 
         const mapData = {
             itineraryId: itinerary._id,
-            itineraryName: itinerary.itineraryName,
+            itineraryName: itinerary.tripName,
             activities: [],
             routes: [],
             bounds: null,
