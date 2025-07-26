@@ -1,6 +1,6 @@
 import { getInitials } from "../../utils/helper";
 
-function basicInfo(user) {
+function basicInfo({ user }) {
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">User Profile</h2>
@@ -14,9 +14,7 @@ function basicInfo(user) {
                             className="w-60 h-60 rounded-full object-cover border"
                         />
                     ) : (
-                        <div
-                            className="w-60 h-60 flex items-center justify-center rounded-full object-cover border text-6xl font-medium bg-blue-100 cursor-pointer"
-                        >
+                        <div role="img" aria-label="user initials" className="w-60 h-60 flex items-center justify-center rounded-full object-cover border text-6xl font-medium bg-blue-100 cursor-pointer">
                             {getInitials(user.name)}
                         </div>
                     )}

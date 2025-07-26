@@ -25,10 +25,10 @@ export default function ExpensesDetailedCard({ data, editExpenses, xRate, onDele
 
                 <div className="flex items-start gap-3">
                     <button onClick={() => editExpenses(data)} className="text-gray-400 grid place-items-center hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        <ion-icon name="pencil" style={{ height: "24px", width: "24px" }}></ion-icon>
+                        <ion-icon data-testid="pencil" name="pencil" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>
                     <button onClick={() => setOpenModal(true)} className="text-gray-400 grid place-items-center hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        <ion-icon name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
+                        <ion-icon data-testid="trash" name="trash" style={{ height: "24px", width: "24px" }}></ion-icon>
                     </button>
                 </div>
             </div>

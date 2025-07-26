@@ -21,6 +21,7 @@ export default function EditSignUpModal({ isOpen, onClose, onSave }) {
             <div className="flex items-center mb-3">
                 <label className="w-40 mr-2">{display.charAt(0).toUpperCase() + display.slice(1)}</label>
                 <select
+                    aria-label="signup"
                     name={name}
                     value={value}
                     onChange={handleChange}

@@ -7,7 +7,7 @@ export default function SplitExpensesModal({ data, totalExpenses, xRate, onClose
 
     useEffect(() => {
         const allExpenses = data?.splitExpenses;
-        if (allExpenses) setCost(totalExpenses / allExpenses.length);
+        if (allExpenses) setCost(totalExpenses / allExpenses?.length);
     }, [data, setCost, totalExpenses]);
 
     const colorCode = (amt) => {

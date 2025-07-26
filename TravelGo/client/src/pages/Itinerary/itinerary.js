@@ -19,30 +19,42 @@ export default function Itinerary() {
         setLoading(true);
         axiosInstance
             .get(`/itineraries/${id}`)
-            .then((res) => setItinerary(res.data.itinerary))
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => setItinerary(res.data.itinerary))
+            .catch(err => {
+                console.error("Error getting itinerary:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            })
             .finally(() => { setLoading(false); setFetched(true); });
     }, [id]);
 
     const editItinerary = async (data) => {
         axiosInstance
             .put(`/itineraries/${id}`, data)
-            .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => navigate('/dashboard', { state: { message: res.data.message } }))
+            .catch(err => {
+                console.error("Error updating itinerary:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            });
     };
 
     const deleteItinerary = async () => {
         axiosInstance
             .delete(`/itineraries/${id}`)
-            .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => navigate('/dashboard', { state: { message: res.data.message } }))
+            .catch(err => {
+                console.error("Error deleting itinerary:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            });
     };
 
     const leaveItinerary = async () => {
         axiosInstance
             .post(`/itineraries/${id}/quit`)
-            .then((res) => navigate('/dashboard', { state: { message: res.data.message } }))
-            .catch((err) => { console.error(err); setError(err.response.data.error); })
+            .then(res => navigate('/dashboard', { state: { message: res.data.message } }))
+            .catch(err => {
+                console.error("Error leaving itinerary:", err.response?.data?.error || "Something went wrong");
+                setError(err.response?.data?.error);
+            });
     };
 
     useEffect(() => {
@@ -63,7 +75,7 @@ export default function Itinerary() {
     if (loading) return <Loading />;
 
     return (
-        <div className="start-block py-8">
+        <div className="start-block py-8 pb-6">
             {popup && <div className="error">{error}</div>}
             <ItineraryLayout
                 mode="edit"

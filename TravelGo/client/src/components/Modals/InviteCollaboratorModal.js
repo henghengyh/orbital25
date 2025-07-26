@@ -2,15 +2,14 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 
 export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }) {
-    const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
-    const [feedback, setFeedback] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [owner, setOwner] = useState({});
-    const [showAll, setShowAll] = useState(false);
-
     const [collaborators, setCollaborators] = useState([]);
     const [collabDataLoading, setCollabDataLoading] = useState(true);
+    const [email, setEmail] = useState("");
+    const [feedback, setFeedback] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const [owner, setOwner] = useState({});
+    const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
         async function fetchCollaborators() {
@@ -24,6 +23,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
     }, [itinerary]);
 
     const handleInvite = async (e) => {
+        e.preventDefault();
         setLoading(true);
         try {
             const res = await onInvite(email, message);
@@ -38,7 +38,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                 setFeedback(res.data.error || "Failed to send invitation.");
             }
         } catch (err) {
-            setFeedback("Failed to send invitation!!!");
+            setFeedback("Failed to send invitation");
         }
         setLoading(false);
     };
@@ -58,15 +58,15 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                         <div className="font-semibold mb-1">Owner</div>
                         <ul className="text-sm">
                             <li className="flex justify-between py-1 border-b last:border-b-0">
-                                    <span>{owner.name}</span>
-                                    <span className="text-gray-500">{owner.email}</span>
+                                <span>{owner.name}</span>
+                                <span className="text-gray-500">{owner.email}</span>
                             </li>
                         </ul>
                     </div>
-                    {collaborators.length > 0 ? (
+                    {collaborators?.length > 0 ? (
                         <div className="mb-4">
                             <hr className="mb-4"></hr>
-                            <div className="italic mb-1 text-gray-600">{collaborators ? "Collaborators" : null}</div>
+                            <h4 className="italic mb-1 text-gray-600">{collaborators ? "Collaborators" : null}</h4>
                             <ul className="text-sm">
                                 {collaborators.slice(0, 3).map((c, idx) => (
                                     <li key={idx} className="flex justify-between py-1 border-b last:border-b-0">
@@ -75,7 +75,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                                     </li>
                                 ))}
                             </ul>
-                            {collaborators.length > 3 && !showAll && (
+                            {collaborators?.length > 3 && !showAll && (
                                 <button
                                     className="text-blue-600 hover:underline mt-1 text-xs"
                                     onClick={() => setShowAll(true)}
@@ -88,7 +88,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                 </div>
                 {showAll && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-lg p-6 w-80 shadow-lg relative">
+                        <div role="textbox" aria-label="all collaborators" className="bg-white rounded-lg p-6 shadow-lg relative">
                             <button
                                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
                                 onClick={() => setShowAll(false)}
@@ -98,7 +98,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                             <h3 className="text-lg font-bold mb-2">All Collaborators</h3>
                             <ul className="text-sm max-h-60 overflow-y-auto">
                                 {collaborators.map((c, idx) => (
-                                    <li key={idx} className="flex justify-between py-1 border-b last:border-b-0">
+                                    <li key={idx} className="flex justify-between py-1 border-b last:border-b-0 gap-3">
                                         <span>{c.name}</span>
                                         <span className="text-gray-500">{c.email}</span>
                                     </li>
@@ -107,7 +107,7 @@ export default function InviteCollaboratorModal({ onClose, onInvite, itinerary }
                         </div>
                     </div>
                 )}
-                
+
                 <form onSubmit={handleInvite} className="flex flex-col gap-3">
                     <input
                         type="email"
