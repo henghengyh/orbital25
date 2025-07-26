@@ -132,7 +132,7 @@ const searchPlaces = async (query, map, markers, setMarkers) => {
  * @param {Object} itineraryData.bounds - The bounds for the map view.
  * @param {Object} itineraryData.bounds.stats - The statistics for the itinerary.
  */
-const displayItineraryOnMap = (
+const displayItineraryOnMap = async (
     itineraryData,
     map,
     clearItineraryOverlay,
@@ -182,21 +182,17 @@ const displayItineraryOnMap = (
         }
     });
 
+    const routePromises = [];
+    
     itineraryData.activities.forEach(activity => {
         if (activity.transport?.startLocation?.coordinates && activity.transport?.endLocation?.coordinates) {
-            const transportRoute = new window.google.maps.Polyline({
-                path: [
-                    activity.transport.startLocation.coordinates,
-                    activity.transport.endLocation.coordinates
-                ],
-                geodesic: true,
-                strokeColor: getColorByTransportMode(activity.transport.modeOfTransport),
-                strokeOpacity: 0.8,
-                strokeWeight: 4
-            });
-
-            transportRoute.setMap(map);
-            newPolylines.push(transportRoute);
+            const routePromise = getActualRoute(
+                activity.transport.startLocation.coordinates,
+                activity.transport.endLocation.coordinates,
+                activity.transport.modeOfTransport || 'driving',
+                map
+            );
+            routePromises.push(routePromise);
         }
     });
 
@@ -222,6 +218,13 @@ const displayItineraryOnMap = (
         newPolylines.push(routePath);
     });
 
+    try {
+        const actualRoutes = await Promise.all(routePromises);
+        newPolylines.push(...actualRoutes);
+    } catch (error) {
+        console.error('Some routes failed to load:', error);
+    }
+
     if (itineraryData.bounds) {
         const bounds = new window.google.maps.LatLngBounds(
             { lat: itineraryData.bounds.south, lng: itineraryData.bounds.west },
@@ -231,6 +234,59 @@ const displayItineraryOnMap = (
     }
     setMarkers(newMarkers);
     setPolylines(newPolylines);
+};
+
+const getActualRoute = (origin, destination, travelMode, map) => {
+    return new Promise((resolve, reject) => {
+        const directionsService = new window.google.maps.DirectionsService();
+        
+        const modeMapping = {
+            'walk': window.google.maps.TravelMode.WALKING,
+            'car': window.google.maps.TravelMode.DRIVING,
+            'public': window.google.maps.TravelMode.TRANSIT,
+            'driving': window.google.maps.TravelMode.DRIVING,
+            'walking': window.google.maps.TravelMode.WALKING,
+            'transit': window.google.maps.TravelMode.TRANSIT,
+            'bicycling': window.google.maps.TravelMode.BICYCLING
+        };
+
+        const googleTravelMode = modeMapping[travelMode.toLowerCase()] || window.google.maps.TravelMode.DRIVING;
+        
+        directionsService.route({
+            origin: origin,
+            destination: destination,
+            travelMode: googleTravelMode,
+            unitSystem: window.google.maps.UnitSystem.METRIC,
+            avoidHighways: false,
+            avoidTolls: false
+        }, (result, status) => {
+            if (status === 'OK' && result.routes[0]) {
+                const routePolyline = new window.google.maps.Polyline({
+                    path: result.routes[0].overview_path,
+                    geodesic: false, 
+                    strokeColor: getColorByTransportMode(travelMode),
+                    strokeOpacity: 0.8,
+                    strokeWeight: 4,
+                    strokeStyle: 'solid'
+                });
+                
+                routePolyline.setMap(map);
+                resolve(routePolyline);
+            } else {
+                console.warn(`Directions request failed for ${travelMode}:`, status);
+                const straightLine = new window.google.maps.Polyline({
+                    path: [origin, destination],
+                    geodesic: true,
+                    strokeColor: getColorByTransportMode(travelMode),
+                    strokeOpacity: 0.6,
+                    strokeWeight: 3,
+                    strokeStyle: 'dashed' 
+                });
+                straightLine.setMap(map);
+                resolve(straightLine);
+            }
+        });
+    });
 };
 
 export {
