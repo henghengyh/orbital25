@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 
 import { formatDate, getRate } from "../../utils/helper";
 import currencyCodes from "../../utils/currencylist";
 
 export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDelete }) {
-    const [amount, setAmount] = useState(data?.amount || 0);
     const [currency, setCurrency] = useState(data?.currency || "SGD");
     const [date, setDate] = useState(data?.date || formatDate(new Date().toISOString()));
-    const [displayAmt, setDisplayAmt] = useState(0);
     const [error, setError] = useState("");
+    const [hasMounted, setHasMounted] = useState(false);
     const [notes, setNotes] = useState(data?.notes || "");
     const [popup, setPopup] = useState(false);
     const [title, setTitle] = useState(data?.title || "");
@@ -17,6 +16,23 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
 
     const edit = mode === "edit";
     const typesOfExpenses = ["accommodation", "activities", "food", "gift", "others", "shopping", "transport"];
+    const initialState = {
+        amount: data?.amount.toString() || "0",
+        displayAmt: "0.00"
+    };
+
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case "SET_AMOUNT":
+                return { ...state, amount: action.payload };
+            case "SET_DISPLAY_AMT":
+                return { ...state, displayAmt: action.payload };
+            default:
+                return state;
+        }
+    };
+
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const amtInCurrency = useCallback(async (amount) => {
         if (mode === "edit" && currency !== "SGD") {
@@ -28,18 +44,18 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
 
     useEffect(() => {
         const convertAmt = async () => {
-            if (amount === 0) { setDisplayAmt(0); return; }
-
-            setDisplayAmt(await amtInCurrency(amount));
+            dispatch({ type: "SET_DISPLAY_AMT", payload: state.amount === 0 ? "0.00" : await amtInCurrency(parseFloat(state.amount)) });
+            setHasMounted(true);
         };
 
         convertAmt();
-    }, [amount, currency, amtInCurrency]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const validInputCheck = (fn) => {
         if (!title) { setError("Invalid Title"); return; }
         if (!date) { setError("Invalid Date"); return; }
-        if (!amount || amount <= 0) { setError("Invalid Amount"); return; }
+        if (!state.amount || state.amount <= 0) { setError("Invalid Amount"); return; }
         if (!currency) { setError("Invalid Currency"); return; }
         if (!whoPaid) { setError("Invalid Person Paid"); return; }
         if (!type || type === "") { setError("Invalid Expenses Type"); return; }
@@ -110,11 +126,11 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                             type="number"
                             placeholder="0"
                             name="amount"
-                            value={displayAmt}
+                            value={hasMounted ? state.displayAmt : state.amount}
                             min={0}
                             required
                             className="text-input w-[122px]"
-                            onChange={(e) => setAmount(e.target.value)}
+                            onChange={(e) => { dispatch({ type: "SET_AMOUNT", payload: e.target.value || 0 }); setHasMounted(false); }}
                         />
                     </div>
 
@@ -186,7 +202,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                     ? <div className="flex gap-2 mt-7 w-full h-10">
                         <button onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => onEdit(data._id, { title, date, amount, currency, type, whoPaid, notes }));
+                            validInputCheck(() => onEdit(data._id, { title, date, amount: parseFloat(state.amount), currency, type, whoPaid, notes }));
                         }}
                             className="itinerary-button bg-green-200 hover:bg-green-300">
                             <ion-icon name="pencil"></ion-icon>
@@ -201,7 +217,7 @@ export default function ExpensesModal({ mode, data, onClose, onAdd, onEdit, onDe
                     : <button
                         onClick={(e) => {
                             e.preventDefault();
-                            validInputCheck(() => onAdd({ title, date, amount, currency, type, whoPaid, notes }));
+                            validInputCheck(() => onAdd({ title, date, amount: state.amount, currency, type, whoPaid, notes }));
                         }}
                         className="flex gap-2 mt-7 w-full h-10 itinerary-button bg-green-200 hover:bg-green-300">
                         <ion-icon name="pencil"></ion-icon>
