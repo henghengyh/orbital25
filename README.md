@@ -21,7 +21,9 @@ Branch naming should be such that they can be easily distinguished. Recommended 
 Official Style Guide: http://www.python.org/dev/peps/pep-0008/
 
 ## Useful Documentations
-The project proposal can be found [here](https://docs.google.com/document/d/1D2bHDXoqUTczwbjbPwc9bvrkqinJr8MP/edit). 
+Please refer to **[Project Final Submission](https://docs.google.com/document/d/1_YHy-Q_eR0pEm1FsxDROeSEdmUi035FH2WuqV9DUPVY/edit?usp=sharing)** to view the final product.
+
+This may serve as additional reference (Already covered in Final Submission): [Project Proposal](https://docs.google.com/document/d/1D2bHDXoqUTczwbjbPwc9bvrkqinJr8MP/edit)
 ### Tech Stacks
 Click on each technology to be directed to their documentation.
 - Frontend
