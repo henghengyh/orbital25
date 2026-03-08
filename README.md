@@ -2,6 +2,8 @@ orbital25
 ========
 This repository contains material for the project *CP2106 Independent Software Development Project (Orbital)* for [henghengyh](https://github.com/henghengyh) and [haobuhaoo](https://github.com/haobuhaoo).
 
+Please refer to **[Project Final Submission](https://docs.google.com/document/d/1_YHy-Q_eR0pEm1FsxDROeSEdmUi035FH2WuqV9DUPVY/edit?usp=sharing)** to view the final product.
+
 ## Contributing
 
 ### Branches
@@ -21,8 +23,6 @@ Branch naming should be such that they can be easily distinguished. Recommended 
 Official Style Guide: http://www.python.org/dev/peps/pep-0008/
 
 ## Useful Documentations
-Please refer to **[Project Final Submission](https://docs.google.com/document/d/1_YHy-Q_eR0pEm1FsxDROeSEdmUi035FH2WuqV9DUPVY/edit?usp=sharing)** to view the final product.
-
 This may serve as additional reference (Already covered in Final Submission): [Project Proposal](https://docs.google.com/document/d/1D2bHDXoqUTczwbjbPwc9bvrkqinJr8MP/edit)
 ### Tech Stacks
 Click on each technology to be directed to their documentation.
